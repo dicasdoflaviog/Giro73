@@ -54,6 +54,7 @@
 .g73-portal .category-famosos-entretenimento { --g73-section: var(--g73-entertainment); }
 
 .g73-portal a { color: #005a9c; text-underline-offset: .18em; }
+.g73-portal :is(h1, h2, h3, h4, h5, h6) { font-family: inherit; }
 .g73-portal a:hover { text-decoration-thickness: .12em; }
 .g73-portal :focus-visible { outline: 3px solid #005a9c; outline-offset: 4px; }
 .g73-portal img { display: block; max-inline-size: 100%; block-size: auto; }
