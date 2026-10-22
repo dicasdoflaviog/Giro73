@@ -291,3 +291,23 @@ body:has(.g73-drawer[open]) { overflow: hidden; }
 .g73-portal .g73-single:has(> .g73-kicker a[href*="/tecnologia-inovacao/"]) { --g73-section: var(--g73-tech); }
 .g73-portal .g73-single:has(> .g73-kicker a[href*="/esportes/"]) { --g73-section: var(--g73-sports); }
 .g73-portal .g73-single:has(> .g73-kicker a[href*="/famosos-entretenimento/"]) { --g73-section: var(--g73-entertainment); }
+
+/* Giro73: publicidade de parceiros locais. */
+.g73-portal :is(.ad-slot-sidebar,.ad-slot-article) { position: relative; background: #F4F5F7; border: 1px solid #E2E8F0; border-radius: 8px; overflow: hidden; box-shadow: none; }
+.g73-portal .ad-slot-sidebar { width: min(100%,300px); margin: 24px auto; }
+.g73-portal .ad-slot-article { width: 100%; margin: 32px 0; }
+.g73-portal .g73-ad-label { display: block; height: 28px; padding: 8px 10px; text-align: left; font-size: 10px; line-height: 12px; font-weight: 700; color: #9CA3AF; letter-spacing: .05em; text-transform: uppercase; }
+.g73-portal .g73-ad-creative { display: grid; place-items: center; width: 100%; height: 250px; }
+.g73-portal .ad-slot-sidebar--tall .g73-ad-creative { height: 600px; }
+.g73-portal .ad-slot-article .g73-ad-creative { height: 90px; }
+.g73-portal .g73-ad-creative :is(.g73-ad-link,picture) { display: block; width: 100%; height: 100%; }
+.g73-portal .g73-ad-creative .g73-ad-image { display: block; width: 100%; height: 100%; max-width: 100%; object-fit: contain; border: 0; border-radius: 0; }
+.g73-portal .g73-ad-availability { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; width: 100%; height: 100%; padding: 12px; color: #2C1067; text-align: center; text-decoration: none; font-size: 14px; line-height: 1.4; }
+.g73-portal .g73-ad-availability strong { font-size: 16px; font-weight: 700; }
+.g73-portal .g73-ad-availability .g73-ad-contact { font-size: 12px; color: #555555; overflow-wrap: anywhere; }
+.g73-portal .g73-partner-ad a:focus-visible { outline-offset: -4px; }
+.g73-portal .g73-single-layout { display: grid; grid-template-columns: minmax(0,1fr); gap: 32px; margin: 32px auto; padding: 0 16px; }
+.g73-portal .g73-single-layout > .g73-single { width: 100%; min-width: 0; max-width: 740px; margin: 0; padding: 0; }
+.g73-portal .g73-single-layout > .g73-sidebar { min-width: 0; margin: 0; }
+@media (max-width: 47.99rem) { .g73-portal .ad-slot-article .g73-ad-creative { height: 100px; } }
+@media (min-width: 64rem) { .g73-portal .g73-single-layout { grid-template-columns: minmax(0,740px) minmax(280px,1fr); gap: 48px; } }

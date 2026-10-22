@@ -31,6 +31,8 @@ Paleta oficial Giro73, atualizada em 22/10/2026. Aplicar cores de editoria em bo
 
 ## Artigo e anúncios
 
+Publicidade local usa os slots nativos descritos em `16-publicidade-parceiros-locais.md`: sidebar na Home e nos artigos, e banner automático após o terceiro parágrafo editorial. Gestão em Configurações → Publicidade Giro73, com e-mail comercial nos espaços vazios. Sem plugin adicional, script de anúncios ou alteração no conteúdo armazenado.
+
 - Artigo em coluna única: container máximo de 740 px, margem de 32 px auto e padding lateral de 16 px. H1 de 38 px/peso 800/entrelinha 1,15, resumo de 19 px/1,45 e corpo de 19 px/1,68. H2 com borda esquerda de 4 px na cor da editoria.
 - Ordem: chapéu de editoria de 13 px, H1, resumo, assinatura “Por Redação Giro73 — Teixeira de Freitas, BA” com data/hora nativa e botão WhatsApp, imagem 16:9 com crédito factual de 12 px, conteúdo, fontes, responsabilidade editorial e relacionados. O botão só abre o compartilhamento por iniciativa do leitor; nenhum envio automático.
 - Fonte de sistema por padrão. Se indispensável, uma família WOFF2 local, poucos pesos e fallback de métricas compatíveis; evitar troca de fonte que desloque o texto.

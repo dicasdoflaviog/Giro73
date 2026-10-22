@@ -31,3 +31,7 @@ O financeiro usa exclusivamente `GET /wp-json/giro73/v1/cotacoes`, na própria o
 Rollback: desativar apenas o snippet 5 em Snippets, ou POST `/code-snippets/v1/snippets/5/deactivate`. O widget passa a indicar indisponibilidade. Não desativar o plugin enquanto este for o único mecanismo que carrega a rotina. Para migrar ao functions.php de um tema filho ou a MU-plugin, instalar o arquivo, desativar o snippet e confirmar que a rota continua registrada; manter somente uma cópia carregada. Mudanças no código não limpam automaticamente o transient; versionar a chave quando a estrutura do cache mudar.
 
 Depois de publicar, limpar LiteSpeed via `wp_clear_cache`, scope site para alterações globais, respeitando o limite de uma vez a cada cinco minutos; para correções finais, scope urls. Respeitar verify.after_seconds e conferir URLs canônicas sem cache buster. Validar seletor, coordenadas, endpoint anônimo, cache e layout mobile/desktop antes de anunciar conclusão.
+
+## Publicidade local
+
+A implantação 16 acrescentou slots laterais na Home e nos artigos, além de banner automático após o terceiro parágrafo editorial. Gestão: **Configurações → Publicidade Giro73**, snippet PHP **6**. Ver `README-publicidade.md`. O single agora tem uma coluna de apoio à direita no desktop, preservando leitura de até 740 px; mobile segue em coluna única. O mecanismo de cotações, snippet 5, foi preservado.
