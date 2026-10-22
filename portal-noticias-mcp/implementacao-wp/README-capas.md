@@ -2,6 +2,8 @@
 
 O script `gerar-upload-capas.py` produz arte original com formas geométricas, tipografia e o selo oficial fornecido pela redação. Não utiliza fotos, marcas ou personagens de terceiros. As fontes locais DejaVu Sans/Liberation Sans possuem licenças permissivas; não se redistribuem arquivos de fonte.
 
+O selo já está disponível em `marca/selo.png`. Na conclusão da identidade visual, as capas foram geradas localmente e importadas pelo `wp_upload_media` do Easy MCP; o modo `--upload` deste script continua sendo o cliente REST anterior. Para evitar o endpoint REST de upload, executar somente a geração e importar os arquivos pelo Easy MCP, preservando os metadados e vínculos descritos abaixo.
+
 ## Especificação validada
 
 - 1200 × 675 pixels, 16:9, RGB, WebP estritamente abaixo de **50.000 bytes**.

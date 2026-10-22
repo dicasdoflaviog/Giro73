@@ -1,0 +1,50 @@
+{
+  "logo-giro73": {
+    "width": 221,
+    "height": 59,
+    "files": {
+      "png": {
+        "filename": "logo-giro73.png",
+        "bytes": 7220,
+        "sha256": "6f07befce74f40c245c7997ab7f392867bdcf4ff982bd1c3096000a275e0007a"
+      },
+      "webp": {
+        "filename": "logo-giro73.webp",
+        "bytes": 2688,
+        "sha256": "06338ed6e3e837060640158d4a0491fcc444eac1375be77a64074655598840fc"
+      }
+    }
+  },
+  "logo-branca": {
+    "width": 221,
+    "height": 59,
+    "files": {
+      "png": {
+        "filename": "logo-branca.png",
+        "bytes": 2696,
+        "sha256": "de34e6ecfcfe33df97dd51e5fc968a69e490237e9f70ecd860031f79839bf716"
+      },
+      "webp": {
+        "filename": "logo-branca.webp",
+        "bytes": 1306,
+        "sha256": "e60600387dfd624ec49f9d124b8f60afa24ef44675456079c38de563a583ca9b"
+      }
+    }
+  },
+  "selo": {
+    "width": 125,
+    "height": 58,
+    "files": {
+      "png": {
+        "filename": "selo.png",
+        "bytes": 4954,
+        "sha256": "e9814bbae8bac65b01b5450c05b61d23c7264f1594a63132cdff21fe1758fdff"
+      },
+      "webp": {
+        "filename": "selo.webp",
+        "bytes": 1964,
+        "sha256": "dcb301f06fefa1d94236c126a6d37255380bcc4db23573a278786f2a27a518d8"
+      }
+    }
+  }
+}

@@ -1,5 +1,7 @@
 # Giro73 — design system oficial e execução
 
+> Registro da implantação inicial, antes do envio das marcas restantes. A conclusão está em [09-identidade-visual-concluida.md](09-identidade-visual-concluida.md).
+
 Data: 22/10/2026. Site: https://giro73.com.br/. Este registro distingue alterações publicadas de preparações locais.
 
 ## Publicado e verificado
