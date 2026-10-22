@@ -1,5 +1,7 @@
 # Espaços publicitários para parceiros locais
 
+> Histórico: a implantação 17 removeu a sidebar dos artigos e manteve o espaço lateral apenas na Home. A inserção no terceiro parágrafo passou à rotina editorial do snippet 7.
+
 Implantado em 22/10/2026 no Giro73, usando o Code Snippets existente, snippet global **6**, sem instalar outro plugin.
 
 - Slot lateral na Home, imediatamente depois de Mais lidas e antes de Economia.

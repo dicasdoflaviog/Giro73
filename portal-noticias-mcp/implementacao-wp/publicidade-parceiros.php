@@ -79,39 +79,7 @@ add_filter('render_block_core/shortcode', function ($html, $block) {
     $raw = trim(isset($block['innerHTML']) ? $block['innerHTML'] : '');
     return preg_match('~^\[giro73_publicidade(?:\s[^\]]*)?\]$~s', $raw) ? do_shortcode($raw) : $html;
 }, 10, 2);
-// Insere depois do terceiro parágrafo editorial, sem alterar o conteúdo no banco.
-add_filter('render_block_core/post-content', function ($content, $parsed, $instance) {
-    if (is_admin() || !is_singular('post') || is_feed()
-        || !isset($instance->context['postId']) || (int) $instance->context['postId'] !== (int) get_queried_object_id()
-        || false !== strpos($content, 'data-g73-ad-slot="article"')) { return $content; }
-    $pattern = '~<!--[\s\S]*?-->|<(?:"[^"]*"|\x27[^\x27]*\x27|[^\x27">])*>~';
-    preg_match_all($pattern, $content, $tokens, PREG_OFFSET_CAPTURE);
-    $stack = array(); $start = null; $count = 0;
-    $blocked = array('blockquote', 'figure', 'ul', 'ol', 'table', 'aside', 'script', 'style', 'pre', 'nav', 'footer');
-    $void = array('area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr');
-    foreach ($tokens[0] as $token) {
-        if (!preg_match('~^<\s*(/?)\s*([a-z][a-z0-9:-]*)\b~i', $token[0], $tag)) { continue; }
-        $name = strtolower($tag[2]); $end = $token[1] + strlen($token[0]);
-        if ($tag[1]) {
-            if ('p' === $name && null !== $start) {
-                $text = trim(html_entity_decode(wp_strip_all_tags(substr($content, $start, $token[1] - $start)), ENT_QUOTES, 'UTF-8'));
-                $start = null;
-                if ('' !== $text && 3 === ++$count) {
-                    return substr($content, 0, $end) . g73_ads_render('article') . substr($content, $end);
-                }
-            }
-            for ($i = count($stack) - 1; $i >= 0; --$i) {
-                if ($stack[$i] === $name) { $stack = array_slice($stack, 0, $i); break; }
-            }
-        } else {
-            if ('p' === $name) {
-                $start = !array_intersect($stack, $blocked) && !preg_match('~g73-photo-credit|g73-meta~i', $token[0]) ? $end : null;
-            }
-            if (!in_array($name, $void, true) && !preg_match('~/\s*>$~', $token[0])) { $stack[] = $name; }
-        }
-    }
-    return '' !== trim(wp_strip_all_tags($content)) ? $content . g73_ads_render('article') : $content;
-}, 20, 3);
+// A inserção no terceiro parágrafo é feita pela rotina single-editorial.php.
 add_action('admin_menu', function () {
     add_options_page('Publicidade Giro73', 'Publicidade Giro73', 'manage_options', 'giro73-publicidade', 'g73_ads_settings_page');
 });
@@ -122,7 +90,7 @@ function g73_ads_settings_page() {
     settings_errors('g73_partner_ads');
     echo '<form method="post" action="options.php">'; settings_fields('g73_partner_ads');
     echo '<p><label>E-mail de contato dos espaços disponíveis<br><input type="email" class="regular-text" name="g73_partner_ads[contact_email]" value="' . esc_attr($config['contact_email']) . '" required></label></p>';
-    foreach (array('sidebar' => 'Sidebar — Home e artigos', 'article' => 'Miolo — após o terceiro parágrafo') as $position => $title) {
+    foreach (array('sidebar' => 'Sidebar — Home', 'article' => 'Miolo — após o terceiro parágrafo') as $position => $title) {
         $slot = $config[$position];
         echo '<h2>' . esc_html($title) . '</h2><table class="form-table" role="presentation"><tbody>';
         foreach (array('image_id' => 'Imagem do banner', 'mobile_image_id' => 'Imagem mobile (opcional)') as $key => $label) {

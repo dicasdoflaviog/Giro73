@@ -31,9 +31,9 @@ Paleta oficial Giro73, atualizada em 22/10/2026. Aplicar cores de editoria em bo
 
 ## Artigo e anúncios
 
-Publicidade local usa os slots nativos descritos em `16-publicidade-parceiros-locais.md`: sidebar na Home e nos artigos, e banner automático após o terceiro parágrafo editorial. Gestão em Configurações → Publicidade Giro73, com e-mail comercial nos espaços vazios. Sem plugin adicional, script de anúncios ou alteração no conteúdo armazenado.
+Publicidade local usa os slots nativos descritos em `16-publicidade-parceiros-locais.md`: sidebar apenas na Home e banner automático após o terceiro parágrafo editorial. Gestão em Configurações → Publicidade Giro73, com e-mail comercial nos espaços vazios. Sem plugin adicional, script de anúncios ou alteração no conteúdo armazenado.
 
-- Artigo em coluna única: container máximo de 740 px, margem de 32 px auto e padding lateral de 16 px. H1 de 38 px/peso 800/entrelinha 1,15, resumo de 19 px/1,45 e corpo de 19 px/1,68. H2 com borda esquerda de 4 px na cor da editoria.
+- Artigo sem sidebar, em coluna única: container máximo de 740 px, margem de 32 px auto e padding lateral de 16 px. H1 de 36 px/peso 800/entrelinha 1,15, resumo de 19 px/1,45 e corpo de 19 px/1,7. H2 com borda esquerda de 4 px na cor da editoria.
 - Ordem: chapéu de editoria de 13 px, H1, resumo, assinatura “Por Redação Giro73 — Teixeira de Freitas, BA” com data/hora nativa e botão WhatsApp, imagem 16:9 com crédito factual de 12 px, conteúdo, fontes, responsabilidade editorial e relacionados. O botão só abre o compartilhamento por iniciativa do leitor; nenhum envio automático.
 - Fonte de sistema por padrão. Se indispensável, uma família WOFF2 local, poucos pesos e fallback de métricas compatíveis; evitar troca de fonte que desloque o texto.
 - Reservar espaço para cada anúncio antes da primeira pintura. Exemplo inicial a validar com formatos suportados: área mobile de 320 × 100 para anúncio horizontal e 300 × 250 dentro do artigo; desktop pode ter área de 728 × 90 onde couber.
@@ -60,3 +60,5 @@ Publicidade local usa os slots nativos descritos em `16-publicidade-parceiros-lo
 - Orçamento inicial próprio por página: CSS comprimido ≤ 50 KB, JS comprimido ≤ 50 KB, imagem LCP preferencialmente ≤ 150 KB. Medir terceiros separadamente e junto no resultado final.
 - Testar em 360 px e desktop: sem overflow, saltos de imagens/fontes/anúncios, falhas de teclado ou links invisíveis sem JS. Verificar atualização automática da capa após publicação.
 - PageSpeed 95+ é uma meta de engenharia; laboratório, Core Web Vitals de campo e aprovação do AdSense são avaliações distintas.
+
+O template oficial da implantação 17 usa Leia também após o sexto parágrafo e compartilhamento WhatsApp no PHP, sem script próprio do artigo. Ver `17-template-oficial-artigos.md`.

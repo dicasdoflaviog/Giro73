@@ -12,7 +12,7 @@ Implementação publicada no tema de blocos `hostinger-ai-theme`, descrita em `.
 
 Não inserir estes templates como conteúdo de uma nova página. Ler o estado atual antes de publicar e preservar outras propriedades dos estilos globais. As consultas de posts são nativas; não substituí-las por listas fixas.
 
-`header-editorial.js`, `widgets-editoriais.js` e `artigo-compartilhar.js` são fontes legíveis dos scripts inline já contidos nos respectivos HTMLs. Não carregá-los novamente. `widgets-editoriais.html` documenta os dois blocos HTML de dados, já incluídos na Home. O arquivo histórico `topbar-relogio.js` não é utilizado pelo novo header.
+`header-editorial.js` e `widgets-editoriais.js` são fontes legíveis dos scripts inline já contidos nos respectivos HTMLs. O compartilhamento dos artigos agora é gerado por PHP no snippet 7; o script anterior foi removido. Não carregá-los novamente. `widgets-editoriais.html` documenta os dois blocos HTML de dados, já incluídos na Home. O arquivo histórico `topbar-relogio.js` não é utilizado pelo novo header.
 
 Menu usa dialog nativo; busca usa GET `s` e `post_type=post`. Relógio usa Intl em America/Sao_Paulo. WhatsApp apenas monta o link com título e URL canônica, sem envio automático.
 
@@ -35,3 +35,7 @@ Depois de publicar, limpar LiteSpeed via `wp_clear_cache`, scope site para alter
 ## Publicidade local
 
 A implantação 16 acrescentou slots laterais na Home e nos artigos, além de banner automático após o terceiro parágrafo editorial. Gestão: **Configurações → Publicidade Giro73**, snippet PHP **6**. Ver `README-publicidade.md`. O single agora tem uma coluna de apoio à direita no desktop, preservando leitura de até 740 px; mobile segue em coluna única. O mecanismo de cotações, snippet 5, foi preservado.
+
+## Template oficial dos artigos
+
+A implantação **17** removeu a sidebar do single e centralizou a leitura em 740 px. `single-editorial.php`, snippet 7, concentra inserção do anúncio após o terceiro parágrafo, Leia também após o sexto e compartilhamento WhatsApp sem JS. Ver `README-single.md`; essa configuração substitui a descrição de duas colunas da implantação 16.
