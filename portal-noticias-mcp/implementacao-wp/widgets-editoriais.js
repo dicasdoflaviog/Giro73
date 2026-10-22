@@ -1,12 +1,12 @@
 (()=>{
   const zone='America/Sao_Paulo',brl=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:4,maximumFractionDigits:4}),points=new Intl.NumberFormat('pt-BR',{maximumFractionDigits:2}),pct=new Intl.NumberFormat('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2,signDisplay:'always'});
-  const cities={teixeira:{latitude:-17.535,longitude:-39.7419},porto:{latitude:-16.4497,longitude:-39.0647},eunapolis:{latitude:-16.377,longitude:-39.5807},itamaraju:{latitude:-17.0392,longitude:-39.5312}};
+  const cities={"teixeira":{"latitude":-17.535,"longitude":-39.7419},"porto":{"latitude":-16.4497,"longitude":-39.0647},"eunapolis":{"latitude":-16.377,"longitude":-39.5807},"itamaraju":{"latitude":-17.0392,"longitude":-39.5312},"prado":{"latitude":-17.3364,"longitude":-39.2227},"mucuri":{"latitude":-18.0754,"longitude":-39.5565},"caravelas":{"latitude":-17.7268,"longitude":-39.2597},"medeiros":{"latitude":-17.3707,"longitude":-40.2238},"novavicosa":{"latitude":-17.8926,"longitude":-39.3743},"itanhem":{"latitude":-17.1642,"longitude":-40.3321},"alcobaca":{"latitude":-17.5195,"longitude":-39.2036}};
   const finite=v=>v!==null&&v!==''&&v!==undefined&&Number.isFinite(Number(v));
   const stamp=date=>new Intl.DateTimeFormat('pt-BR',{timeZone:zone,day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}).format(date);
   const today=()=>{const p=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).map(x=>[x.type,x.value]));return p.year+'-'+p.month+'-'+p.day;};
   const read=(key,age)=>{try{const v=JSON.parse(localStorage.getItem(key));return v&&Date.now()-v.saved>=0&&Date.now()-v.saved<age?v.data:null;}catch{return null;}};
   const write=(key,data)=>{try{localStorage.setItem(key,JSON.stringify({saved:Date.now(),data}));}catch{}};
-  async function fetchJSON(url){const c=new AbortController(),timer=setTimeout(()=>c.abort(),6500);try{const r=await fetch(url,{signal:c.signal,credentials:'omit',headers:{Accept:'application/json'}});if(!r.ok)throw new Error('Provider unavailable');return await r.json();}finally{clearTimeout(timer);}}
+  async function fetchJSON(url,timeout=6500){const c=new AbortController(),timer=setTimeout(()=>c.abort(),timeout);try{const r=await fetch(url,{signal:c.signal,credentials:'omit',headers:{Accept:'application/json'}});if(!r.ok)throw new Error('Provider unavailable');return await r.json();}finally{clearTimeout(timer);}}
   const sun='<circle cx="24" cy="20" r="7"/><path d="M24 6v3m0 22v3M10 20h3m22 0h3M14 10l2 2m16 16 2 2m0-20-2 2M16 28l-2 2"/>';
   const moon='<path d="M29 7a14 14 0 1 0 12 22A13 13 0 0 1 29 7Z"/>';
   const cloud='<path d="M13 31h23a8 8 0 0 0 0-16 12 12 0 0 0-23-2 9 9 0 0 0 0 18Z"/>';
@@ -53,20 +53,29 @@
     const v=Number(variation),cell=row.querySelector('[data-quote-change]');cell.textContent=pct.format(v)+'%';cell.className=v>0?'g73-up':v<0?'g73-down':'g73-flat';row.dataset.state='ready';
   }
   async function startEconomy(root){
-    const status=root.querySelector('[data-economy-status]');let successful=0,when=[];
+    const status=root.querySelector('[data-economy-status]');let busy=false,next=0;
     const load=async()=>{
-      successful=0;when=[];status.textContent='Consultando cotações…';root.querySelectorAll('[data-quote]').forEach(row=>{row.dataset.state='unavailable';row.querySelector('[data-quote-value]').textContent='—';const c=row.querySelector('[data-quote-change]');c.textContent='—';c.className='g73-flat';});
-      await Promise.allSettled([
-        (async()=>{const key='g73-fx-v1',cached=read(key,5*60*1000),data=cached||await fetchJSON('https://economia.awesomeapi.com.br/json/last/USD-BRL,EUR-BRL');
-          for(const [name,code] of [['usd','USDBRL'],['eur','EURBRL']]){const q=data?.[code];setQuote(root,name,q?.bid,q?.pctChange,'currency');if(finite(q.timestamp)){const date=new Date(Number(q.timestamp)*1000);if(Number.isFinite(date.getTime()))when.push(date);}successful++;}
-          if(!cached)write(key,data);
-        })(),
-        (async()=>{const key='g73-ibov-v1',cached=read(key,5*60*1000),data=cached||await fetchJSON('https://api.hgbrasil.com/finance?format=json-cors');const q=data?.results?.stocks?.IBOVESPA;setQuote(root,'ibov',q?.points,q?.variation,'points');successful++;if(!cached)write(key,data);})()
-      ]);
-      root.dataset.state=successful===3?'ready':successful?'partial':'unavailable';
-      status.textContent=successful?(when.length?'Moedas: '+stamp(new Date(Math.min(...when.map(x=>x.getTime()))))+'. ':'')+(successful===3?'Índice: HG Brasil.':'Dados não recebidos permanecem indisponíveis.'):'Cotações indisponíveis no momento.';
+      if(busy)return;busy=true;let successful=0;
+      status.textContent='Consultando cotações…';root.querySelectorAll('[data-quote]').forEach(row=>{row.dataset.state='unavailable';row.querySelector('[data-quote-value]').textContent='—';const c=row.querySelector('[data-quote-change]');c.textContent='—';c.className='g73-flat';});
+      try{
+        let data;
+        for(let attempt=0;attempt<2;attempt++){
+          try{data=await fetchJSON(new URL('/wp-json/giro73/v1/cotacoes',location.origin).href,12000);break;}
+          catch(error){if(attempt)throw error;await new Promise(resolve=>setTimeout(resolve,3000));}
+        }
+        const times=[];
+        for(const [name,unit] of [['usd','currency'],['eur','currency'],['ibov','points']]){
+          const q=data?.quotes?.[name];if(!q||q.unit!==unit)continue;
+          try{setQuote(root,name,q.value,q.variation,unit);successful++;if(name!=='ibov'&&q.as_of){const time=new Date(q.as_of);if(Number.isFinite(time.getTime()))times.push(time.getTime());}}catch{}
+        }
+        root.dataset.state=successful===3?'ready':successful?'partial':'unavailable';
+        const consulted=new Date(data.fetched_at),expires=new Date(data.expires_at);
+        next=Number.isFinite(expires.getTime())?Math.max(Date.now()+60000,expires.getTime()):Date.now()+60000;
+        status.textContent=successful?(times.length?'Moedas: '+stamp(new Date(Math.min(...times)))+'. ':'')+(Number.isFinite(consulted.getTime())?'Consulta do servidor: '+stamp(consulted)+'. ':'')+(successful===3?'Cache de 15 min.':'Dados não recebidos permanecem indisponíveis.'):'Cotações indisponíveis no momento.';
+      }catch{root.dataset.state='unavailable';status.textContent='Cotações indisponíveis no momento.';next=Date.now()+60000;}
+      finally{busy=false;}
     };
-    await load();setInterval(()=>{if(!document.hidden&&root.getBoundingClientRect().bottom>=0&&root.getBoundingClientRect().top<innerHeight)load();},5*60*1000);
+    await load();setInterval(()=>{if(!document.hidden&&Date.now()>=next&&root.getBoundingClientRect().bottom>=0&&root.getBoundingClientRect().top<innerHeight)load();},60000);
   }
   const entries=[...document.querySelectorAll('[data-g73-weather]')].map(root=>[root,startWeather]).concat([...document.querySelectorAll('[data-g73-economy]')].map(root=>[root,startEconomy]));
   const begin=()=>{if('IntersectionObserver'in window){const map=new Map(entries),observer=new IntersectionObserver(list=>{list.forEach(e=>{if(e.isIntersecting){observer.unobserve(e.target);map.get(e.target)?.(e.target);}});},{rootMargin:'240px'});entries.forEach(([root])=>observer.observe(root));}else entries.forEach(([root,start])=>start(root));};

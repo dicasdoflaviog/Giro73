@@ -1,0 +1,72 @@
+{
+  "coordinate_reference": "Pontos de referência das sedes municipais, não limites territoriais; Bahia, DDD 73.",
+  "additional_cities_source": "https://raw.githubusercontent.com/kelvins/municipios-brasileiros/main/json/municipios.json",
+  "cities": [
+    {
+      "key": "teixeira",
+      "name": "Teixeira de Freitas",
+      "latitude": -17.535,
+      "longitude": -39.7419
+    },
+    {
+      "key": "porto",
+      "name": "Porto Seguro",
+      "latitude": -16.4497,
+      "longitude": -39.0647
+    },
+    {
+      "key": "eunapolis",
+      "name": "Eunápolis",
+      "latitude": -16.377,
+      "longitude": -39.5807
+    },
+    {
+      "key": "itamaraju",
+      "name": "Itamaraju",
+      "latitude": -17.0392,
+      "longitude": -39.5312
+    },
+    {
+      "key": "prado",
+      "name": "Prado",
+      "latitude": -17.3364,
+      "longitude": -39.2227
+    },
+    {
+      "key": "mucuri",
+      "name": "Mucuri",
+      "latitude": -18.0754,
+      "longitude": -39.5565
+    },
+    {
+      "key": "caravelas",
+      "name": "Caravelas",
+      "latitude": -17.7268,
+      "longitude": -39.2597
+    },
+    {
+      "key": "medeiros",
+      "name": "Medeiros Neto",
+      "latitude": -17.3707,
+      "longitude": -40.2238
+    },
+    {
+      "key": "novavicosa",
+      "name": "Nova Viçosa",
+      "latitude": -17.8926,
+      "longitude": -39.3743
+    },
+    {
+      "key": "itanhem",
+      "name": "Itanhém",
+      "latitude": -17.1642,
+      "longitude": -40.3321
+    },
+    {
+      "key": "alcobaca",
+      "name": "Alcobaça",
+      "latitude": -17.5195,
+      "longitude": -39.2036
+    }
+  ]
+}

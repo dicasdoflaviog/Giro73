@@ -1,5 +1,7 @@
 # Home, topo e artigos: pacote editorial
 
+> Registro histórico. A pendência de CORS do Ibovespa foi resolvida pela rotina de servidor do relatório 15, que também ampliou o clima para onze cidades.
+
 Aplicado em **22/10/2026**, no WordPress existente. Não foram recriados artigos, páginas ou mídias. Os cinco posts mantiveram integralmente conteúdo, título, resumo, slug, categoria, status, datas e imagem destacada, conferidos pela API antes/depois.
 
 ## Publicado

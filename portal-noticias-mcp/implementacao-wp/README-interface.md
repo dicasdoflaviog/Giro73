@@ -16,12 +16,18 @@ Não inserir estes templates como conteúdo de uma nova página. Ler o estado at
 
 Menu usa dialog nativo; busca usa GET `s` e `post_type=post`. Relógio usa Intl em America/Sao_Paulo. WhatsApp apenas monta o link com título e URL canônica, sem envio automático.
 
-## APIs públicas
+## Dados da sidebar
 
-- `api.open-meteo.com/v1/forecast`: quatro cidades fixas, sem pedir geolocalização. Horas locais de hoje, temperatura e código meteorológico; máximas/mínimas por período. Atribuição na interface e link de previsão para https://www.climatempo.com.br/.
-- `economia.awesomeapi.com.br/json/last/USD-BRL,EUR-BRL`: bid e pctChange, timestamp da fonte.
-- `api.hgbrasil.com/finance?format=json-cors`: results.stocks.IBOVESPA.points/variation; a resposta pública verificada não libera CORS para o Giro73 sem chave, portanto o fallback do índice continua necessário. Não alegar cotação ao vivo do índice até habilitar fonte acessível. Não expor chaves secretas no JavaScript para resolver isso.
+Clima continua via Open-Meteo, com onze pontos de referência municipais fixos em `cidades-clima-extremo-sul.json`. Teixeira de Freitas é o padrão, seguido de Porto Seguro, Eunápolis, Itamaraju, Prado, Mucuri, Caravelas, Medeiros Neto, Nova Viçosa, Itanhém e Alcobaça. A previsão consulta horas locais de hoje, temperatura e código meteorológico; máximas/mínimas por período, atribuição visível e link para https://www.climatempo.com.br/. Cache público local de 15 minutos por cidade/dia. Não há consulta de geolocalização do leitor nem geocodificação no caminho de renderização.
 
-Cache local contém somente dados públicos: clima 15 min, cotações 5 min. Não há cache estático com números financeiros de exemplo. Fetch sem credenciais, timeout de 6,5 s e carga perto da viewport, depois do load. Falhas mantêm traços e texto de indisponibilidade. Índice sempre em pontos; moedas em reais. Não importar scripts de widgets externos.
+O financeiro usa exclusivamente `GET /wp-json/giro73/v1/cotacoes`, na própria origem. Não consulta AwesomeAPI/HG Brasil diretamente no navegador. `cotacoes-servidor.php` contém a rotina publicada como snippet PHP global **ID 5** no **Code Snippets 4.0.0**, instalado pela API nativa porque a conexão não escreve arquivos PHP do tema. O plugin não adicionou assets ao frontend. WPCode existente foi preservado; nenhum código dele foi alterado. Não executar cópia simultânea da mesma rotina no tema.
 
-Depois de publicar, limpar LiteSpeed via `wp_clear_cache`, scope site para alterações globais, respeitando o limite de uma vez a cada cinco minutos; para correções finais, scope urls. Respeitar verify.after_seconds e conferir URLs canônicas sem cache buster. Verificar Home e artigo em desktop/mobile, menu por teclado, formulário de busca, créditos e fontes antes de anunciar conclusão.
+- `wp_remote_get` consulta duas URLs fixas, com TLS padrão verificado, timeout de quatro segundos por fonte, sem redirecionamentos e com corpo limitado a 64 KB.
+- AwesomeAPI é a primeira fonte de dólar/euro. HG Brasil fornece Ibovespa e moedas alternativas se a primeira fonte falhar. Cada indicador identifica sua fonte na resposta JSON. Índice em pontos, moedas em reais. `as_of` é a data da fonte quando disponível; `fetched_at` identifica somente a consulta do servidor.
+- `set_transient('g73_market_v2', ..., 15 * MINUTE_IN_SECONDS)` guarda respostas completas por 900 segundos. Falha/resultado parcial recebe cache curto de 60 segundos para permitir recuperação. Trava de atualização com `add_option`, sem autoload, limita consultas frias simultâneas; limpa em finally e expira após 15 segundos.
+- O endpoint público não aceita URL externa ou parâmetros de provedor. Não devolve credenciais, respostas brutas ou erros internos. Valida JSON, valores finitos/positivos e variações antes de publicar indicadores.
+- O navegador respeita `expires_at`, consulta novamente quando o card está visível e mantém traços se não receber dados válidos. Não há cache financeiro em localStorage com números antigos das consultas diretas.
+
+Rollback: desativar apenas o snippet 5 em Snippets, ou POST `/code-snippets/v1/snippets/5/deactivate`. O widget passa a indicar indisponibilidade. Não desativar o plugin enquanto este for o único mecanismo que carrega a rotina. Para migrar ao functions.php de um tema filho ou a MU-plugin, instalar o arquivo, desativar o snippet e confirmar que a rota continua registrada; manter somente uma cópia carregada. Mudanças no código não limpam automaticamente o transient; versionar a chave quando a estrutura do cache mudar.
+
+Depois de publicar, limpar LiteSpeed via `wp_clear_cache`, scope site para alterações globais, respeitando o limite de uma vez a cada cinco minutos; para correções finais, scope urls. Respeitar verify.after_seconds e conferir URLs canônicas sem cache buster. Validar seletor, coordenadas, endpoint anônimo, cache e layout mobile/desktop antes de anunciar conclusão.
