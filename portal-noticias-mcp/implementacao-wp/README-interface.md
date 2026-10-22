@@ -43,3 +43,7 @@ A implantação **17** removeu a sidebar do single e centralizou a leitura em 74
 ## Fechamento da fundação
 
 A implantação 19 publicou category/archive/search/author e a template part única `giro73-sidebar`, compartilhada com a Home. O script de widgets passou da Home para essa parte; não duplicar. Miniaturas de feed desktop agora têm 240×135 px. O snippet 8 acrescenta cabeçalhos de arquivo, NewsArticle/Organization e ads.txt. Ver `README-arquivos-schema.md`; single permanece sem sidebar.
+
+## Parceiros G73 — implantação 20
+
+A gestão antiga foi substituída pelo CPT e painel **Parceiros G73**, sem novo plugin. Classes neutras, cinco posições, sete formatos, campanhas agendadas, rotação/empilhamento e modal nativo. Fonte principal continua no snippet 6; inserções no snippet 7. Consulte [README-publicidade.md](README-publicidade.md) e [registro da implantação 20](../20-gerenciador-parceiros-g73.md). Os dois banners existentes foram migrados, e o modal permanece desligado até haver campanha configurada.

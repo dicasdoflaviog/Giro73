@@ -1,53 +1,136 @@
-# Publicidade de parceiros Giro73
+# Parceiros G73 — campanhas nativas
 
-Publicado pelo snippet PHP global **6**, no Code Snippets já instalado. Arquivo fonte: `publicidade-parceiros.php`. Não alterar a rotina de cotações, snippet 5.
+Implementação de 22/10/2026, substitui a gestão antiga de dois slots. Usa o **snippet global 6** no Code Snippets existente, sem instalar outro plugin. Inserções editoriais permanecem no snippet 7. Não carregar uma segunda cópia do PHP no tema.
 
-## Gestão pelo WordPress
+## Painel
 
-Acesse **Configurações → Publicidade Giro73**:
+- **Parceiros G73 → Nova campanha**: https://giro73.com.br/wp-admin/post-new.php?post_type=g73_partner
+- **Campanhas**: https://giro73.com.br/wp-admin/edit.php?post_type=g73_partner
+- **Configurações**: https://giro73.com.br/wp-admin/edit.php?post_type=g73_partner&page=g73-partners-settings
 
-https://giro73.com.br/wp-admin/options-general.php?page=giro73-publicidade
+Use o título para o nome do anunciante/campanha. Selecione imagem desktop e, opcionalmente, uma arte mobile; escolha posição e formato, informe destino HTTP/HTTPS e status Ativo/Pausado. **Publicado + Ativo + agenda vigente** são necessários para veicular. Início e expiração são opcionais; o painel usa **America/Bahia**. Uma peça somente mobile também funciona como fallback desktop. Imagens aceitas: WebP, PNG e JPG; prefira WebP leve. Nenhuma mídia é excluída ao pausar ou remover uma campanha.
 
-1. Escolha a posição: **Sidebar — Home** ou **Miolo — após o terceiro parágrafo**.
-2. Clique em **Selecionar na biblioteca** e envie/escolha um WebP ou PNG. Prefira arquivos até 100 KB.
-3. Informe **URL de destino** e **Nome do anunciante**. A URL pode ser o site HTTPS do parceiro ou um link `https://wa.me/55DDDNUMERO?text=MENSAGEM_CODIFICADA`. Use somente número real fornecido pelo parceiro; o sistema não envia mensagens automaticamente.
-4. Opcionalmente escolha uma imagem mobile. Clique em **Salvar publicidade**. O salvamento invalida o cache LiteSpeed.
-5. Para liberar o espaço, remova as duas imagens e salve. Os arquivos permanecem na biblioteca.
+Os dois banners anteriores foram migrados idempotentemente, IDs **135** (lateral) e **136** (matéria), preservando mídias **133**, **134**, **119**, URLs vazias e contato comercial. Os formatos foram ajustados às artes existentes: 970×90 → leaderboard grande; 970×250 → billboard. Isso elimina a reserva vertical excessiva de uma arte horizontal. Novas campanhas não sobrescrevem as antigas.
 
-Sem banner, o espaço mostra **Espaço disponível / Anuncie aqui / comercial@giro73.com.br**, com link mailto e assunto pronto. O usuário confirmou o uso do e-mail; nenhum número fictício foi publicado. O e-mail pode ser atualizado no mesmo painel.
+## Formatos e posições
 
-Cada posição compartilha uma configuração global. O banner lateral aparece somente na Home; o banner de miolo aparece automaticamente em todas as notícias. Alterar a campanha não exige editar cada post.
+| Valor do formato | Dimensões oficiais |
+|---|---|
+| `retangulo_medio` | 300×250 |
+| `retangulo_grande` | 336×280 |
+| `meia_pagina` | 300×600 |
+| `billboard` | 970×250 |
+| `leaderboard_grande` | 970×90 |
+| `faixa_mobile` | 320×50 |
+| `popup_modal` | 600×600 ou arte vertical 500×650 |
 
-## Formatos e apresentação
+As peças se ajustam à largura disponível com `object-fit: contain`, preservando a imagem completa. O formato define a reserva desktop; uma arte mobile própria define a proporção mobile. A posição é independente do formato: escolha uma combinação adequada à largura da coluna.
 
-| Posição | Área da imagem | Local |
-|---|---|---|
-| `.ad-slot-sidebar` | 300×250; opção 300×600 | Abaixo de Mais lidas na Home |
-| `.ad-slot-article` | Horizontal, recomendado 728×90; mobile 320×100 | Após o terceiro parágrafo editorial |
+| Posição | Inserção |
+|---|---|
+| `topo_portal` | Abaixo do header na Home, single e arquivos/editorias/busca/autor |
+| `sidebar_lateral` | Sidebar compartilhada, abaixo de Mais lidas |
+| `in_article_1` | Após o terceiro parágrafo; no final quando houver menos de três |
+| `in_article_2` | Após o sexto parágrafo, quando existir; também abaixo do feed da Home |
+| `popup_global` | Sobreposição central, sujeita à chave geral, escopo e frequência |
 
-O rótulo **PUBLICIDADE** fica acima da imagem, com 28 px reservados; bordas acrescentam 2 px. A imagem lateral reduz a largura quando a coluna tem menos de 300 px, mantendo a altura reservada. O banner horizontal usa largura fluida e `object-fit: contain`, sem distorcer nem cortar a peça. O template oficial não possui sidebar interna; o slot de miolo permanece no texto em desktop e mobile.
+Cada posição considera até **dez campanhas publicadas e ativas**, ainda válidas, em ordem de cadastro; peças futuras ficam reservadas para sua agenda. Excedentes não entram na seleção. Expiradas e pausadas não são entregues pelo endpoint público. Para substituir uma campanha, pause a anterior.
 
-Fundo `#F4F5F7`, borda `#E2E8F0`, raio 8 px e rótulo de 10 px na cor `#9CA3AF`. Sem scripts de publicidade, iframe, rastreamento, animação, rotação ou plugin adicional. JavaScript da biblioteca de mídia carrega apenas na página de gestão; o visitante recebe HTML renderizado no servidor e CSS.
+**Rotação**: posição inicial alterna a cada visita via localStorage e muda a cada oito segundos. Pausa em aba oculta, durante a sobreposição, ao passar o mouse ou focar a peça. **Empilhado**, disponível para a sidebar, mostra as peças uma abaixo da outra. As outras posições mantêm rotação. As dimensões reservadas consideram as peças candidatas da posição; a troca da arte não altera a altura. Alterações administrativas, de viewport ou de quantidade no modo empilhado podem alterar a composição da página.
 
-Imagens têm dimensões nativas do WordPress, lazy loading e decoding async. Links de anunciantes usam `rel="sponsored noopener noreferrer"`. A altura da área de anúncio existe mesmo sem imagem, sem expansão assíncrona para receber um banner. Uma mudança administrativa entre formatos 300×250 e 300×600 altera a altura na próxima navegação, não durante a leitura.
+Sem imagem/campanha no lateral ou no primeiro slot de matéria, aparece o contato `comercial@giro73.com.br`. Topo e segundo slot sem campanha ficam ocultos. Nenhum telefone fictício é usado. Links de parceiros abrem em outra aba com `rel="sponsored noopener"`; o rótulo PUBLICIDADE permanece visível.
 
-## Implementação
+## Sobreposição
 
-- A Home usa o bloco nativo Shortcode: `[giro73_publicidade posicao="sidebar"]`.
-- A rotina corrige o wpautop apenas desse shortcode para preservar o HTML dos slots.
-- A rotina `single-editorial.php`, snippet 7, usa `render_block_core/post-content` para inserir o slot de miolo depois do terceiro parágrafo editorial no post principal. Ignora crédito da foto, parágrafos de metadados, citações, listas, figuras, tabelas e outros contextos de apoio. Não altera o banco de conteúdo.
-- Se uma notícia tiver menos de três parágrafos, coloca o slot ao final do texto; nunca quebra um parágrafo.
-- A presença de um slot de artigo existente evita duplicação automática.
-- Página institucional, excerpt, feed RSS, resultado de busca e chamadas da Home não recebem anúncios de miolo.
-- O template oficial usa leitura central de 740 px sem sidebar. Essa escolha da implantação 17 substitui o grid interno da implantação 16.
-- Campos dedicados são guardados na opção `g73_partner_ads`, também acessível a administradores pelo campo correspondente em `/wp-json/wp/v2/settings`. Settings API protege o formulário com nonce e `manage_options`; mídia aceita apenas WebP/PNG e destinos HTTP/HTTPS.
+Em **Parceiros G73 → Configurações**:
 
-`slots-publicitarios.html` contém exemplos de blocos Shortcode. Não adicionar uma segunda cópia às posições que já são automáticas. Para HTML personalizado em outra área, reutilizar as classes e a estrutura retornada, preservando rótulo, dimensões e atributo sponsored; os campos do painel só gerenciam os slots renderizados pelo shortcode/rotina.
+- Chave geral, inicialmente **desligada**, sem campanha real de sobreposição cadastrada.
+- Gatilho por tempo, padrão três segundos **após load**, mínimo três; ou por rolagem, padrão 30%.
+- Frequência diária, por sessão ou sempre para testes. Dia calculado no fuso da Bahia; sessão usa sessionStorage. Dependem da disponibilidade do armazenamento no navegador.
+- Escopo: todo o portal, somente Home ou somente matérias.
+- Auto-fechar: padrão quinze segundos; zero desativa.
+- Fechar por botão visível de 44 px, clique no fundo ou ESC. Usa `<dialog>` nativo, foco no botão e retorno ao elemento anterior; fundo com blur de 3 px. Próxima visita elegível escolhe outra campanha, sem troca de peça enquanto o leitor interage com o modal.
 
-## Manutenção e rollback
+Frequência diária e atraso reduzem repetição e interferência no carregamento; **não garantem ausência de impacto de intersticiais no SEO**, especialmente no celular. Prefira escopo Home e frequência diária. Não há bibliotecas de slider, iframe, pixel, mensuração de cliques ou envio automático de mensagens.
 
-Para retirar uma campanha, remover as imagens no painel, sem desativar o sistema. Para remover todos os slots, desativar apenas o snippet **6**, restaurar os templates anteriores do Git e limpar o LiteSpeed. O snippet de cotações **5** permanece ativo. Não carregar uma segunda cópia do PHP no tema enquanto o snippet estiver ativo.
+## REST API e Easy MCP AI
 
-Não há mensuração de impressões/cliques ou rodízio de campanhas nesta estrutura. Esses recursos só devem ser acrescentados quando houver necessidade e orçamento de performance definido.
+Gestão requer administrador (`manage_options`) e autenticação WordPress existente. Nenhuma credencial deve ser colocada neste repositório. CPT `g73_partner`, `show_in_rest=true`, com título e custom-fields registrados.
 
-Desde a implantação 17, manter o snippet 7 ativo para inserção no miolo. O snippet 6 contém gestão e renderização, sem outro filtro concorrente de inserção. O Leia também e o compartilhamento permanecem no snippet 7.
+- `GET/POST /wp-json/wp/v2/g73_partner`
+- `GET/POST/DELETE /wp-json/wp/v2/g73_partner/{id}`
+- `GET/POST /wp-json/wp/v2/settings` → `g73_partners_config`
+- Público: `GET /wp-json/g73/v1/partners` — apenas dados para exibir campanhas candidatas e configurações de apresentação; `Cache-Control: no-store`.
+
+| Meta | Tipo / valores |
+|---|---|
+| `g73_desktop_image` | ID inteiro da mídia, 0 se vazio |
+| `g73_mobile_image` | ID inteiro, opcional |
+| `g73_url` | URL HTTP/HTTPS ou vazio |
+| `g73_status` | `ativo` / `pausado` |
+| `g73_start_at` | ISO 8601 com fuso, ou vazio |
+| `g73_end_at` | ISO 8601 com fuso, ou vazio; posterior ao início |
+| `g73_format` | Um dos sete formatos |
+| `g73_position` | Uma das cinco posições |
+
+Exemplo de corpo de criação, **rascunho pausado**, usando imagem já existente:
+
+```json
+{
+  "title": "Nome real do parceiro — campanha",
+  "status": "draft",
+  "meta": {
+    "g73_desktop_image": 133,
+    "g73_mobile_image": 0,
+    "g73_url": "https://giro73.com.br/contato/",
+    "g73_status": "pausado",
+    "g73_start_at": "",
+    "g73_end_at": "",
+    "g73_format": "retangulo_medio",
+    "g73_position": "sidebar_lateral"
+  }
+}
+```
+
+Ativar: POST no ID com `{"status":"publish","meta":{"g73_status":"ativo"}}`. Pausar: `{"meta":{"g73_status":"pausado"}}`. Datas: por exemplo `2026-11-01T08:00:00-03:00`. Não envie data local sem offset. Imagem inexistente/incompatível, período invertido ou status/formato inválido são recusados. Ativar exige ao menos uma imagem.
+
+No **Easy MCP AI**, usar `wp_create_cpt_item`, `wp_get_cpt_item`, `wp_update_cpt_item`, `wp_list_cpt_items` e `wp_delete_cpt_item`, com **`rest_base: "g73_partner"`**. Os campos vão no objeto `meta`. Para configurações usar `wp_rest_read`/`wp_rest_write`, `route: "/wp/v2/settings"`. O ciclo de criação/edição/exclusão foi conferido via MCP; os registros de teste foram excluídos.
+
+Exemplo de configuração completa para salvar em `g73_partners_config` (ao editar, leia primeiro e preserve os outros campos):
+
+```json
+{
+  "contact_email": "comercial@giro73.com.br",
+  "modes": {
+    "topo_portal": "rotacao",
+    "sidebar_lateral": "rotacao",
+    "in_article_1": "rotacao",
+    "in_article_2": "rotacao",
+    "popup_global": "rotacao"
+  },
+  "overlay": {
+    "enabled": false,
+    "trigger": "tempo",
+    "delay": 3,
+    "scroll": 30,
+    "frequency": "1x_por_dia",
+    "scope": "todo_portal",
+    "auto_close": 15
+  }
+}
+```
+
+O objeto de configurações é substituído e sanitizado; envie os campos que deseja preservar. Os metadados da campanha podem ser atualizados parcialmente.
+
+## Engenharia, cache e manutenção
+
+- PHP: `publicidade-parceiros.php` (snippet 6). Shortcodes novo `[giro73_parceiros posicao="..."]` e legado `[giro73_publicidade posicao="sidebar|article"]` compatível.
+- PHP editorial: `single-editorial.php` (snippet 7), preserva Leia também e compartilhamento, insere unidades sem reescrever o conteúdo dos posts.
+- Templates e CSS versionados nesta pasta. Classes neutras `.g73-partner-unit`, `.g73-vitrine-box`, `.g73-media-frame` e `.g73-overlay-card`; não há `ad-slot` no HTML/CSS ativo. Isso reduz conflitos com filtros cosméticos por classe, sem prometer contornar todos os bloqueadores.
+- Uma cópia de JS inline por página, nenhuma biblioteca no frontend. Uma requisição local leve no navegador sincroniza campanhas e horário, independentemente do cache de HTML. Imagens são carregadas apenas nas peças exibidas, com lazy loading no fluxo e prioridade normal no modal.
+- Datas são verificadas no endpoint e no navegador; expiração não depende do WP-Cron. Mudanças de campanha/configuração invalidam LiteSpeed no shutdown, uma vez por requisição, incluindo as variantes desktop/mobile. Navegações seguintes recebem a nova configuração; leitores que já abriram a página mantêm sua seleção até navegar, com a agenda local ainda respeitada.
+- O CPT é privado, não aparece no feed de notícias, busca pública, arquivos jornalísticos ou sitemap Rank Math. Administração REST anônima é recusada; endpoint público não permite escrita.
+- Opção antiga `g73_partner_ads` permanece intacta como backup, não é mais o painel de gestão. A flag `g73_partners_migrated_v1` impede recriação/religamento de campanhas. Não apagar essa flag em produção.
+- Rollback: restaurar snippets 6/7, estilos e templates do commit anterior, limpar LiteSpeed. Não excluir mídias/CPT para fazer rollback. Cotações (snippet 5), Schema/ads.txt (snippet 8), páginas e artigos permanecem preservados.
+
+Teste de comportamento isolado: `python portal-noticias-mcp/implementacao-wp/tests/parceiros-browser.py`, com Python Playwright e Chromium instalados. Não altera o WordPress. Registros de validação: `../20-gerenciador-parceiros-g73.md`.

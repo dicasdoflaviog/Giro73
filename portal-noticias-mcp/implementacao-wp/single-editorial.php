@@ -65,9 +65,13 @@ add_filter('render_block_core/post-content', function ($content, $parsed, $insta
     $ends = g73_single_paragraph_ends($content);
     if (!$ends) { return $content; }
     $insertions = array();
-    if (false === strpos($content, 'data-g73-ad-slot="article"') && function_exists('g73_ads_render')) {
+    if (false === strpos($content, 'data-g73-position="in_article_1"') && function_exists('g73_ads_render')) {
         $offset = $ends[min(2, count($ends) - 1)];
         $insertions[$offset] = g73_ads_render('article');
+    }
+    if (count($ends) >= 6 && false === strpos($content, 'data-g73-position="in_article_2"') && function_exists('g73_partner_unit')) {
+        $offset = $ends[5];
+        $insertions[$offset] = (isset($insertions[$offset]) ? $insertions[$offset] : '') . g73_partner_unit('in_article_2');
     }
     if (false === strpos($content, 'data-g73-read-also')) {
         $related = g73_single_read_also((int) $instance->context['postId']);

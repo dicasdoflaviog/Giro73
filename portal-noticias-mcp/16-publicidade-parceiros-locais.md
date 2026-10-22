@@ -1,3 +1,5 @@
+> Histórico: a implantação 20 substitui este painel pelo gerenciador Parceiros G73. Consulte `20-gerenciador-parceiros-g73.md` e `implementacao-wp/README-publicidade.md`.
+
 # Espaços publicitários para parceiros locais
 
 > Histórico: a implantação 17 removeu a sidebar dos artigos e manteve o espaço lateral apenas na Home. A inserção no terceiro parágrafo passou à rotina editorial do snippet 7.
