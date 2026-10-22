@@ -1,5 +1,7 @@
 # Home Giro73 — manchete, feed e sidebar
 
+Registro histórico. A estrutura vigente e a pendência de fotografias estão em [12-home-editorial-branca.md](12-home-editorial-branca.md).
+
 Estrutura publicada em **22/10/2026**. Substitui a grade descrita no relatório 10. Usa blocos nativos WordPress e o CSS global de `implementacao-wp/css-g1-techtudo-ultra-leve.css`.
 
 ## Hierarquia automática
