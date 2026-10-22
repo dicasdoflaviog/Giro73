@@ -83,9 +83,14 @@ add_filter('render_block_core/post-content', function ($content, $parsed, $insta
 add_shortcode('giro73_compartilhar_whatsapp', function () {
     $id = get_queried_object_id();
     if (!$id || 'post' !== get_post_type($id)) { return ''; }
-    $text = wp_specialchars_decode(get_the_title($id), ENT_QUOTES) . "\n" . get_permalink($id);
-    return '<a class="g73-share-whatsapp" data-g73-whatsapp href="' . esc_url('https://wa.me/?text=' . rawurlencode($text))
+    $text = wp_specialchars_decode(get_the_title($id), ENT_QUOTES) . ' - Leia em Giro73: ' . get_permalink($id);
+    return '<a class="g73-share-whatsapp" data-g73-whatsapp href="' . esc_url('https://api.whatsapp.com/send?text=' . rawurlencode($text))
         . '" target="_blank" rel="noopener noreferrer">Compartilhar no WhatsApp</a>';
+});
+// WhatsApp usa Open Graph: título editorial completo, sem alterar o título SEO.
+add_filter('rank_math/opengraph/facebook/og_title', function ($title) {
+    return is_singular('post')
+        ? wp_specialchars_decode(wp_strip_all_tags(get_the_title(get_queried_object_id())), ENT_QUOTES) : $title;
 });
 add_filter('render_block_core/shortcode', function ($html, $block) {
     return '[giro73_compartilhar_whatsapp]' === trim(isset($block['innerHTML']) ? $block['innerHTML'] : '')

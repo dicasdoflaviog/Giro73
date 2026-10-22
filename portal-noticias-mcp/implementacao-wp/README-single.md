@@ -23,7 +23,7 @@ O parser e a inserção comercial saíram do snippet 6 e passaram à rotina úni
 
 ## WhatsApp sem JavaScript
 
-O bloco Shortcode `[giro73_compartilhar_whatsapp]` gera no servidor o link `https://wa.me/?text=...`, com título e URL canônica codificados. O link só abre o compartilhamento por iniciativa do leitor. Nenhuma mensagem é enviada automaticamente. O antigo script `artigo-compartilhar.js` foi removido do template e do repositório.
+O bloco Shortcode `[giro73_compartilhar_whatsapp]` gera no servidor o link `https://api.whatsapp.com/send?text=...`, com `Título da matéria - Leia em Giro73: URL canônica` codificado com rawurlencode. O título Open Graph usa o título editorial completo por filtro do Rank Math; o título SEO de busca permanece independente. O link só abre o compartilhamento por iniciativa do leitor. Nenhuma mensagem é enviada automaticamente. O antigo script `artigo-compartilhar.js` foi removido do template e do repositório.
 
 Layout, anúncio, indicação e compartilhamento funcionam com JavaScript desativado. Os controles leves já existentes do header permanecem independentes deste template.
 
