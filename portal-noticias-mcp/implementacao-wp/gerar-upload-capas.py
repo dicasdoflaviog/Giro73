@@ -136,38 +136,55 @@ def draw_art(draw, kind, color, clean=False):
         draw.polygon([(1044, 438), (1044, 490), (1080, 464)], fill=color)
 
 
+class ScaledDraw:
+    """Desenho em 2x, com redução final para contornos suaves."""
+    def __init__(self, image):
+        self.image = image
+
+    def __getattr__(self, name):
+        operation = getattr(ImageDraw.Draw(self.image), name)
+        def call(coords, *args, **kwargs):
+            def scale(value):
+                if isinstance(value, (tuple, list)):return tuple(scale(x) for x in value)
+                return value*2
+            if name=="rounded_rectangle":args=(args[0]*2,)+args[1:]
+            if "width" in kwargs:kwargs["width"]*=2
+            return operation(scale(coords),*args,**kwargs)
+        return call
+
+
+def render_illustration(kind):
+    """Apenas formas gráficas: sem títulos, legendas, URLs, fontes ou marcas."""
+    layer=Image.new("RGBA",(2400,1350),(0,0,0,0))
+    draw_art(ScaledDraw(layer),kind,PALETTE["purple"],clean=True)
+    art=layer.crop(layer.getbbox())
+    ratio=min(1700/art.width,950/art.height)
+    art=art.resize((round(art.width*ratio),round(art.height*ratio)),Image.Resampling.LANCZOS)
+    image=Image.new("RGB",(2400,1350),PALETTE["white"])
+    ImageDraw.Draw(image).ellipse((320,120,2080,1230),fill="#F4F5F8")
+    image.paste(art,((2400-art.width)//2,(1350-art.height)//2),art)
+    return image
+
+
 def generate(spec, directory, seal=None, clean=True):
     label, color, kind = EDITORIAS[spec["categoria"]]
-    # Desenho em 2x e redução final preservam contornos e tipografia.
-    image = Image.new("RGB", (2400, 1350), PALETTE["white"])
-    class Scaled:
-        def __getattr__(self, name):
-            operation = getattr(ImageDraw.Draw(image), name)
-            def call(coords, *args, **kwargs):
-                def scale(value):
-                    if isinstance(value, (tuple, list)):return tuple(scale(x) for x in value)
-                    return value*2
-                coords=scale(coords)
-                if name=="rounded_rectangle":args=(args[0]*2,)+args[1:]
-                if "width" in kwargs:kwargs["width"]*=2
-                return operation(coords,*args,**kwargs)
-            return call
-    draw = Scaled()
-    if not clean:
-        draw.rectangle((0, 0, 1200, 14), fill=color)
-        draw.rounded_rectangle((40, 38, 160, 90), 8, fill=PALETTE["yellow"])
-        draw.text((64, 46), "GUIA", font=font(42, True), fill=PALETTE["black"])
-        draw.text((190, 49), label, font=font(40, True), fill=PALETTE["purple"])
-    draw.ellipse((675, 150, 1160, 615), fill="#F4F5F8" if clean else PALETTE["cyan"] if kind=="tecnologia" else PALETTE["yellow"])
-    draw_art(draw, kind, PALETTE["purple"] if clean else color, clean)
+    if clean:
+        return save_cover(render_illustration(kind),spec,directory,False,"illustration")
+    image=Image.new("RGB",(2400,1350),PALETTE["white"])
+    draw=ScaledDraw(image)
+    draw.rectangle((0, 0, 1200, 14), fill=color)
+    draw.rounded_rectangle((40, 38, 160, 90), 8, fill=PALETTE["yellow"])
+    draw.text((64, 46), "GUIA", font=font(42, True), fill=PALETTE["black"])
+    draw.text((190, 49), label, font=font(40, True), fill=PALETTE["purple"])
+    draw.ellipse((675, 150, 1160, 615), fill=PALETTE["cyan"] if kind=="tecnologia" else PALETTE["yellow"])
+    draw_art(draw, kind, color)
     title_size=64
     for line in spec["headline"]:
         if ImageDraw.Draw(image).textbbox((0,0), line, font=font(title_size*2,True))[2]>1180:
             raise ValueError("Título da capa longo demais; forneça linhas curtas no manifesto.")
     for index, line in enumerate(spec["headline"]):
         draw.text((48, 242+index*78), line, font=font(title_size*2,True), fill=PALETTE["black"])
-    if not clean:
-        draw.rectangle((50, 435, 152, 443), fill=color)
+    draw.rectangle((50, 435, 152, 443), fill=color)
     draw.text((48, 470), spec["apoio"], font=font(46), fill=PALETTE["purple"])
     draw.text((48, 610), "GIRO73.COM.BR  /  ILUSTRAÇÃO EDITORIAL", font=font(28,True), fill=PALETTE["purple"])
     if seal is not None:
@@ -178,6 +195,10 @@ def generate(spec, directory, seal=None, clean=True):
         x,y=2320-mark.width,1306-mark.height
         draw.rounded_rectangle(((x-16)/2,(y-12)/2,1172,659),8,fill=PALETTE["white"])
         image.paste(mark,(x,y),mark)
+    return save_cover(image,spec,directory,seal is not None,"classic")
+
+
+def save_cover(image,spec,directory,has_seal,style):
     image=image.resize(SIZE, Image.Resampling.LANCZOS)
     for quality in (84, 80, 76, 72, 68, 64):
         buffer=io.BytesIO();image.save(buffer,"WEBP",quality=quality,method=6)
@@ -192,7 +213,7 @@ def generate(spec, directory, seal=None, clean=True):
         check.load()
     return {"post_id":spec["post_id"],"path":str(path),"slug":path.stem,
             "sha256":digest,"bytes":len(content),"width":1200,"height":675,"quality":quality,
-            "official_seal":seal is not None,"style":"clean" if clean else "classic"}
+            "official_seal":has_seal,"style":style}
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -270,14 +291,14 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir",type=Path,default=Path("/tmp/giro73-capas"))
     parser.add_argument("--manifest",type=Path,help="JSON com post_id, categoria, headline, apoio, keyword, alt_text e caption.")
-    parser.add_argument("--seal",type=Path,help="PNG original do selo G73 verificado; sem ele a assinatura fica pendente.")
-    parser.add_argument("--classic",action="store_true",help="Recupera as cores e tarjas do estilo anterior; o padrão é limpo.")
+    parser.add_argument("--seal",type=Path,help="Selo original, usado somente no modo --classic.")
+    parser.add_argument("--classic",action="store_true",help="Composição antiga com textos; o padrão é apenas ilustração.")
     parser.add_argument("--upload",action="store_true",help="Upload e vínculo; nunca cria posts ou páginas.")
     parser.add_argument("--site-url",default="https://giro73.com.br")
     parser.add_argument("--user",default=os.environ.get("WORDPRESS_USERNAME"))
     parser.add_argument("--password-stdin",action="store_true")
     args=parser.parse_args()
-    if not args.seal:
+    if args.classic and not args.seal:
         print("Marca pendente: capas sem selo oficial; forneça --seal quando o PNG original estiver disponível.",flush=True)
     seal=None
     if args.seal:

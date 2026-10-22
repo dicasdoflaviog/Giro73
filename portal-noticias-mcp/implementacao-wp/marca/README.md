@@ -10,10 +10,10 @@ As marcas restantes foram recuperadas dos anexos enviados pela redação ao Word
 | `logo-branca.webp` | 221 × 59 | 1.306 | 64 | Footer roxo |
 | `selo.webp` | 125 × 58 | 1.964 | 65 | Selo oficial disponível na Mídia |
 
-As versões PNG equivalentes usam os mesmos nomes simples. Para gerar as capas com assinatura, executar na pasta `implementacao-wp`:
+As versões PNG equivalentes usam os mesmos nomes simples. As capas atuais não recebem selo, logo ou qualquer texto; a assinatura visual fica no HTML do portal. Para gerar as ilustrações limpas, executar na pasta `implementacao-wp`:
 
 ```bash
-python gerar-upload-capas.py --seal marca/selo.png --output-dir /tmp/giro73-capas
+python gerar-upload-capas.py --output-dir /tmp/giro73-capas
 ```
 
 Para repetir a normalização com originais novos:

@@ -1,66 +1,64 @@
 # Capas editoriais Giro73 — geração e upload
 
-O script `gerar-upload-capas.py` produz arte original com formas geométricas, tipografia e o selo oficial fornecido pela redação. Não utiliza fotos, marcas ou personagens de terceiros. As fontes locais DejaVu Sans/Liberation Sans possuem licenças permissivas; não se redistribuem arquivos de fonte.
+O padrão atual de `gerar-upload-capas.py` produz **somente ilustrações geométricas originais, sem texto, títulos, URLs, logos ou selos**. Categoria, manchete, legenda e crédito ficam no HTML do WordPress, fora da imagem. Não utiliza fotos, marcas ou personagens de terceiros.
 
-O selo já está disponível em `marca/selo.png`. Na conclusão da identidade visual, as capas foram geradas localmente e importadas pelo `wp_upload_media` do Easy MCP; o modo `--upload` deste script continua sendo o cliente REST anterior. Para evitar o endpoint REST de upload, executar somente a geração e importar os arquivos pelo Easy MCP, preservando os metadados e vínculos descritos abaixo.
-
-## Especificação validada
+## Especificação
 
 - 1200 × 675 pixels, 16:9, RGB, WebP estritamente abaixo de **50.000 bytes**.
-- Estilo padrão limpo: branco, cinza `#F4F5F8`, preto e roxo, com selo oficial. Sem tarja superior, selo “GUIA” ou categoria gravada na arte. A cor da editoria aparece na etiqueta dinâmica do card, controlada pelo CSS; Achadinhos não é aceito.
-- O selo PNG original entra sem recoloração e com transparência preservada. Antialiasing e compressão WebP produzem tons intermediários nas bordas; as cores de desenho vêm da paleta oficial.
-- Sem downloads de bibliotecas gráficas, imagens ou fontes durante a geração.
-- Ambiente testado: Python 3.12, Pillow 12.3.0 e DejaVu Sans instalado em `/usr/share/fonts/truetype/dejavu/`.
-- As imagens são ilustrações editoriais; não representam fotografias de locais, dados de mercado, audiência, mapas geográficos ou partidas reais.
+- Composição neutra: branco, cinza `#F4F5F8` e roxo `#2C1067`, com contornos suaves. A cor da editoria aparece apenas na etiqueta HTML do card.
+- Sem downloads de imagens, fontes ou bibliotecas durante a geração. O modo padrão não usa fontes nem operações de desenho de texto.
+- Ambiente validado: Python 3.12 e Pillow 12.3.0.
+- Ilustrações abstratas, não fotografias de locais, mapas geográficos, dados de mercado, audiência ou partidas reais.
+- Manifesto padrão: `style: illustration` e `official_seal: false`. O antigo modo `--classic` permanece por compatibilidade histórica e não integra o fluxo visual atual; não usá-lo nos disparos.
 
 ## Gerar sem alterar o WordPress
 
 Na pasta `portal-noticias-mcp/implementacao-wp`:
 
 ```bash
-python gerar-upload-capas.py --seal '/caminho/Property 1=G73_V.png' --output-dir /tmp/giro73-capas
+python gerar-upload-capas.py --output-dir /tmp/giro73-capas
 ```
 
-Se Pillow estiver ausente, instalar a dependência verificada no ambiente de execução:
+Se Pillow estiver ausente:
 
 ```bash
 python -m pip install 'Pillow==12.3.0'
 ```
 
-O diretório escolhido recebe as imagens e `manifesto-geracao.json`. Por padrão, o script gera as cinco capas dos posts existentes 20, 21, 22, 23 e 24.
+O diretório recebe as cinco imagens e `manifesto-geracao.json`. Os IDs padrão são os posts existentes 20 a 24; o script não cria artigos. O argumento `--seal` é exclusivo do modo histórico e não acrescenta marca às ilustrações atuais.
 
-Sem `--seal`, as capas e o manifesto registram `official_seal: false`, e o script informa que a assinatura está pendente. É possível atualizar somente a paleta sem inventar uma assinatura para substituir a marca; fornecer o PNG original para concluir a identidade visual.
+## Enviar e vincular
 
-## Fazer upload e vincular
+Nesta implantação, o envio binário usou **`wp_upload_media` do Easy MCP**, com nomes simples, título, alt e legenda; depois, a API REST atualizou os metadados e `featured_media`. Esse caminho contorna o erro de processamento observado no upload REST anterior. Para repeti-lo, gerar localmente, procurar mídia existente pelo slug do manifesto, importar somente se ausente e atualizar o vínculo do post.
 
-```bash
-python gerar-upload-capas.py --seal '/caminho/Property 1=G73_V.png' --upload --user admin
-```
-
-A senha de aplicativo é solicitada sem exibição. Para automação, injetar `WORDPRESS_USERNAME` e `WORDPRESS_APP_PASSWORD` pelo gerenciador de segredos do executor e executar:
+O cliente REST opcional do script continua disponível quando o processamento de upload da hospedagem estiver funcionando:
 
 ```bash
-python gerar-upload-capas.py --seal '/caminho/Property 1=G73_V.png' --upload
+python gerar-upload-capas.py --upload --user admin
 ```
 
-`--password-stdin` permite fornecer somente a senha pela entrada padrão de um executor confiável. Não passar senhas em argumentos, escrever valores em scripts nem versionar arquivos de credenciais. O token Easy MCP não substitui Basic Auth neste cliente REST.
+A senha de aplicativo é solicitada sem exibição. Para automação, injetar `WORDPRESS_USERNAME` e `WORDPRESS_APP_PASSWORD` pelo gerenciador de segredos do executor:
 
-## Comportamento de atualização
+```bash
+python gerar-upload-capas.py --manifest fila-capas.json --upload
+```
 
-1. Gera e verifica os WebP localmente antes de usar a rede.
-2. Confere se cada post já existe e pertence à categoria indicada. Aceita posts publicados, rascunhos, pendentes ou agendados; preserva o status.
-3. Localiza a mídia pelo slug com ID do post e hash do arquivo. Arquivos idênticos são reutilizados; mudanças na arte geram outro hash e outra mídia, preservando a anterior.
-4. Preenche título, alt, legenda e associação ao post na biblioteca. Vincula apenas `featured_media` no artigo existente.
-5. Relê o post e confirma preservação do título, slug, texto, categoria, status e data. Verifica o arquivo servido por HTTPS, incluindo formato, dimensões e peso.
-6. Salva `manifesto-upload.json` com IDs, URLs, tamanhos e metadados públicos. Nenhuma credencial é gravada.
+`--password-stdin` também aceita a senha pela entrada padrão. Não passar segredos como argumentos nem gravá-los em scripts, manifestos ou no GitHub. O token Easy MCP não substitui Basic Auth no cliente REST.
 
-O script nunca cria posts/páginas, publica rascunhos ou apaga mídias. Uploads e atualizações são sequenciais, com timeout e TLS verificado. Redirecionamentos de API são recusados para evitar encaminhar autenticação para outro destino. CDNs com outra origem exigem adaptação explícita da verificação pública.
+## Atualização segura
 
-Reexecução da versão anterior testada: as cinco mídias originais foram reutilizadas, sem duplicação. A reprodução dos mesmos hashes depende das versões do Pillow, das fontes, do selo e do conteúdo do manifesto.
+1. Gera e valida os WebP localmente antes de usar a rede.
+2. Confere existência, categoria e status do post; preserva publicados, rascunhos, pendentes e agendados.
+3. Busca a mídia por slug com ID do post e hash. Arquivos idênticos são reutilizados; arte diferente recebe outra mídia, preservando a anterior.
+4. Preenche título, alt, legenda e associação na Biblioteca. No artigo, altera somente `featured_media`.
+5. Relê o post e compara título, texto bruto, slug, categoria, status e data. Verifica formato, dimensões e peso do arquivo servido por HTTPS.
+6. Salva `manifesto-upload.json` com dados públicos, sem credenciais.
 
-## Usar nos próximos artigos do calendário
+O script nunca cria posts/páginas, publica rascunhos ou apaga mídias. As operações são sequenciais, com timeout e TLS verificado. A API recusa redirecionamentos autenticados para outros destinos. A reprodução dos mesmos hashes depende da versão do Pillow e do conteúdo do manifesto.
 
-Criar primeiro o rascunho no fluxo editorial existente, obter seu ID e preparar um manifesto JSON. Exemplo: substituir `123` por um ID real e usar textos curtos para a capa.
+## Próximos artigos do calendário
+
+Criar primeiro o rascunho no fluxo editorial, obter o ID e preparar um manifesto. Substituir `123` por um ID real:
 
 ```json
 [
@@ -76,15 +74,17 @@ Criar primeiro o rascunho no fluxo editorial existente, obter seu ID e preparar 
 ]
 ```
 
+Os campos `headline` e `apoio` continuam obrigatórios por compatibilidade do manifesto, mas **não são desenhados na imagem padrão**. `keyword`, `alt_text` e `caption` preenchem metadados; descrevê-los com naturalidade, sem repetir palavras-chave artificialmente.
+
 ```bash
-python gerar-upload-capas.py --manifest fila-capas.json --seal '/caminho/Property 1=G73_V.png' --upload
+python gerar-upload-capas.py --manifest fila-capas.json --output-dir /tmp/giro73-capas
 ```
 
-Categorias aceitas: `noticias-regiao`, `dinheiro-renda-extra`, `tecnologia-inovacao`, `esportes` e `famosos-entretenimento`. A categoria seleciona a ilustração correspondente. O manifesto registra `style: clean` por padrão; `--classic` recupera a arte colorida anterior apenas quando explicitamente solicitado. Título auxiliar, alt e legenda devem descrever a imagem com naturalidade e corresponder ao assunto do post.
+Categorias aceitas: `noticias-regiao`, `dinheiro-renda-extra`, `tecnologia-inovacao`, `esportes` e `famosos-entretenimento`. Cada categoria seleciona uma ilustração temática. Achadinhos não é aceito nesta fase. Para assuntos específicos, produzir arte fiel à pauta antes de publicar; não apresentar um desenho genérico como registro de um fato real.
 
-## Depois do upload
+## Depois do envio
 
-- Invalidar os caches pertinentes pelos mecanismos do WordPress/LiteSpeed e do Rank Math. O script não tenta registrar hooks ou executar comandos de cache não documentados.
-- Verificar capa, categoria e artigo, `og:image`, dimensões, `max-image-preview:large`, sitemap e layout mobile.
-- As variantes responsivas são geradas pelo WordPress; o arquivo original permanece em 1200 × 675. A primeira imagem visível deve ter prioridade; imagens inferiores podem usar lazy loading.
-- Dimensões reservadas ajudam a evitar CLS. Elegibilidade ao Discover e nota PageSpeed dependem também do conteúdo, do tema, de terceiros, do servidor e de medição; não são garantidas pelo tamanho das capas.
+- Invalidar os caches do WordPress/LiteSpeed e do Rank Math pelos mecanismos disponíveis. O script não executa hooks de cache não documentados.
+- Conferir Home, categoria e artigo, `og:image`, dimensões, `max-image-preview:large`, sitemap e layout mobile.
+- Manter dimensões reservadas, `srcset`/`sizes` e prioridade para a imagem LCP. Lazy loading somente nas imagens inferiores.
+- Meta PageSpeed 95+, elegibilidade ao Discover e CLS de campo dependem de medições, conteúdo, anúncios e hospedagem. O peso das capas, isoladamente, não garante esses resultados.

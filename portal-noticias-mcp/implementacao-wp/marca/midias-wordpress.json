@@ -15,28 +15,38 @@
     "source_url": "https://giro73.com.br/wp-content/uploads/2026/10/logo-giro73.webp"
   },
   {
-    "id": 77,
-    "bytes": 22866,
-    "source_url": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-pilar-20-c0e8993c924e.webp"
+    "id": 84,
+    "post_id": 20,
+    "bytes": 12748,
+    "source_url": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-pilar-20-33587c342916.webp",
+    "style": "illustration"
   },
   {
-    "id": 78,
-    "bytes": 21346,
-    "source_url": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-pilar-21-8119cf9e3c63.webp"
+    "id": 85,
+    "post_id": 21,
+    "bytes": 8228,
+    "source_url": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-pilar-21-7e1fe0d50a1f.webp",
+    "style": "illustration"
   },
   {
-    "id": 79,
-    "bytes": 20760,
-    "source_url": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-pilar-22-91d4fcd78373.webp"
+    "id": 86,
+    "post_id": 22,
+    "bytes": 11070,
+    "source_url": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-pilar-22-a94d29612d88.webp",
+    "style": "illustration"
   },
   {
-    "id": 80,
-    "bytes": 18432,
-    "source_url": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-pilar-23-a893b4b4cbaa.webp"
+    "id": 87,
+    "post_id": 23,
+    "bytes": 8802,
+    "source_url": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-pilar-23-a62cd97ad837.webp",
+    "style": "illustration"
   },
   {
-    "id": 81,
-    "bytes": 16986,
-    "source_url": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-pilar-24-9241bed52187.webp"
+    "id": 88,
+    "post_id": 24,
+    "bytes": 6724,
+    "source_url": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-pilar-24-aeb3c6747acb.webp",
+    "style": "illustration"
   }
 ]

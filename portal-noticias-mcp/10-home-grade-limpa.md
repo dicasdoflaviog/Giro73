@@ -1,5 +1,7 @@
 # Home com grade automática e apresentação limpa
 
+Registro histórico. A estrutura vigente está em [11-home-hero-feed-sidebar.md](11-home-hero-feed-sidebar.md), com abertura 70/30, feed horizontal e capas sem texto ou selo.
+
 Aplicado ao Giro73 em 22/10/2026. Substitui a divisão da Home em cinco seções independentes.
 
 ## Blocos publicados

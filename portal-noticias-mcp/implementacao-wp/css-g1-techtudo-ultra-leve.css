@@ -79,6 +79,9 @@
 }
 
 .g73-portal .g73-header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 100;
   background: var(--giro-yellow);
   border-block-end: 3px solid var(--giro-purple);
 }
@@ -103,7 +106,15 @@
   list-style: none;
 }
 .g73-portal .g73-nav a { display: inline-flex; align-items: center; min-block-size: 2.75rem; color: var(--giro-purple); font-weight: 800; text-decoration: none; }
-.g73-portal .g73-header .g73-nav a:hover { color: var(--giro-pink); }
+.g73-portal .g73-header .g73-nav a:hover { color: var(--giro-purple); background: rgba(44,16,103,.06); }
+.g73-portal .g73-header nav { inline-size: 100%; min-inline-size: 0; overflow-x: auto; scrollbar-width: thin; }
+.g73-portal .g73-header .g73-nav { flex-wrap: nowrap; inline-size: max-content; }
+.g73-portal .g73-header .g73-nav a { white-space: nowrap; }
+.g73-portal [id] { scroll-margin-block-start: 9rem; }
+.g73-portal .g73-visually-hidden {
+  position: absolute; inline-size: 1px; block-size: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
 .g73-portal .g73-section { padding-block: 1.5rem; }
 .g73-portal .g73-section-title {
   margin: 0 0 1rem;
@@ -138,37 +149,34 @@
 .g73-portal .g73-card {
   background: var(--giro-white);
   border: 1px solid var(--g73-line);
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(44, 16, 103, 0.06);
-  padding-block-end: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  padding: 1rem;
 }
-.g73-portal .g73-card > :not(.g73-card-media):not(.g73-card-visual) { margin-inline: 1rem; }
-.g73-portal .g73-card .g73-card-media { border-radius: 9px 9px 0 0; overflow: hidden; }
+.g73-portal .g73-card > * { margin-inline: 0; }
+.g73-portal .g73-card .g73-card-media { border-radius: 6px; overflow: hidden; }
 .g73-portal .g73-card-visual { position: relative; }
 .g73-portal .g73-card-visual > * { margin-block: 0; }
 .g73-portal .g73-card-badge {
-  position: absolute;
-  inset-block-start: .75rem;
-  inset-inline-end: .75rem;
-  max-inline-size: calc(100% - 1.5rem);
-  padding: .25rem .5rem;
-  border: 1px solid var(--g73-line);
-  border-radius: 5px;
-  background: var(--giro-white);
+  position: static;
+  justify-self: start;
+  max-inline-size: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: var(--giro-black);
   font-size: .6875rem;
   font-weight: 700;
   line-height: 1.4;
 }
-.g73-portal .g73-card-badge a { color: var(--giro-black); text-decoration: none; }
-.g73-portal .g73-card-badge a::before {
-  content: "";
+.g73-portal .g73-card-badge a {
   display: inline-block;
-  inline-size: .5rem;
-  block-size: .5rem;
-  margin-inline-end: .375rem;
-  border-radius: 50%;
-  background: var(--g73-section);
+  padding: .125rem .375rem;
+  border-inline-start: 3px solid var(--g73-section);
+  border-radius: 3px;
+  background: #F4F5F8;
+  color: var(--giro-black);
+  text-decoration: none;
 }
 .g73-portal .g73-card-badge a[href*="/noticias-regiao/"] { --g73-section: var(--g73-news); }
 .g73-portal .g73-card-badge a[href*="/dinheiro-renda-extra/"] { --g73-section: var(--g73-money); }
@@ -177,9 +185,6 @@
 .g73-portal .g73-card-badge a[href*="/famosos-entretenimento/"] { --g73-section: var(--g73-entertainment); }
 .g73-portal .g73-card-badge a:not(:first-of-type),
 .g73-portal .g73-card-badge .wp-block-post-terms__separator { display: none; }
-.g73-portal .g73-home-grid > li { display: flex; }
-.g73-portal .g73-home-grid .g73-card { inline-size: 100%; }
-.g73-portal .g73-home-grid > li:first-child .g73-card-title { font-size: clamp(1.4rem, 2.5vw, 1.75rem); }
 .g73-portal .g73-pagination { display: flex; flex-wrap: wrap; gap: .75rem; margin-block: 2rem; }
 .g73-portal .g73-card > * { margin-block: .75rem 0; }
 .g73-portal .g73-card > :first-child { margin-block-start: 0; }
@@ -206,6 +211,46 @@
 .g73-portal .g73-meta,
 .g73-portal figcaption { color: var(--g73-muted); font-size: .875rem; }
 .g73-portal figcaption { padding-block-start: .375rem; }
+
+/* Abertura e feed nativos: 1 principal, 2 secundarias, demais sem repeticao. */
+.g73-portal .g73-home { padding-block: 1.5rem; }
+.g73-portal .g73-home > .g73-hero-layout { margin-block-start: 0; }
+.g73-portal .g73-hero-layout,
+.g73-portal .g73-content-layout { display: grid; grid-template-columns: minmax(0,1fr); gap: 1.5rem; align-items: start; }
+.g73-portal :is(.g73-hero-layout, .g73-content-layout, .g73-sidebar) > * { margin: 0; min-inline-size: 0; }
+.g73-portal .g73-content-layout { margin-block-start: 1.5rem; }
+.g73-portal .g73-news-list { display: grid; gap: 1rem; list-style: none; margin: 0; padding: 0; }
+.g73-portal .g73-news-list > li { margin: 0; min-inline-size: 0; }
+.g73-portal .g73-card .g73-card-copy { display: grid; align-content: start; gap: .5rem; margin-block-start: 1rem; }
+.g73-portal .g73-card .g73-card-copy > *,
+.g73-portal .g73-card-copy .wp-block-post-excerpt > p { margin: 0; }
+.g73-portal .g73-hero-main .g73-card-title { font-size: clamp(1.5rem,3vw,2rem); }
+.g73-portal .g73-hero-secondary .g73-card-title { font-size: 1.125rem; }
+.g73-portal .g73-hero-main .g73-card,
+.g73-portal .g73-hero-main .g73-news-list,
+.g73-portal .g73-hero-main .g73-news-list > li { block-size: 100%; }
+.g73-portal .g73-hero-secondary .g73-news-list { grid-auto-rows: 1fr; block-size: 100%; }
+.g73-portal .g73-hero-secondary .g73-card { block-size: 100%; }
+.g73-portal .g73-card .wp-block-post-excerpt { font-size: 1rem; line-height: 1.5; color: #444; }
+.g73-portal .g73-feed-heading { margin: 0 0 1rem; color: var(--giro-black); font-size: 1.5rem; }
+.g73-portal .g73-feed > .g73-feed-query { margin-block-start: 0; }
+.g73-portal .g73-feed-card { display: grid; grid-template-columns: minmax(6rem,30%) minmax(0,1fr); gap: 1rem; align-items: start; }
+.g73-portal .g73-feed-card .g73-card-copy { margin-block-start: 0; }
+.g73-portal .g73-feed-card .g73-card-title { font-size: clamp(1.0625rem,1.8vw,1.25rem); }
+.g73-portal .g73-feed-card .wp-block-post-excerpt > p { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.g73-portal .g73-sidebar { display: grid; gap: 1rem; min-inline-size: 0; }
+.g73-portal .g73-widget { background: var(--giro-white); border: 1px solid var(--g73-line); border-radius: 8px; padding: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,.06); }
+.g73-portal .g73-widget h2 { margin: 0 0 .75rem; color: var(--giro-black); font-size: 1.125rem; }
+.g73-portal .g73-widget p { margin: 0; color: #444; font-size: .875rem; }
+.g73-portal .g73-widget a { color: var(--giro-black); text-decoration: none; }
+.g73-portal .g73-widget .g73-ad { margin: 0; }
+.g73-portal .g73-widget .g73-ad-slot { border: 1px dashed var(--g73-line); background: #FAFAFA; }
+
+@media (max-width: 39.99rem) {
+  .g73-portal .g73-hero-secondary .g73-card { display: grid; grid-template-columns: 6rem minmax(0,1fr); gap: 1rem; }
+  .g73-portal .g73-hero-secondary .g73-card-copy { margin-block-start: 0; }
+  .g73-portal .g73-hero-secondary .g73-card-title { font-size: 1.0625rem; }
+}
 
 .g73-portal .g73-article {
   inline-size: min(100% - 2rem, 45rem);
@@ -266,20 +311,18 @@
 
 @media (min-width: 40rem) {
   .g73-portal .g73-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  /* Um destaque de largura inteira equilibra quantidades impares no tablet. */
-  .g73-portal .g73-home-grid > li:first-child:nth-last-child(odd) { grid-column: 1 / -1; }
 }
 @media (min-width: 48rem) {
   .g73-portal .g73-ad--top { --g73-ad-height: 90px; }
 }
 @media (min-width: 64rem) {
   .g73-portal .g73-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  /* Seis trilhas permitem tres cards iguais e destaque de 2/3 sem lacunas. */
-  .g73-portal .g73-home-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-  .g73-portal .g73-home-grid > li { grid-column: span 2; }
-  .g73-portal .g73-home-grid > li:first-child:nth-last-child(odd) { grid-column: span 2; }
-  .g73-portal .g73-home-grid > li:first-child:nth-last-child(3n + 1) { grid-column: span 6; }
-  .g73-portal .g73-home-grid > li:first-child:nth-last-child(3n + 2) { grid-column: span 4; }
+  .g73-portal .g73-header-inner { flex-wrap: nowrap; }
+  .g73-portal .g73-header nav { inline-size: auto; flex: 1; }
+  .g73-portal .g73-hero-layout,
+  .g73-portal .g73-content-layout { grid-template-columns: minmax(0,7fr) minmax(0,3fr); }
+  .g73-portal .g73-hero-layout { align-items: stretch; }
+  .g73-portal .g73-sidebar { position: sticky; inset-block-start: 6rem; }
 }
 @media print {
   .g73-portal .g73-ad,

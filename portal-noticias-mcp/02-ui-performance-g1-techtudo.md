@@ -16,14 +16,15 @@ Paleta oficial Giro73, atualizada em 22/10/2026. Aplicar cores de editoria em bo
 
 ## Cabeçalho e capa automática
 
-- Cabeçalho `#FFEA02`, borda inferior roxa de 3 px, logo horizontal colorida oficial com dimensões declaradas. Navegação roxa, peso 800, sem sublinhado, hover magenta; links visíveis com quebra de linha no mobile, sem JavaScript de menu.
+- Cabeçalho aderente ao topo (`position: sticky`), `#FFEA02`, borda inferior roxa de 3 px e logo horizontal oficial com dimensões declaradas. Navegação roxa, peso 800, sem sublinhado; no mobile, rolagem horizontal restrita ao menu, sem JavaScript ou overflow da página.
 - Rodapé `#2C1067`, logo branca oficial, texto branco e links institucionais ciano/branco sem sublinhado. Favicon e logo do Schema usam a marca redonda oficial.
-- Corpo com largura máxima próxima de 1.200 px. Cards em CSS Grid: uma coluna em telas estreitas, duas em tablets e três em desktop, sem biblioteca de layout.
-- Uma consulta nativa principal, 12 matérias por página, abrangendo as cinco editorias e ordenada por publicação. Cada artigo aparece uma vez; o primeiro recebe título maior. Sem cinco seções fixas disputando a grade.
-- Desktop: três colunas; quando a divisão deixa dois itens de resto, o primeiro ocupa 2/3 da abertura; quando deixa um, o primeiro ocupa a largura inteira. As demais matérias preenchem linhas completas de três. Tablet usa duas colunas e destaque inicial inteiro para quantidades ímpares; mobile, uma coluna. Distribuição CSS automática pelo número de itens, sem JavaScript.
-- Cada card: fundo branco sobre página `#F4F5F8`, borda cinza de 1 px, raio de 10 px e sombra `0 4px 12px rgba(44,16,103,.06)`. Sem tarjas de editoria. Imagem 16:9 com dimensões declaradas, etiqueta branca discreta com ponto na cor da editoria, título preto peso 800 sem sublinhado e data cinza. A cor fica concentrada no pequeno indicador da etiqueta.
-- Capas editoriais próprias em 1200 × 675 WebP abaixo de 50.000 bytes, com o selo verificado original fornecido pela redação. Arte neutra sem tarja, selo “GUIA” ou nome de editoria gravado na imagem; a identificação de categoria é dinâmica no HTML. Não redesenhar as marcas.
-- Usar paginação com links HTML; não exigir scroll infinito. Invalidar cache da capa e da categoria no evento de publicação. Nenhuma edição manual de capa é necessária.
+- Corpo com largura máxima de 1.200 px. Abertura desktop em duas colunas, 70/30 após descontar o intervalo de 24 px: uma manchete à esquerda, com foto acima do título, e duas secundárias empilhadas à direita. Alturas externas alinhadas.
+- Abaixo, duas colunas 70/30: feed horizontal à esquerda, com miniatura, editoria, título, data e resumo; sidebar à direita. Em telas abaixo de 1.024 px, os grupos ficam em uma coluna. No mobile estreito, secundárias e feed conservam miniatura à esquerda para leitura compacta.
+- Três consultas nativas, sempre com as cinco editorias e ordem decrescente de publicação: uma matéria com offset 0; duas com offset 1; até 12 no feed com offset 3. Sem repetição entre grupos, edição manual da capa ou JavaScript de layout.
+- Cada card: branco sobre página `#F4F5F8`, borda cinza de 1 px, raio de **8 px**, padding de 16 px e sombra **`0 4px 12px rgba(0,0,0,.06)`**. Imagem 16:9 com dimensões reservadas. Categoria em etiqueta discreta fora da foto, com pequeno marcador na cor da editoria. Título preto, peso 800, sem sublinhado; manchete maior que os demais títulos.
+- Capas editoriais próprias em **1200 × 675 WebP abaixo de 50.000 bytes**. Apenas ilustração ou fotografia pertinente: **nenhum texto, título, URL, selo ou logo dentro da imagem**. Título, categoria e créditos são HTML externo à foto. As marcas oficiais permanecem no cabeçalho, rodapé, favicon e Schema.
+- Sidebar com “Mais lidas” reservado até existir uma fonte real de leituras, contato da redação e espaço publicitário com altura fixa. Não apresentar uma lista de recentes como ranking de popularidade.
+- Feed da Home sem paginação ou scroll infinito; notícias anteriores continuam acessíveis pelos arquivos das editorias, que possuem paginação nativa HTML. Invalidar cache da capa e da categoria no evento de publicação.
 
 ## Artigo e anúncios
 
