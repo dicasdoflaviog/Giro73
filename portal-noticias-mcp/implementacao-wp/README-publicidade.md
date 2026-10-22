@@ -1,5 +1,7 @@
 # Parceiros G73 — campanhas nativas
 
+**Atualização 22:** caixas removidas, imagens em tamanho natural e seis posições de comparação preenchidas. Consulte `../22-parceiros-dimensoes-comparacao.md` para o estado publicado atual.
+
 Implementação de 22/10/2026, substitui a gestão antiga de dois slots. Usa o **snippet global 6** no Code Snippets existente, sem instalar outro plugin. Inserções editoriais permanecem no snippet 7. Não carregar uma segunda cópia do PHP no tema.
 
 ## Painel
@@ -10,7 +12,7 @@ Implementação de 22/10/2026, substitui a gestão antiga de dois slots. Usa o *
 
 Use o título para o nome do anunciante/campanha. Selecione imagem desktop e, opcionalmente, uma arte mobile; escolha posição e formato, informe destino HTTP/HTTPS e status Ativo/Pausado. **Publicado + Ativo + agenda vigente** são necessários para veicular. Início e expiração são opcionais; o painel usa **America/Bahia**. Uma peça somente mobile também funciona como fallback desktop. Imagens aceitas: WebP, PNG e JPG; prefira WebP leve. Nenhuma mídia é excluída ao pausar ou remover uma campanha.
 
-Os dois banners anteriores foram migrados idempotentemente, IDs **135** (lateral) e **136** (matéria), preservando mídias **133**, **134**, **119**, URLs vazias e contato comercial. Os formatos foram ajustados às artes existentes: 970×90 → leaderboard grande; 970×250 → billboard. Isso elimina a reserva vertical excessiva de uma arte horizontal. Novas campanhas não sobrescrevem as antigas.
+A migração inicial preservou os dois registros anteriores. Na atualização 22, a campanha **135** foi ajustada ao topo largo com mídia desktop **134** e mobile **131**, e a **136** ao primeiro miolo com mídia **132**. Quatro campanhas adicionais preenchem as outras posições. As mídias antigas permanecem na biblioteca. Os banners de comparação apontam para a página Contato do portal.
 
 ## Formatos e posições
 
@@ -24,21 +26,23 @@ Os dois banners anteriores foram migrados idempotentemente, IDs **135** (lateral
 | `faixa_mobile` | 320×50 |
 | `popup_modal` | 600×600 ou arte vertical 500×650 |
 
-As peças se ajustam à largura disponível com `object-fit: contain`, preservando a imagem completa. O formato define a reserva desktop; uma arte mobile própria define a proporção mobile. A posição é independente do formato: escolha uma combinação adequada à largura da coluna.
+As peças se ajustam à largura disponível com largura máxima de 100% e altura automática, preservando a imagem completa. A largura e a altura intrínsecas da mídia definem a proporção. O formato é a classificação da campanha, sem forçar caixa artificial ao redor de uma arte de outra proporção. A posição é independente do formato: escolha uma combinação adequada à largura da coluna.
 
 | Posição | Inserção |
 |---|---|
 | `topo_portal` | Abaixo do header na Home, single e arquivos/editorias/busca/autor |
-| `sidebar_lateral` | Sidebar compartilhada, abaixo de Mais lidas |
+| `sidebar_lateral` | Sidebar compartilhada, abaixo de Mais lidas e antes de Economia |
+| `sidebar_base` | Sidebar compartilhada, abaixo de Economia |
+| `home_entre_secoes` | Home, entre o hero e Últimas notícias, independente do segundo miolo |
 | `in_article_1` | Após o terceiro parágrafo; no final quando houver menos de três |
-| `in_article_2` | Após o sexto parágrafo, quando existir; também abaixo do feed da Home |
+| `in_article_2` | Após o sexto parágrafo da matéria, quando existir |
 | `popup_global` | Sobreposição central, sujeita à chave geral, escopo e frequência |
 
 Cada posição considera até **dez campanhas publicadas e ativas**, ainda válidas, em ordem de cadastro; peças futuras ficam reservadas para sua agenda. Excedentes não entram na seleção. Expiradas e pausadas não são entregues pelo endpoint público. Para substituir uma campanha, pause a anterior.
 
-**Rotação**: posição inicial alterna a cada visita via localStorage e muda a cada oito segundos. Pausa em aba oculta, durante a sobreposição, ao passar o mouse ou focar a peça. **Empilhado**, disponível para a sidebar, mostra as peças uma abaixo da outra. As outras posições mantêm rotação. As dimensões reservadas consideram as peças candidatas da posição; a troca da arte não altera a altura. Alterações administrativas, de viewport ou de quantidade no modo empilhado podem alterar a composição da página.
+**Rotação**: posição inicial alterna a cada visita via localStorage e muda a cada oito segundos. Pausa em aba oculta, durante a sobreposição, ao passar o mouse ou focar a peça. **Empilhado**, disponível separadamente para `sidebar_lateral` e `sidebar_base`, mostra as peças uma abaixo da outra. As outras posições mantêm rotação. Cada arte usa sua altura natural, com a micro-aba PUBLICIDADE colada no topo; não há fundo cinza, borda, padding ou altura fixa nos containers. Para rodízio contínuo sem mudança de altura, mantenha a mesma proporção nas campanhas de cada posição. No modo de comparação atual há uma peça por posição.
 
-Sem imagem/campanha no lateral ou no primeiro slot de matéria, aparece o contato `comercial@giro73.com.br`. Topo e segundo slot sem campanha ficam ocultos. Nenhum telefone fictício é usado. Links de parceiros abrem em outra aba com `rel="sponsored noopener"`; o rótulo PUBLICIDADE permanece visível.
+Sem campanha elegível, a posição fica oculta; não aparece caixa vazia nem texto de espaço disponível. O contato de gestão continua `comercial@giro73.com.br`. Nenhum telefone fictício é usado. Links de parceiros abrem em outra aba com `rel="sponsored noopener"`; o rótulo PUBLICIDADE permanece visível.
 
 ## Sobreposição
 
@@ -71,7 +75,7 @@ Gestão requer administrador (`manage_options`) e autenticação WordPress exist
 | `g73_start_at` | ISO 8601 com fuso, ou vazio |
 | `g73_end_at` | ISO 8601 com fuso, ou vazio; posterior ao início |
 | `g73_format` | Um dos sete formatos |
-| `g73_position` | Uma das cinco posições |
+| `g73_position` | Uma das sete posições (seis no fluxo + sobreposição) |
 
 Exemplo de corpo de criação, **rascunho pausado**, usando imagem já existente:
 
@@ -104,6 +108,8 @@ Exemplo de configuração completa para salvar em `g73_partners_config` (ao edit
   "modes": {
     "topo_portal": "rotacao",
     "sidebar_lateral": "rotacao",
+    "sidebar_base": "rotacao",
+    "home_entre_secoes": "rotacao",
     "in_article_1": "rotacao",
     "in_article_2": "rotacao",
     "popup_global": "rotacao"
@@ -126,8 +132,8 @@ O objeto de configurações é substituído e sanitizado; envie os campos que de
 
 - PHP: `publicidade-parceiros.php` (snippet 6). Shortcodes novo `[giro73_parceiros posicao="..."]` e legado `[giro73_publicidade posicao="sidebar|article"]` compatível.
 - PHP editorial: `single-editorial.php` (snippet 7), preserva Leia também e compartilhamento, insere unidades sem reescrever o conteúdo dos posts.
-- Templates e CSS versionados nesta pasta. Classes neutras `.g73-partner-unit`, `.g73-vitrine-box`, `.g73-media-frame` e `.g73-overlay-card`; não há `ad-slot` no HTML/CSS ativo. Isso reduz conflitos com filtros cosméticos por classe, sem prometer contornar todos os bloqueadores.
-- Uma cópia de JS inline por página, nenhuma biblioteca no frontend. Uma requisição local leve no navegador sincroniza campanhas e horário, independentemente do cache de HTML. Imagens são carregadas apenas nas peças exibidas, com lazy loading no fluxo e prioridade normal no modal.
+- Templates e CSS versionados nesta pasta. Micro-aba por peça, largura natural e classes neutras `.g73-partner-unit`, `.g73-vitrine-box`, `.g73-media-frame` e `.g73-overlay-card`; não há `ad-slot` no HTML/CSS ativo. Isso reduz conflitos com filtros cosméticos por classe, sem prometer contornar todos os bloqueadores.
+- As imagens e suas dimensões são renderizadas no servidor, inclusive os atributos width/height da versão mobile em picture. Uma cópia de JS inline por página, nenhuma biblioteca no frontend. Uma requisição local leve no navegador sincroniza campanhas e horário, independentemente do cache de HTML. Imagens são carregadas apenas nas peças exibidas, com lazy loading no fluxo e prioridade normal no modal.
 - Datas são verificadas no endpoint e no navegador; expiração não depende do WP-Cron. Mudanças de campanha/configuração invalidam LiteSpeed no shutdown, uma vez por requisição, incluindo as variantes desktop/mobile. Navegações seguintes recebem a nova configuração; leitores que já abriram a página mantêm sua seleção até navegar, com a agenda local ainda respeitada.
 - O CPT é privado, não aparece no feed de notícias, busca pública, arquivos jornalísticos ou sitemap Rank Math. Administração REST anônima é recusada; endpoint público não permite escrita.
 - Opção antiga `g73_partner_ads` permanece intacta como backup, não é mais o painel de gestão. A flag `g73_partners_migrated_v1` impede recriação/religamento de campanhas. Não apagar essa flag em produção.

@@ -3,6 +3,7 @@ from pathlib import Path
 import json,copy,base64
 root=Path(__file__).resolve().parents[1]
 php=root.joinpath('publicidade-parceiros.php').read_text();script=php.split("function g73_partner_frontend_js(){return <<<'G73JS'\n")[1].split('\nG73JS;')[0];css=root.joinpath('css-g1-techtudo-ultra-leve.css').read_text().split('/* Parceiros G73:')[1].split('/* Arquivos e busca:')[0];css='/* Parceiros G73:'+css
+# A imagem mínima é uma fixture de teste; o CSS local abaixo simula seus 300×250 px declarados.
 img='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScLbtAAAAABJRU5ErkJggg=='
 base={'server_time':1792699200000,'settings':{'contact_email':'comercial@giro73.com.br','modes':{'sidebar_lateral':'rotacao'},'overlay':{'enabled':False,'trigger':'tempo','delay':3,'scroll':30,'frequency':'1x_por_dia','scope':'todo_portal','auto_close':15}},'campaigns':[],'endpoint':'https://giro73.test/wp-json/g73/v1/partners','page':'home'}
 def c(i,pos='sidebar_lateral',**kw):
@@ -15,7 +16,7 @@ with sync_playwright() as p:
   data=copy.deepcopy(config)
   def route(r):
    if '/wp-json/' in r.request.url:r.fulfill(json=data)
-   else:r.fulfill(content_type='text/html',body=f'''<html><head><style>{css}</style></head><body style="margin:16px"><button id="before">Antes</button><aside class="g73-partner-unit" data-g73-position="sidebar_lateral" data-g73-empty="1" style="--g73-partner-width:300px;--g73-partner-ratio:1.2;--g73-partner-mobile-ratio:1.2"><span class="g73-partner-label">PUBLICIDADE</span><div class="g73-vitrine-box"></div></aside><div style="height:{bodyheight}px">Conteúdo</div><dialog class="g73-overlay-card"><div class="g73-overlay-toolbar"><span>PUBLICIDADE</span><button data-g73-close>✕ Fechar</button></div><div class="g73-overlay-content"></div></dialog><script id="g73-partners-boot" type="application/json">{json.dumps(data)}</script><script>{script}</script></body></html>''')
+   else:r.fulfill(content_type='text/html',body=f'''<html><head><style>{css}</style></head><body style="margin:16px"><style>.g73-media-frame img{{width:300px;height:250px}}</style><button id="before">Antes</button><aside class="g73-partner-unit" data-g73-position="sidebar_lateral"><div class="g73-vitrine-box"></div></aside><div style="height:{bodyheight}px">Conteúdo</div><dialog class="g73-overlay-card"><div class="g73-overlay-toolbar"><span>PUBLICIDADE</span><button data-g73-close>✕ Fechar</button></div><div class="g73-overlay-content"></div></dialog><script id="g73-partners-boot" type="application/json">{json.dumps(data)}</script><script>{script}</script></body></html>''')
   ctx.route('**/*',route);page.goto('https://giro73.test/',wait_until='networkidle');return ctx,page,errors
  cfg=copy.deepcopy(base);cfg['campaigns']=[c(1),c(2)]
  for width in (390,1440):

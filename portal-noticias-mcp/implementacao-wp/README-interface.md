@@ -51,3 +51,7 @@ A gestão antiga foi substituída pelo CPT e painel **Parceiros G73**, sem novo 
 ## Engajamento e autoridade regional — implantação 21
 
 CTA WhatsApp configurável, reações/enquetes, colunistas, agenda regional e impressão foram integrados sem plugin novo. Fonte no snippet 9, independente das rotinas 5–8. Convite vazio, colunistas Em breve e três eventos-modelo em rascunho conforme orientação do usuário. Consulte [README-engajamento.md](README-engajamento.md) e [validação da implantação 21](../21-engajamento-retencao-autoridade-regional.md).
+
+## Dimensões dos parceiros — implantação 22
+
+Banners agora usam imagens completas com altura natural e micro-aba PUBLICIDADE, sem caixa cinza. `sidebar_base` e `home_entre_secoes` são posições independentes; as seis posições no fluxo estão preenchidas para comparação. Relação de campanhas/mídias e validação: [implantação 22](../22-parceiros-dimensoes-comparacao.md). O guia de publicidade contém a API atualizada.

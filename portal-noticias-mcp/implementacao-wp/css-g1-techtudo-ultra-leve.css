@@ -297,29 +297,31 @@ body:has(.g73-drawer[open]) { overflow: hidden; }
 .g73-portal .g73-single:has(> .g73-kicker a[href*="/esportes/"]) { --g73-section: var(--g73-sports); }
 .g73-portal .g73-single:has(> .g73-kicker a[href*="/famosos-entretenimento/"]) { --g73-section: var(--g73-entertainment); }
 
-/* Parceiros G73: nomenclatura neutra, dimensões reservadas e mídia responsiva. */
-.g73-partner-unit { position: relative; width: min(100%,var(--g73-partner-width,970px)); margin: 24px auto; background: #F4F5F7; border: 1px solid #E2E8F0; border-radius: 8px; overflow: hidden; box-shadow: none; box-sizing: border-box; }
-.g73-partner-unit[hidden] { display: none !important; }
-.g73-partner-unit--topo_portal { margin: 20px auto; max-width: calc(100% - 32px); }
-.g73-partner-label { display: block; padding: 8px 10px; font: 700 10px/12px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color: #6B7280; letter-spacing: .05em; text-align: left; }
-.g73-vitrine-box { width: 100%; aspect-ratio: var(--g73-partner-ratio,1.2); max-height: 650px; }
-.g73-media-frame { display: grid; place-items: center; width: 100%; height: 100%; overflow: hidden; }
-.g73-media-frame :is(a,picture),.g73-overlay-content :is(a,picture) { display: block; width: 100%; height: 100%; }
-.g73-media-frame img,.g73-overlay-content img { display: block; width: 100%; height: 100%; max-width: 100%; object-fit: contain; border: 0; border-radius: 0; }
-.g73-partner-stack .g73-vitrine-box { display: grid; gap: 16px; aspect-ratio: auto; max-height: none; }
-.g73-partner-stack .g73-media-frame { aspect-ratio: var(--g73-partner-ratio,1.2); height: auto; max-height: 650px; }
-.g73-partner-contact { display: grid; place-items: center; height: 100%; padding: 12px; color: #2C1067; font: 500 14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; text-align: center; overflow-wrap: anywhere; text-decoration: none; box-sizing: border-box; }
-.g73-partner-unit a:focus-visible { outline: 3px solid #2C1067; outline-offset: -4px; }
-.g73-overlay-card { width: min(600px,calc(100vw - 32px)); max-width: calc(100vw - 32px); max-height: calc(100dvh - 32px); padding: 0; border: 0; border-radius: 8px; background: white; color: #111; overflow: auto; }
-.g73-overlay-card:not([open]) { display: none; }
-.g73-overlay-card::backdrop { background: rgba(0,0,0,.65); backdrop-filter: blur(3px); }
-.g73-overlay-toolbar { display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: white; z-index: 1; }
-.g73-overlay-toolbar button { min-height: 44px; padding: 8px 16px; border: 0; background: white; color: #111; font: 700 14px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; cursor: pointer; }
-.g73-overlay-toolbar button:focus-visible { outline: 3px solid #2C1067; outline-offset: -3px; }
-.g73-overlay-content { height: min(650px,calc(100dvh - 100px)); }
-html.g73-overlay-open { overflow: hidden; }
-@media(max-width:767px) { .g73-vitrine-box,.g73-partner-stack .g73-media-frame { aspect-ratio: var(--g73-partner-mobile-ratio,1.2); } .g73-partner-stack .g73-vitrine-box { aspect-ratio: auto; } }
-@media(prefers-reduced-motion:no-preference) { .g73-media-frame img { animation: g73-partner-appear .18s ease-out; } @keyframes g73-partner-appear { from { opacity: .6; } to { opacity: 1; } } }
+/* Parceiros G73: imagem natural e micro-aba, sem moldura ou altura artificial. */
+.g73-partner-unit { position:relative; width:fit-content; max-width:100%; margin:24px auto; padding:0; background:transparent; border:0; border-radius:0; box-shadow:none; box-sizing:border-box; }
+.g73-partner-unit[hidden] { display:none!important; }
+.g73-portal > .g73-partner-unit--topo_portal { width:100%; max-width:min(970px,calc(100% - 32px)); margin:20px auto; }
+.g73-partner-label { display:inline-block; margin:0; padding:2px 8px; font:700 9px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; letter-spacing:.08em; color:#888; background:#F1F5F9; border-radius:4px 4px 0 0; text-align:left; }
+.g73-vitrine-box { display:block; width:fit-content; max-width:100%; height:auto; margin:0 auto; padding:0; background:transparent; border:0; }
+.g73-media-frame { display:block; width:fit-content; max-width:100%; height:auto; margin:0 auto; padding:0; border:0; background:transparent; font-size:0; line-height:0; }
+.g73-media-frame :is(a,picture) { display:block; width:fit-content; max-width:100%; height:auto; margin:0 auto; padding:0; }
+.g73-media-frame img { display:block; width:auto; max-width:100%; height:auto; margin:0 auto; padding:0; border:0; border-radius:0 4px 4px 4px; }
+.g73-partner-stack .g73-vitrine-box { display:flex; flex-direction:column; align-items:center; gap:24px; }
+.g73-portal .g73-sidebar > :is(.g73-partner-unit--sidebar_lateral,.g73-partner-unit--sidebar_base) { display:flex; flex-direction:column; align-items:center; width:100%; margin:0 auto 24px; }
+.g73-portal .g73-single .g73-partner-unit:is(.g73-partner-unit--in_article_1,.g73-partner-unit--in_article_2) { margin:28px auto; }
+.g73-partner-unit--home_entre_secoes { margin:28px auto; }
+.g73-partner-unit a:focus-visible { outline:3px solid #2C1067; outline-offset:3px; }
+.g73-overlay-card { width:min(600px,calc(100vw - 32px)); max-width:calc(100vw - 32px); max-height:calc(100dvh - 32px); padding:0; border:0; border-radius:8px; background:white; color:#111; overflow:auto; }
+.g73-overlay-card:not([open]) { display:none; }
+.g73-overlay-card::backdrop { background:rgba(0,0,0,.65); backdrop-filter:blur(3px); }
+.g73-overlay-toolbar { display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; background:white; z-index:1; }
+.g73-overlay-toolbar button { min-height:44px; padding:8px 16px; border:0; background:white; color:#111; font:700 14px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; cursor:pointer; }
+.g73-overlay-toolbar button:focus-visible { outline:3px solid #2C1067; outline-offset:-3px; }
+.g73-overlay-content :is(a,picture) { display:block; width:100%; height:auto; }
+.g73-overlay-content img { display:block; width:100%; height:auto; max-height:calc(100dvh - 100px); object-fit:contain; }
+html.g73-overlay-open { overflow:hidden; }
+@media(max-width:768px) { .g73-portal > .g73-partner-unit--topo_portal { max-width:min(320px,calc(100% - 32px)); } }
+@media(prefers-reduced-motion:no-preference) { .g73-media-frame img { animation:g73-partner-appear .18s ease-out; } @keyframes g73-partner-appear { from { opacity:.6; } to { opacity:1; } } }
 
 /* Arquivos e busca: consulta nativa, cabeçalho editorial e paginação HTML. */
 .g73-portal .g73-archive-heading { margin: 0 0 32px; padding: 0 0 20px; border-bottom: 3px solid var(--g73-section); }
