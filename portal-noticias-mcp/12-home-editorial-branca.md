@@ -1,5 +1,7 @@
 # Home editorial branca — aplicado e pendência de fotos
 
+Registro histórico. A pendência foi resolvida e o refinamento vigente está em [13-refinamento-editorial-e-fotografias.md](13-refinamento-editorial-e-fotografias.md).
+
 Atualização de **22/10/2026**. Substitui a apresentação do relatório 11. O HTML/CSS foi publicado no WordPress; a substituição das cinco imagens está **pendente de liberação da rede do ambiente**.
 
 ## Publicado

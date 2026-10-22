@@ -1,0 +1,63 @@
+[
+  {
+    "post_id": 20,
+    "categoria": "noticias-regiao",
+    "commons_title": "File:Teixeira de Freitas, Bahia.jpg",
+    "keyword": "economia do Extremo Sul da Bahia",
+    "alt_text": "Terminal urbano de Teixeira de Freitas, Bahia, em fotografia de Kelwy.",
+    "caption": "Terminal urbano de Teixeira de Freitas, Bahia. Fotografia de arquivo; não representa uma obra ou evento atual.",
+    "crop_center": [
+      0.5,
+      0.5
+    ]
+  },
+  {
+    "post_id": 21,
+    "categoria": "dinheiro-renda-extra",
+    "commons_title": "File:Statistics on a laptop (Unsplash).jpg",
+    "keyword": "planejamento financeiro",
+    "alt_text": "Notebook com gráficos e estatísticas sobre uma mesa de trabalho.",
+    "caption": "Imagem ilustrativa de análise de dados para acompanhar o planejamento financeiro; não representa rentabilidade ou oferta de crédito.",
+    "crop_center": [
+      0.5,
+      0.5
+    ]
+  },
+  {
+    "post_id": 22,
+    "categoria": "tecnologia-inovacao",
+    "commons_title": "File:Typing on a laptop (Unsplash).jpg",
+    "keyword": "inteligência artificial",
+    "alt_text": "Mãos de uma pessoa digitando no teclado de um notebook.",
+    "caption": "Uso de notebook no trabalho: fotografia ilustrativa. A imagem não comprova o uso de uma ferramenta específica de inteligência artificial.",
+    "crop_center": [
+      0.5,
+      0.5
+    ]
+  },
+  {
+    "post_id": 23,
+    "categoria": "esportes",
+    "commons_title": "File:Maracanã stadium.jpg",
+    "keyword": "futebol brasileiro e baiano",
+    "alt_text": "Gramado e arquibancadas do estádio do Maracanã, no Rio de Janeiro, em registro de arquivo de 2013.",
+    "caption": "Maracanã, Rio de Janeiro, em fotografia de arquivo de 2013. A imagem não se refere a uma partida atual.",
+    "crop_center": [
+      0.5,
+      0.5
+    ],
+    "denoise_radius": 0.6
+  },
+  {
+    "post_id": 24,
+    "categoria": "famosos-entretenimento",
+    "commons_title": "File:TV remote control in hand.jpg",
+    "keyword": "TV e streaming no Brasil",
+    "alt_text": "Mão segurando um controle remoto de televisão em primeiro plano.",
+    "caption": "Controle remoto de televisão: fotografia ilustrativa sobre hábitos de consumo de TV e streaming.",
+    "crop_center": [
+      0.5,
+      0.5
+    ]
+  }
+]

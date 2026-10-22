@@ -9,7 +9,7 @@ import argparse,base64,getpass,hashlib,html,io,json,os,ssl,sys
 import urllib.error,urllib.parse,urllib.request
 from html.parser import HTMLParser
 from pathlib import Path
-from PIL import Image,ImageOps
+from PIL import Image,ImageOps,ImageFilter
 
 SIZE=(1200,675)
 MAX_BYTES=60_000
@@ -43,6 +43,7 @@ def licensed_source(session,title):
     value=lambda key:plain(meta.get(key,{}).get('value',''))
     license_url=value('LicenseUrl');parsed=urllib.parse.urlsplit(license_url)
     license_path=parsed.path.rstrip('/')
+    if '/deed.' in license_path:license_path=license_path.rsplit('/deed.',1)[0]
     allowed_paths={'/publicdomain/zero/1.0','/publicdomain/mark/1.0'}|{f'/licenses/{kind}/{version}' for kind in ('by','by-sa') for version in ('2.0','2.5','3.0','4.0')}
     if parsed.hostname not in ('creativecommons.org','www.creativecommons.org') or license_path not in allowed_paths:
         raise ValueError('Licenca ausente ou fora das licencas livres aceitas; revisar a origem.')
@@ -61,7 +62,10 @@ def convert_photo(content,spec,directory):
         center=spec.get('crop_center',[.5,.5])
         if len(center)!=2 or any(type(v) not in (int,float) or not 0<=v<=1 for v in center):raise ValueError('crop_center invalido.')
         image=ImageOps.fit(image,SIZE,method=Image.Resampling.LANCZOS,centering=tuple(center))
-        for quality in (86,82,78,74,70,66,62,58,54,50,46,42):
+        radius=spec.get('denoise_radius',0)
+        if type(radius) not in (int,float) or not 0<=radius<=.8:raise ValueError('Suavizacao maxima permitida:0.8px.')
+        if radius:image=image.filter(ImageFilter.GaussianBlur(radius))
+        for quality in (86,82,78,74,70,66,62,58,54,50,46,42,38,34,30):
             output=io.BytesIO();image.save(output,'WEBP',quality=quality,method=6)
             data=output.getvalue()
             if len(data)<MAX_BYTES:break
@@ -70,7 +74,7 @@ def convert_photo(content,spec,directory):
     path=directory/(slug+'.webp');path.write_bytes(data)
     with Image.open(path) as check:
         assert check.format=='WEBP' and check.size==SIZE;check.load()
-    return {'post_id':spec['post_id'],'path':str(path),'slug':slug,'sha256':digest,'bytes':len(data),'quality':quality,'width':1200,'height':675,'style':'photograph','source_sha256':hashlib.sha256(content).hexdigest()}
+    return {'post_id':spec['post_id'],'path':str(path),'slug':slug,'sha256':digest,'bytes':len(data),'quality':quality,'width':1200,'height':675,'style':'photograph','denoise_radius':radius,'source_sha256':hashlib.sha256(content).hexdigest()}
 def attribution(provenance):
     p={k:html.escape(v,quote=True) for k,v in provenance.items()}
     return f'Foto: {p["author"]} / <a href="{p["source_page"]}">Wikimedia Commons</a> · <a href="{p["license_url"]}">{p["license"]}</a>. {p["changes"]}'
@@ -174,8 +178,10 @@ def main():
     results=[]
     for spec in specs:
         info,provenance=licensed_source(session,spec['commons_title'])
-        content=get_url(session,info.get('thumburl',info['url']))
-        result=convert_photo(content,spec,args.output_dir);result['provenance']=provenance
+        content=get_url(session,info['url'])
+        result=convert_photo(content,spec,args.output_dir)
+        if result['denoise_radius']:provenance['changes']+=' Suavizacao leve de ruido.'
+        result['provenance']=provenance
         credit=attribution(provenance)
         spec['caption']=html.escape(spec['caption'])+' '+credit
         result['visible_credit_html']=credit

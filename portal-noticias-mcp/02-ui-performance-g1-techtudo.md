@@ -9,24 +9,25 @@ Inspirar-se na hierarquia jornalística do G1 e na distribuição automática de
 | Notícias & Região | `#FF006E` |
 | Dinheiro & Renda Extra | `#3A86FF` |
 | Tecnologia & Inovação | `#2C1067`, detalhe `#03F1F4` |
-| Esportes | `#FFBE0B`, texto `#000000` |
+| Esportes | `#D97706` nos chapéus/hover; ouro `#FFBE0B` na paleta da marca |
 | Famosos & Entretenimento | `#FB5607` |
 
-Paleta oficial Giro73, atualizada em 22/10/2026. Aplicar cores de editoria em bordas, marcadores e rótulos; títulos dos cards em preto. Não depender apenas da cor para identificar a categoria. Tecnologia usa roxo para leitura e ciano como acento; esportes usa preto sobre ouro.
+Paleta oficial Giro73, atualizada em 22/10/2026. Aplicar cores de editoria em bordas, marcadores e rótulos; títulos dos cards em preto. Não depender apenas da cor para identificar a categoria. Tecnologia usa roxo para leitura e ciano como acento; esportes usa o acento editorial `#D97706`.
 
 ## Cabeçalho e Home editorial
 
-- Fundo global **branco `#FFFFFF !important`**. Container central de até **1180 px**, margem automática e padding **24 px 16 px**. Sem sombras ou molduras individuais nas notícias; separação por linhas `#EAEAEA`.
-- Header amarelo `#FFEA02`, borda inferior roxa de 3 px e logo oficial com dimensões declaradas. Navegação roxa, peso 800, sem sublinhado; cabeçalho aderente ao topo. Apenas o menu pode rolar horizontalmente no mobile. Footer roxo com logo branca e cinco links institucionais; preservar favicon e Schema.
-- **Hero desktop:** duas colunas iguais, intervalo de 24 px. Área visual de 416 px (duas fotos de 200 px + intervalo de 16 px), abaixo de 420 px; separador inferior com padding de 32 px e margem de 40 px.
-- **Manchete esquerda:** única moldura permitida, borda de 1 px `#EAEAEA`, raio de 8 px e padding de 32 px; conteúdo centralizado verticalmente. Sem foto. Chapéu de 12 px/peso 700/caixa alta; título de 34 px/entrelinha 1,15/peso 800/cor `#111111`, margem 12 px 0 16 px; resumo de 16 px/cor `#555555`/entrelinha 1,5.
-- **Dois destaques direitos:** fotografia ocupando cada bloco de 200 px, raio de 8 px, recorte `object-fit: cover`; degradê escuro na base e título branco de 18 px/peso 700, a 16 px das bordas. Título é HTML separado, nunca texto gravado na fotografia.
-- **Corpo:** `minmax(0,2.2fr) minmax(280px,1fr)`, intervalo de 48 px. Feed horizontal com colunas de 240 px e restante livre, intervalo de 20 px, padding de 24 px 0 e borda inferior de 1 px. Foto 240×135/raio de 6 px; chapéu 12 px; título 20 px/peso 800/entrelinha 1,25; resumo de 14 px em duas linhas; data de 12 px cinza.
-- **Sidebar:** borda esquerda de 1 px `#EAEAEA`, padding esquerdo de 32 px. “Mais lidas” reservado até existir fonte real de leituras; CSS de lista numerada pronto, números grandes `#CCCCCC` e títulos de 15 px. Contato e publicidade com altura reservada de 250 px; nenhum código de anúncios acrescentado.
-- Três consultas nativas com as cinco editorias e ordem decrescente de publicação: uma matéria com offset 0, duas com offset 1 e até 12 no feed com offset 3. Sem repetição, JavaScript de layout ou edição manual da capa. O feed não usa scroll infinito/paginação; arquivos das editorias mantêm paginação nativa HTML.
-- Abaixo de 1024 px, hero e corpo passam a uma coluna. Em telas abaixo de 640 px, título principal de 28 px e miniaturas do feed de 112 px; manter os destaques de 200 px sem overflow.
-- **Imagens obrigatórias:** fotografias reais pertinentes, em **1200×675 WebP abaixo de 60.000 bytes**, com fonte/licença verificadas e crédito visível quando exigido. Sem desenhos vetoriais, títulos, logos ou selos gravados. Identificar quando a foto for ilustrativa ou retratar outro local/data.
-- **Pendência em 22/10/2026:** o layout novo está publicado, mas a rede do ambiente bloqueou o download das fotos. As mídias ilustradas anteriores continuam vinculadas até a liberação de `commons.wikimedia.org` e `upload.wikimedia.org`; não afirmar que já foram substituídas.
+- Fundo branco puro e container de 1180 px com padding de 24 px 16 px; sem sombras ou molduras no feed/sidebar.
+- Topbar roxa de 32 px, data/hora em português atualizada por JS inline de 811 bytes, fuso de Brasília, região e atalhos institucionais. Em mobile, formato compacto sem overflow.
+- Header amarelo de 56 px, logo de 30 px e menu roxo de 14 px/peso 500/intervalo de 28 px. Hover com linha de 2 px na cor da editoria. Header permanece no topo durante a rolagem; menu mobile rola horizontalmente.
+- Footer roxo com logo branca de 26 px, links ciano de 13 px/peso 500 e textos de 12 px/branco a 75%. Manter os cinco links institucionais, favicon e Schema oficiais.
+- Hero desktop em duas colunas iguais e intervalo de 24 px, área visual de 416 px. Manchete esquerda tipográfica, sem foto, única moldura sutil permitida, padding de 32 px. Título de 32 px/peso 800/entrelinha 1,15/espaçamento -0,025em, resumo de 16 px e dois tópicos automáticos com bullets coloridos. À direita, dois destaques de 200 px, intervalo de 16 px, foto, degradê e título HTML branco de 18 px.
+- Chapéus de 11 px/peso 700/caixa alta/espaçamento 0,05em, texto colorido e borda lateral de 3 px. Cores: notícias `#FF006E`, dinheiro `#3A86FF`, tecnologia `#2C1067`, esportes `#D97706`, entretenimento `#FB5607`.
+- Corpo `2.2fr / minmax(280px,1fr)`, intervalo de 48 px. Feed horizontal com imagem **210×118 px**, intervalo de 20 px, padding de 24 px 0 e separador de 1 px. Título de 19 px/peso 700, resumo de 14 px em duas linhas e data de 12 px. Heading “Últimas notícias” de 18 px/peso 700 com linha inferior roxa de 2 px.
+- Sidebar com divisor esquerdo de 1 px e padding de 32 px. Lista numerada de cinco artigos publicados, atualizada nativamente, com números cinza de 24 px/peso 800 e identificação “Seleção editorial”; não representa leituras medidas. Contato e anúncio com reserva de 250 px, sem scripts de publicidade.
+- Consultas principais: uma matéria com offset 0, duas com offset 1 e até 12 no feed com offset 3. Os tópicos apontam aos dois seguintes e a sidebar lista cinco recentes. Nenhuma edição manual de capa ou JavaScript de layout; arquivos das editorias mantêm paginação HTML.
+- Abaixo de 1024 px, grupos em coluna única; miniaturas do feed ficam menores no mobile. Manter as alturas da topbar e do header, sem empurrar conteúdo.
+- Fotografias reais pertinentes em **1200×675 WebP abaixo de 60.000 bytes**, fonte/licença verificadas e crédito visível. Sem texto, logo, selo ou ícone acrescentado ao arquivo. Títulos sobre as fotos dos destaques são elementos HTML separados.
+- A pendência de download foi resolvida: as cinco fotos estão publicadas, com metadados, créditos e `featured_media` conferidos. Registro completo em `13-refinamento-editorial-e-fotografias.md`.
 
 ## Artigo e anúncios
 

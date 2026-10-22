@@ -1,46 +1,22 @@
 # Fotografias editoriais Giro73
 
-O fluxo vigente exige **fotografias reais**, sem títulos, logos ou selos gravados. A geração de desenhos foi removida de `gerar-upload-capas.py`. Não há mais imagens padrão nem fallback para ícones.
+As cinco capas dos posts existentes **20 a 24 foram substituídas por fotografias reais**, com créditos e licenças registrados, em **1200×675 WebP abaixo de 60.000 bytes**. Nenhum texto, logo, selo ou desenho foi acrescentado às imagens. A rede Wikimedia funcionou nesta execução; o plano B abstrato não foi necessário.
 
-**Situação desta implantação:** o HTML/CSS novo foi publicado, mas o download das cinco fotografias está bloqueado pela política de rede do ambiente. As mídias antigas 84 a 88 continuam vinculadas; nenhuma foto ou licença foi inventada. Foi salvo um rascunho de configuração para permitir `commons.wikimedia.org` e `upload.wikimedia.org`, preservando o acesso ao WordPress. Revisar/salvar e publicar o ambiente é necessário para aplicar essa alteração; salvar o rascunho não libera a rede atual.
+As escolhas estão em `fotos-editoriais-selecionadas.json`. IDs de mídia, URLs, autor, licença, alterações, dimensões, bytes e hashes estão em `fotos-editoriais-publicadas.json`.
 
-## Seleção das fontes
+| Post | Fotografia | Autor | Licença | Mídia | Bytes |
+|---|---|---|---|---:|---:|
+| 20 | Terminal urbano de Teixeira de Freitas | Kelwy | CC BY-SA 4.0 | 95 | 59.260 |
+| 21 | Notebook com gráficos e estatísticas | Carlos Muza | CC0 | 96 | 53.798 |
+| 22 | Pessoa digitando em notebook | Simon Hattinga Verschure | CC0 | 97 | 27.626 |
+| 23 | Interior do Maracanã, registro de 2013 | Leandro Neumann Ciuffo | CC BY 2.0 | 99 | 59.036 |
+| 24 | Controle remoto de televisão | Santeri Viinamäki | CC BY-SA 4.0 | 98 | 54.074 |
 
-Escolher visualmente uma fotografia para cada tema, abrindo sua página original no Wikimedia Commons e conferindo autor, contexto e licença. Usar apenas JPEG/PNG com resolução suficiente para 1200×675. O programa admite CC BY/CC BY-SA 2.0, 2.5, 3.0 e 4.0, CC0 ou marca de domínio público com URL explícita do Creative Commons; recusa metadados ausentes e licenças fora dessa lista.
+As fotografias de arquivo/ilustrativas não são apresentadas como registro de acontecimentos atuais. O arquivo de finanças ilustra análise de dados, sem alegar rentabilidade ou oferta de crédito. Os créditos aparecem abaixo da imagem de cada artigo, com links para a fonte e a licença. As versões CC BY-SA continuam identificadas com a mesma licença após recorte/compressão.
 
-| Post | Editoria | Fotografia a selecionar |
-|---|---|---|
-| 20 | Notícias & Região | Cidade, comércio ou rodovia brasileira; identificar o local real. Se não retratar a região, declarar que é imagem ilustrativa. |
-| 21 | Dinheiro & Renda Extra | Finanças ou pessoa usando celular; não alegar que um aplicativo oferece crédito sem comprovação. |
-| 22 | Tecnologia & Inovação | Pessoa trabalhando com notebook ou ambiente tecnológico. |
-| 23 | Esportes | Estádio brasileiro, gramado ou bola de futebol; não apresentar uma imagem antiga como partida atual. |
-| 24 | Famosos & Entretenimento | Sala com TV, controle remoto ou estúdio. |
+## Reproduzir a geração
 
-Licença livre exige cumprir as condições da fonte. O fluxo registra autor, URL da página, licença e alterações; o crédito acompanha a mídia e fica visível no artigo. Não presumir que uma imagem é livre apenas porque está acessível na internet.
-
-## Preparar um manifesto revisado
-
-Usar o título `File:` exato da fotografia escolhida, sem adivinhar nomes ou autores. O exemplo abaixo é um **modelo não executável**; substituir o campo de arquivo e revisar os textos antes de usar:
-
-```json
-[
-  {
-    "post_id": 20,
-    "categoria": "noticias-regiao",
-    "commons_title": "File:SUBSTITUIR_PELO_ARQUIVO_REAL_REVISADO.jpg",
-    "keyword": "economia do Extremo Sul da Bahia",
-    "alt_text": "Descrever somente o que aparece na fotografia selecionada.",
-    "caption": "Informar o local real e, quando pertinente, que é imagem ilustrativa.",
-    "crop_center": [0.5, 0.5]
-  }
-]
-```
-
-Acrescentar as entradas dos outros quatro posts e suas categorias. As cinco editorias da Fase 1 são aceitas; Achadinhos é recusado.
-
-## Baixar e converter
-
-Dependências: Python 3.12, Pillow e requests. Neste ambiente, requests foi instalado somente em `/tmp/giro73-photo-tools`; usar `PYTHONPATH=/tmp/giro73-photo-tools` ao executar aqui. Em outro executor, instalar com TLS verificado:
+Dependências: Python 3.12, Pillow e requests. Neste ambiente, usar `PYTHONPATH=/tmp/giro73-tools`; a configuração reutilizável instala requests e o validador CSS nesse diretório, sem alterar o repositório. Em outro executor:
 
 ```bash
 python -m pip install 'Pillow==12.3.0' 'requests==2.32.5'
@@ -49,29 +25,37 @@ python -m pip install 'Pillow==12.3.0' 'requests==2.32.5'
 Na pasta `implementacao-wp`:
 
 ```bash
-python gerar-upload-capas.py --manifest fotos-revisadas.json --output-dir /tmp/giro73-fotos
+python gerar-upload-capas.py --manifest fotos-editoriais-selecionadas.json --output-dir /tmp/giro73-fotos
 ```
 
-A API oficial fornece os metadados e uma variante de até 1600 px de largura. O arquivo baixado é limitado a 12 MB; o script recorta em **1200×675**, sem ampliar imagens pequenas, preserva a orientação e comprime em **WebP abaixo de 60.000 bytes**. Não desenha texto nem marcas. O manifesto guarda os hashes do arquivo de origem e do WebP, dimensões, peso e atribuição.
+O script consulta a API oficial do Commons, verifica autor e licença livre explícita e baixa o original JPEG/PNG de até 12 MB por arquivo. O domínio `thumb.wikimedia.org` passou a aparecer em miniaturas do provedor; o fluxo usa os originais em `upload.wikimedia.org`, já permitido, sem depender desse domínio adicional.
 
-Conferir visualmente os recortes antes do envio. O filtro de formato não prova sozinho que uma imagem é uma fotografia pertinente.
+Faz orientação EXIF, recorte 16:9 e redução sem ampliar imagens pequenas. Compressão WebP é ajustada até ficar abaixo de 60.000 bytes. A foto do estádio usa suavização de ruído de **0,6 px**, declarada no crédito, para caber no orçamento; o limite permitido é 0,8 px. Não há operações de desenho de texto, ícones ou marcas.
+
+O manifesto guarda os hashes da origem e do WebP, dimensões, peso, qualidade, recorte e atribuição. Conferir visualmente o arquivo final antes de enviar. O fato de uma imagem estar disponível na internet não comprova licença.
+
+## Próximos artigos
+
+Criar o post pelo fluxo editorial existente e informar seu ID, uma das cinco categorias da Fase 1, o título `File:` exato selecionado no Commons, palavra-chave, alt natural e legenda factual. `crop_center` é opcional; usar `[0.5,0.5]` por padrão. `denoise_radius` é opcional, padrão zero.
+
+Selecionar visualmente fotografias pertinentes e verificar contexto/autor/licença. O script admite CC BY/CC BY-SA 2.0, 2.5, 3.0 e 4.0, CC0 e marca de domínio público com URL Creative Commons explícita. Aceita URLs de licença com sufixo de idioma `/deed.en`; recusa licenças fora da lista e metadados ausentes. Achadinhos permanece fora da Fase 1.
 
 ## Enviar e vincular
 
-O caminho usado nas implantações anteriores foi `wp_upload_media` do Easy MCP, seguido de atualização de metadados e `featured_media` pela API nativa. Reutilizar a mídia pelo slug com hash quando já existir. Preservar créditos, legenda, alt e origem registrados no manifesto. Exibir o crédito no artigo, além de armazená-lo na Biblioteca.
+Nesta implantação, o envio binário usou **`wp_upload_media` do Easy MCP**. A API nativa depois atualizou slug, associação, alt/título/legenda/descrição e `featured_media`. O texto jornalístico, títulos, datas, categorias, status e resumos foram preservados. Foi acrescentada apenas uma linha identificada de crédito no início do conteúdo, logo abaixo da imagem no template de artigo. Mídias antigas foram preservadas.
 
-O cliente REST opcional continua disponível quando o processamento de upload da hospedagem estiver funcional:
+Reutilizar o slug com ID do post e hash quando já existir. O cliente REST opcional continua disponível quando o upload REST da hospedagem estiver funcional:
 
 ```bash
-python gerar-upload-capas.py --manifest fotos-revisadas.json --output-dir /tmp/giro73-fotos --upload --user admin
+python gerar-upload-capas.py --manifest fotos-editoriais-selecionadas.json --output-dir /tmp/giro73-fotos --upload --user admin
 ```
 
-A senha de aplicativo é solicitada sem exibição. Automação pode usar `WORDPRESS_USERNAME` e `WORDPRESS_APP_PASSWORD` injetados por gerenciador de segredos, ou `--password-stdin`. Nunca gravar credenciais no manifesto ou no repositório.
+Senha de aplicativo por prompt sem exibição, `WORDPRESS_APP_PASSWORD` injetada pelo gerenciador de segredos ou `--password-stdin`; usuário por `--user` ou `WORDPRESS_USERNAME`. Não gravar credenciais em arquivos ou no GitHub.
 
-O cliente verifica posts/categorias, reutiliza mídias pelo slug, preenche metadados e troca `featured_media`. Acrescenta ao início do conteúdo uma pequena linha de crédito HTML identificada, sem reescrever o texto jornalístico. Reexecuções substituem somente esse crédito identificado, sem duplicá-lo. Título, slug, categoria, status e data são preservados e verificados. Arquivos públicos são conferidos por formato, dimensões, peso e SHA256.
+O cliente reutiliza mídias por slug, verifica os dados editoriais e acrescenta/substitui somente o bloco de crédito identificado, sem duplicá-lo. Confere os arquivos públicos por formato, dimensões, peso e SHA256. Nunca cria/publica artigos ou páginas, apaga mídias ou executa PHP no servidor. Operações sequenciais, com timeout e TLS verificado.
 
-Nenhum artigo/página é criado ou publicado pelo script; mídias antigas não são apagadas. Operações são sequenciais, com timeout e TLS verificado. Não executa hooks de cache ou comandos PHP.
+## Verificação concluída
 
-## Verificação final
+Cinco imagens e artigos públicos HTTP 200, arquivos remotos idênticos aos locais, créditos visíveis e `og:image` atualizado. Sitemap Rank Math contendo as cinco fotografias. LiteSpeed Purge All e cache de sitemap limpos, seguidos de invalidação final da Home após compactar a sidebar.
 
-Após o envio real, conferir Home, cinco artigos, alt/legendas/créditos, `og:image`, sitemap e responsividade. Limpar LiteSpeed e cache de sitemap Rank Math. O download e o envio de fotografias **ainda não foram executados nesta etapa**; não tratar este procedimento documentado como confirmação da substituição das mídias.
+Validar novamente esses pontos a cada troca de capa. Nota PageSpeed e dados de campo precisam ser medidos; dimensões e peso das fotos, isoladamente, não garantem aprovação no Discover ou AdSense.

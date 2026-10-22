@@ -1,0 +1,123 @@
+[
+  {
+    "post_id": 20,
+    "slug": "giro73-foto-20-914aaac0a592",
+    "sha256": "914aaac0a59280d27c75c0d7f6f659148af28d6d839ce5c99272ae1bbf18473b",
+    "bytes": 59260,
+    "quality": 74,
+    "width": 1200,
+    "height": 675,
+    "style": "photograph",
+    "source_sha256": "6489d4e3baccaeada3878a70f6538d7025b21f9a9118641030958d91ebac9f82",
+    "provenance": {
+      "source_page": "https://commons.wikimedia.org/wiki/File:Teixeira_de_Freitas,_Bahia.jpg",
+      "author": "Kelwy",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "changes": "Recorte16:9, redimensionamento e compressao WebP."
+    },
+    "visible_credit_html": "Foto: Kelwy / <a href=\"https://commons.wikimedia.org/wiki/File:Teixeira_de_Freitas,_Bahia.jpg\">Wikimedia Commons</a> · <a href=\"https://creativecommons.org/licenses/by-sa/4.0\">CC BY-SA 4.0</a>. Recorte16:9, redimensionamento e compressao WebP.",
+    "media_id": 95,
+    "source_url": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-20-914aaac0a592.webp",
+    "post_url": "https://giro73.com.br/extremo-sul-bahia-economia-infraestrutura-desenvolvimento/",
+    "commons_title": "File:Teixeira de Freitas, Bahia.jpg",
+    "alt_text": "Terminal urbano de Teixeira de Freitas, Bahia, em fotografia de Kelwy."
+  },
+  {
+    "post_id": 21,
+    "slug": "giro73-foto-21-5f8a5cfe768c",
+    "sha256": "5f8a5cfe768c3d654e157f0e60be94972484888428b423e55e08b814eb84d3cb",
+    "bytes": 53798,
+    "quality": 86,
+    "width": 1200,
+    "height": 675,
+    "style": "photograph",
+    "source_sha256": "8455dfe67c10876df0bb05fda53b8d5a840a4dba7d976e11d4bd592dbac7867b",
+    "provenance": {
+      "source_page": "https://commons.wikimedia.org/wiki/File:Statistics_on_a_laptop_(Unsplash).jpg",
+      "author": "Carlos Muza kmuza",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "changes": "Recorte16:9, redimensionamento e compressao WebP."
+    },
+    "visible_credit_html": "Foto: Carlos Muza kmuza / <a href=\"https://commons.wikimedia.org/wiki/File:Statistics_on_a_laptop_(Unsplash).jpg\">Wikimedia Commons</a> · <a href=\"http://creativecommons.org/publicdomain/zero/1.0/deed.en\">CC0</a>. Recorte16:9, redimensionamento e compressao WebP.",
+    "media_id": 96,
+    "source_url": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-21-5f8a5cfe768c.webp",
+    "post_url": "https://giro73.com.br/planejamento-financeiro-renda-extra-credito-seguro/",
+    "commons_title": "File:Statistics on a laptop (Unsplash).jpg",
+    "alt_text": "Notebook com gráficos e estatísticas sobre uma mesa de trabalho."
+  },
+  {
+    "post_id": 22,
+    "slug": "giro73-foto-22-822089d7588b",
+    "sha256": "822089d7588b54a5852296782a1810337f8fe287d6beb8047069675b79b60405",
+    "bytes": 27626,
+    "quality": 86,
+    "width": 1200,
+    "height": 675,
+    "style": "photograph",
+    "source_sha256": "a0153807c3667b7e325810b941bf6aea3a3a61b46f4960267711a2c3a60099d3",
+    "provenance": {
+      "source_page": "https://commons.wikimedia.org/wiki/File:Typing_on_a_laptop_(Unsplash).jpg",
+      "author": "Simon Hattinga Verschure webmarbles",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "changes": "Recorte16:9, redimensionamento e compressao WebP."
+    },
+    "visible_credit_html": "Foto: Simon Hattinga Verschure webmarbles / <a href=\"https://commons.wikimedia.org/wiki/File:Typing_on_a_laptop_(Unsplash).jpg\">Wikimedia Commons</a> · <a href=\"http://creativecommons.org/publicdomain/zero/1.0/deed.en\">CC0</a>. Recorte16:9, redimensionamento e compressao WebP.",
+    "media_id": 97,
+    "source_url": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-22-822089d7588b.webp",
+    "post_url": "https://giro73.com.br/inteligencia-artificial-trabalho-pequenos-negocios/",
+    "commons_title": "File:Typing on a laptop (Unsplash).jpg",
+    "alt_text": "Mãos de uma pessoa digitando no teclado de um notebook."
+  },
+  {
+    "post_id": 23,
+    "slug": "giro73-foto-23-5a4c87cbd163",
+    "sha256": "5a4c87cbd163dd6e27a23103113ea5c4fcc57430289c32ad93da4e4ed5d58bf9",
+    "bytes": 59036,
+    "quality": 38,
+    "width": 1200,
+    "height": 675,
+    "style": "photograph",
+    "denoise_radius": 0.6,
+    "source_sha256": "3f1fec45800ce4fff07ab81f1f144842b34164d3629a23209ab8cd668b97237d",
+    "provenance": {
+      "source_page": "https://commons.wikimedia.org/wiki/File:Maracan%C3%A3_stadium.jpg",
+      "author": "Leandro Neumann Ciuffo",
+      "license": "CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0",
+      "changes": "Recorte16:9, redimensionamento e compressao WebP. Suavizacao leve de ruido."
+    },
+    "visible_credit_html": "Foto: Leandro Neumann Ciuffo / <a href=\"https://commons.wikimedia.org/wiki/File:Maracan%C3%A3_stadium.jpg\">Wikimedia Commons</a> · <a href=\"https://creativecommons.org/licenses/by/2.0\">CC BY 2.0</a>. Recorte16:9, redimensionamento e compressao WebP. Suavizacao leve de ruido.",
+    "media_id": 99,
+    "source_url": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-23-5a4c87cbd163.webp",
+    "post_url": "https://giro73.com.br/futebol-brasileiro-baiano-calendario-guia-torcedor/",
+    "commons_title": "File:Maracanã stadium.jpg",
+    "alt_text": "Gramado e arquibancadas do estádio do Maracanã, no Rio de Janeiro, em registro de arquivo de 2013."
+  },
+  {
+    "post_id": 24,
+    "slug": "giro73-foto-24-4b97b8387fdd",
+    "sha256": "4b97b8387fdd46f56e4bb9637c25bd9b0fcc15d7d3dc414395f31fdccf2f18eb",
+    "bytes": 54074,
+    "quality": 82,
+    "width": 1200,
+    "height": 675,
+    "style": "photograph",
+    "source_sha256": "aa7b445f4c07d19fb4d46aae8669628c9db46275ae6351cc0bdd563ac8a42612",
+    "provenance": {
+      "source_page": "https://commons.wikimedia.org/wiki/File:TV_remote_control_in_hand.jpg",
+      "author": "Santeri Viinamäki",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "changes": "Recorte16:9, redimensionamento e compressao WebP."
+    },
+    "visible_credit_html": "Foto: Santeri Viinamäki / <a href=\"https://commons.wikimedia.org/wiki/File:TV_remote_control_in_hand.jpg\">Wikimedia Commons</a> · <a href=\"https://creativecommons.org/licenses/by-sa/4.0\">CC BY-SA 4.0</a>. Recorte16:9, redimensionamento e compressao WebP.",
+    "media_id": 98,
+    "source_url": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-24-4b97b8387fdd.webp",
+    "post_url": "https://giro73.com.br/tv-streaming-brasil-tendencias-entretenimento/",
+    "commons_title": "File:TV remote control in hand.jpg",
+    "alt_text": "Mão segurando um controle remoto de televisão em primeiro plano."
+  }
+]
