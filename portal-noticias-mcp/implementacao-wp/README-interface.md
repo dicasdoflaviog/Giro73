@@ -39,3 +39,7 @@ A implantação 16 acrescentou slots laterais na Home e nos artigos, além de ba
 ## Template oficial dos artigos
 
 A implantação **17** removeu a sidebar do single e centralizou a leitura em 740 px. `single-editorial.php`, snippet 7, concentra inserção do anúncio após o terceiro parágrafo, Leia também após o sexto e compartilhamento WhatsApp sem JS. Ver `README-single.md`; essa configuração substitui a descrição de duas colunas da implantação 16.
+
+## Fechamento da fundação
+
+A implantação 19 publicou category/archive/search/author e a template part única `giro73-sidebar`, compartilhada com a Home. O script de widgets passou da Home para essa parte; não duplicar. Miniaturas de feed desktop agora têm 240×135 px. O snippet 8 acrescenta cabeçalhos de arquivo, NewsArticle/Organization e ads.txt. Ver `README-arquivos-schema.md`; single permanece sem sidebar.
