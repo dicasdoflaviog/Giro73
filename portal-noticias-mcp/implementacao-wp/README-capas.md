@@ -7,7 +7,7 @@ O selo já está disponível em `marca/selo.png`. Na conclusão da identidade vi
 ## Especificação validada
 
 - 1200 × 675 pixels, 16:9, RGB, WebP estritamente abaixo de **50.000 bytes**.
-- Paleta oficial: magenta `#FF006E` (Notícias), azul `#3A86FF` (Dinheiro), roxo `#2C1067` com ciano `#03F1F4` (Tecnologia), ouro `#FFBE0B` com preto (Esportes), laranja `#FB5607` (Famosos). Apoios em amarelo `#FFEA02`, preto e branco; Achadinhos não é aceito.
+- Estilo padrão limpo: branco, cinza `#F4F5F8`, preto e roxo, com selo oficial. Sem tarja superior, selo “GUIA” ou categoria gravada na arte. A cor da editoria aparece na etiqueta dinâmica do card, controlada pelo CSS; Achadinhos não é aceito.
 - O selo PNG original entra sem recoloração e com transparência preservada. Antialiasing e compressão WebP produzem tons intermediários nas bordas; as cores de desenho vêm da paleta oficial.
 - Sem downloads de bibliotecas gráficas, imagens ou fontes durante a geração.
 - Ambiente testado: Python 3.12, Pillow 12.3.0 e DejaVu Sans instalado em `/usr/share/fonts/truetype/dejavu/`.
@@ -80,7 +80,7 @@ Criar primeiro o rascunho no fluxo editorial existente, obter seu ID e preparar 
 python gerar-upload-capas.py --manifest fila-capas.json --seal '/caminho/Property 1=G73_V.png' --upload
 ```
 
-Categorias aceitas: `noticias-regiao`, `dinheiro-renda-extra`, `tecnologia-inovacao`, `esportes` e `famosos-entretenimento`. A categoria seleciona a cor e a ilustração correspondente. Título auxiliar, alt e legenda devem descrever a imagem com naturalidade e corresponder ao assunto do post.
+Categorias aceitas: `noticias-regiao`, `dinheiro-renda-extra`, `tecnologia-inovacao`, `esportes` e `famosos-entretenimento`. A categoria seleciona a ilustração correspondente. O manifesto registra `style: clean` por padrão; `--classic` recupera a arte colorida anterior apenas quando explicitamente solicitado. Título auxiliar, alt e legenda devem descrever a imagem com naturalidade e corresponder ao assunto do post.
 
 ## Depois do upload
 

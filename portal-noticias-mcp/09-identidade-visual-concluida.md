@@ -1,5 +1,7 @@
 # Identidade visual Giro73 aplicada
 
+> O refinamento posterior da Home e das capas está em [10-home-grade-limpa.md](10-home-grade-limpa.md).
+
 Data: 22/10/2026. Site: https://giro73.com.br/.
 
 ## Recuperação e envio

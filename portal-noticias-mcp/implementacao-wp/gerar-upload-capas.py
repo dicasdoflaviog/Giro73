@@ -75,8 +75,8 @@ def font(size, bold=False):
     raise RuntimeError("Instale DejaVu Sans ou Liberation Sans; não são baixadas fontes externas.")
 
 
-def draw_art(draw, kind, color):
-    """Primitivas próprias; preenchimentos da paleta oficial Giro73."""
+def draw_art(draw, kind, color, clean=False):
+    """Primitivas próprias para as ilustrações editoriais."""
     ink, paper = PALETTE["purple"], PALETTE["white"]
     if kind == "cidade":
         for x, top, width in [(735, 310, 95), (850, 220, 115), (985, 280, 100)]:
@@ -89,7 +89,7 @@ def draw_art(draw, kind, color):
             draw.ellipse((x-9, y-9, x+9, y+9), fill=paper, outline=ink, width=3)
     elif kind == "financas":
         draw.rounded_rectangle((720, 225, 925, 510), 20, fill=paper, outline=ink, width=4)
-        draw.rounded_rectangle((742, 249, 902, 312), 8, fill=PALETTE["cyan"])
+        draw.rounded_rectangle((742, 249, 902, 312), 8, fill="#F4F5F8" if clean else PALETTE["cyan"])
         draw.line((762, 283, 882, 283), fill=color, width=5)
         for x in (747, 803, 859):
             for y in (339, 391, 443):
@@ -112,12 +112,13 @@ def draw_art(draw, kind, color):
         draw.line((910, 443, 910, 488), fill=ink, width=6)
         draw.line((850, 488, 970, 488), fill=ink, width=6)
     elif kind == "esportes":
+        field_ink = paper if clean else PALETTE["black"]
         draw.rounded_rectangle((714, 250, 1110, 495), 17, fill=color, outline=ink, width=4)
-        draw.rectangle((738, 273, 1086, 472), outline=PALETTE["black"], width=4)
-        draw.line((912, 273, 912, 472), fill=PALETTE["black"], width=4)
-        draw.ellipse((867, 328, 957, 418), outline=PALETTE["black"], width=4)
-        draw.rectangle((738, 321, 791, 424), outline=PALETTE["black"], width=4)
-        draw.rectangle((1033, 321, 1086, 424), outline=PALETTE["black"], width=4)
+        draw.rectangle((738, 273, 1086, 472), outline=field_ink, width=4)
+        draw.line((912, 273, 912, 472), fill=field_ink, width=4)
+        draw.ellipse((867, 328, 957, 418), outline=field_ink, width=4)
+        draw.rectangle((738, 321, 791, 424), outline=field_ink, width=4)
+        draw.rectangle((1033, 321, 1086, 424), outline=field_ink, width=4)
         draw.ellipse((970, 455, 1050, 535), fill=paper, outline=ink, width=4)
         draw.regular_polygon((1010, 495, 18), 5, rotation=0, fill=ink)
         draw.rounded_rectangle((744, 175, 835, 226), 8, fill=paper, outline=ink, width=3)
@@ -131,11 +132,11 @@ def draw_art(draw, kind, color):
         draw.line((910, 462, 910, 492), fill=ink, width=5)
         draw.line((844, 492, 976, 492), fill=ink, width=5)
         draw.rounded_rectangle((998, 382, 1117, 551), 16, fill=paper, outline=ink, width=4)
-        draw.rounded_rectangle((1011, 404, 1104, 523), 5, fill=PALETTE["yellow"])
+        draw.rounded_rectangle((1011, 404, 1104, 523), 5, fill="#F4F5F8" if clean else PALETTE["yellow"])
         draw.polygon([(1044, 438), (1044, 490), (1080, 464)], fill=color)
 
 
-def generate(spec, directory, seal=None):
+def generate(spec, directory, seal=None, clean=True):
     label, color, kind = EDITORIAS[spec["categoria"]]
     # Desenho em 2x e redução final preservam contornos e tipografia.
     image = Image.new("RGB", (2400, 1350), PALETTE["white"])
@@ -152,19 +153,21 @@ def generate(spec, directory, seal=None):
                 return operation(coords,*args,**kwargs)
             return call
     draw = Scaled()
-    draw.rectangle((0, 0, 1200, 14), fill=color)
-    draw.rounded_rectangle((40, 38, 160, 90), 8, fill=PALETTE["yellow"])
-    draw.text((64, 46), "GUIA", font=font(42, True), fill=PALETTE["black"])
-    draw.text((190, 49), label, font=font(40, True), fill=PALETTE["purple"])
-    draw.ellipse((675, 150, 1160, 615), fill=PALETTE["cyan"] if kind=="tecnologia" else PALETTE["yellow"])
-    draw_art(draw, kind, color)
+    if not clean:
+        draw.rectangle((0, 0, 1200, 14), fill=color)
+        draw.rounded_rectangle((40, 38, 160, 90), 8, fill=PALETTE["yellow"])
+        draw.text((64, 46), "GUIA", font=font(42, True), fill=PALETTE["black"])
+        draw.text((190, 49), label, font=font(40, True), fill=PALETTE["purple"])
+    draw.ellipse((675, 150, 1160, 615), fill="#F4F5F8" if clean else PALETTE["cyan"] if kind=="tecnologia" else PALETTE["yellow"])
+    draw_art(draw, kind, PALETTE["purple"] if clean else color, clean)
     title_size=64
     for line in spec["headline"]:
         if ImageDraw.Draw(image).textbbox((0,0), line, font=font(title_size*2,True))[2]>1180:
             raise ValueError("Título da capa longo demais; forneça linhas curtas no manifesto.")
     for index, line in enumerate(spec["headline"]):
         draw.text((48, 242+index*78), line, font=font(title_size*2,True), fill=PALETTE["black"])
-    draw.rectangle((50, 435, 152, 443), fill=color)
+    if not clean:
+        draw.rectangle((50, 435, 152, 443), fill=color)
     draw.text((48, 470), spec["apoio"], font=font(46), fill=PALETTE["purple"])
     draw.text((48, 610), "GIRO73.COM.BR  /  ILUSTRAÇÃO EDITORIAL", font=font(28,True), fill=PALETTE["purple"])
     if seal is not None:
@@ -189,7 +192,7 @@ def generate(spec, directory, seal=None):
         check.load()
     return {"post_id":spec["post_id"],"path":str(path),"slug":path.stem,
             "sha256":digest,"bytes":len(content),"width":1200,"height":675,"quality":quality,
-            "official_seal":seal is not None}
+            "official_seal":seal is not None,"style":"clean" if clean else "classic"}
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -268,6 +271,7 @@ def main():
     parser.add_argument("--output-dir",type=Path,default=Path("/tmp/giro73-capas"))
     parser.add_argument("--manifest",type=Path,help="JSON com post_id, categoria, headline, apoio, keyword, alt_text e caption.")
     parser.add_argument("--seal",type=Path,help="PNG original do selo G73 verificado; sem ele a assinatura fica pendente.")
+    parser.add_argument("--classic",action="store_true",help="Recupera as cores e tarjas do estilo anterior; o padrão é limpo.")
     parser.add_argument("--upload",action="store_true",help="Upload e vínculo; nunca cria posts ou páginas.")
     parser.add_argument("--site-url",default="https://giro73.com.br")
     parser.add_argument("--user",default=os.environ.get("WORDPRESS_USERNAME"))
@@ -296,7 +300,7 @@ def main():
     args.output_dir.mkdir(parents=True,exist_ok=True)
     results=[]
     for spec in specs:
-        result=generate(spec,args.output_dir,seal);results.append(result)
+        result=generate(spec,args.output_dir,seal,clean=not args.classic);results.append(result)
         print(f"Gerada: post {spec['post_id']}, 1200x675, {result['bytes']} bytes, qualidade {result['quality']}",flush=True)
     client=None
     if args.upload:
