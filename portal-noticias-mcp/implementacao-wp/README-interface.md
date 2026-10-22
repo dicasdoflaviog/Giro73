@@ -47,3 +47,7 @@ A implantação 19 publicou category/archive/search/author e a template part ún
 ## Parceiros G73 — implantação 20
 
 A gestão antiga foi substituída pelo CPT e painel **Parceiros G73**, sem novo plugin. Classes neutras, cinco posições, sete formatos, campanhas agendadas, rotação/empilhamento e modal nativo. Fonte principal continua no snippet 6; inserções no snippet 7. Consulte [README-publicidade.md](README-publicidade.md) e [registro da implantação 20](../20-gerenciador-parceiros-g73.md). Os dois banners existentes foram migrados, e o modal permanece desligado até haver campanha configurada.
+
+## Engajamento e autoridade regional — implantação 21
+
+CTA WhatsApp configurável, reações/enquetes, colunistas, agenda regional e impressão foram integrados sem plugin novo. Fonte no snippet 9, independente das rotinas 5–8. Convite vazio, colunistas Em breve e três eventos-modelo em rascunho conforme orientação do usuário. Consulte [README-engajamento.md](README-engajamento.md) e [validação da implantação 21](../21-engajamento-retencao-autoridade-regional.md).
