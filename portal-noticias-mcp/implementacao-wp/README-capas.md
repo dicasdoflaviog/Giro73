@@ -1,11 +1,12 @@
 # Capas editoriais Giro73 — geração e upload
 
-O script `gerar-upload-capas.py` produz arte original com formas geométricas e tipografia. Não utiliza fotos, marcas, personagens ou ativos de terceiros. As fontes locais DejaVu Sans/Liberation Sans possuem licenças permissivas; não se redistribuem arquivos de fonte.
+O script `gerar-upload-capas.py` produz arte original com formas geométricas, tipografia e o selo oficial fornecido pela redação. Não utiliza fotos, marcas ou personagens de terceiros. As fontes locais DejaVu Sans/Liberation Sans possuem licenças permissivas; não se redistribuem arquivos de fonte.
 
 ## Especificação validada
 
 - 1200 × 675 pixels, 16:9, RGB, WebP estritamente abaixo de **50.000 bytes**.
-- Cores das cinco editorias da Fase 1; Achadinhos não é aceito.
+- Paleta oficial: magenta `#FF006E` (Notícias), azul `#3A86FF` (Dinheiro), roxo `#2C1067` com ciano `#03F1F4` (Tecnologia), ouro `#FFBE0B` com preto (Esportes), laranja `#FB5607` (Famosos). Apoios em amarelo `#FFEA02`, preto e branco; Achadinhos não é aceito.
+- O selo PNG original entra sem recoloração e com transparência preservada. Antialiasing e compressão WebP produzem tons intermediários nas bordas; as cores de desenho vêm da paleta oficial.
 - Sem downloads de bibliotecas gráficas, imagens ou fontes durante a geração.
 - Ambiente testado: Python 3.12, Pillow 12.3.0 e DejaVu Sans instalado em `/usr/share/fonts/truetype/dejavu/`.
 - As imagens são ilustrações editoriais; não representam fotografias de locais, dados de mercado, audiência, mapas geográficos ou partidas reais.
@@ -15,7 +16,7 @@ O script `gerar-upload-capas.py` produz arte original com formas geométricas e 
 Na pasta `portal-noticias-mcp/implementacao-wp`:
 
 ```bash
-python gerar-upload-capas.py --output-dir /tmp/giro73-capas
+python gerar-upload-capas.py --seal '/caminho/Property 1=G73_V.png' --output-dir /tmp/giro73-capas
 ```
 
 Se Pillow estiver ausente, instalar a dependência verificada no ambiente de execução:
@@ -26,16 +27,18 @@ python -m pip install 'Pillow==12.3.0'
 
 O diretório escolhido recebe as imagens e `manifesto-geracao.json`. Por padrão, o script gera as cinco capas dos posts existentes 20, 21, 22, 23 e 24.
 
+Sem `--seal`, as capas e o manifesto registram `official_seal: false`, e o script informa que a assinatura está pendente. É possível atualizar somente a paleta sem inventar uma assinatura para substituir a marca; fornecer o PNG original para concluir a identidade visual.
+
 ## Fazer upload e vincular
 
 ```bash
-python gerar-upload-capas.py --upload --user admin
+python gerar-upload-capas.py --seal '/caminho/Property 1=G73_V.png' --upload --user admin
 ```
 
 A senha de aplicativo é solicitada sem exibição. Para automação, injetar `WORDPRESS_USERNAME` e `WORDPRESS_APP_PASSWORD` pelo gerenciador de segredos do executor e executar:
 
 ```bash
-python gerar-upload-capas.py --upload
+python gerar-upload-capas.py --seal '/caminho/Property 1=G73_V.png' --upload
 ```
 
 `--password-stdin` permite fornecer somente a senha pela entrada padrão de um executor confiável. Não passar senhas em argumentos, escrever valores em scripts nem versionar arquivos de credenciais. O token Easy MCP não substitui Basic Auth neste cliente REST.
@@ -51,7 +54,7 @@ python gerar-upload-capas.py --upload
 
 O script nunca cria posts/páginas, publica rascunhos ou apaga mídias. Uploads e atualizações são sequenciais, com timeout e TLS verificado. Redirecionamentos de API são recusados para evitar encaminhar autenticação para outro destino. CDNs com outra origem exigem adaptação explícita da verificação pública.
 
-Reexecução testada: as cinco mídias originais foram reutilizadas, sem duplicação. A reprodução dos mesmos hashes depende das versões do Pillow, das fontes e do conteúdo do manifesto.
+Reexecução da versão anterior testada: as cinco mídias originais foram reutilizadas, sem duplicação. A reprodução dos mesmos hashes depende das versões do Pillow, das fontes, do selo e do conteúdo do manifesto.
 
 ## Usar nos próximos artigos do calendário
 
@@ -72,7 +75,7 @@ Criar primeiro o rascunho no fluxo editorial existente, obter seu ID e preparar 
 ```
 
 ```bash
-python gerar-upload-capas.py --manifest fila-capas.json --upload
+python gerar-upload-capas.py --manifest fila-capas.json --seal '/caminho/Property 1=G73_V.png' --upload
 ```
 
 Categorias aceitas: `noticias-regiao`, `dinheiro-renda-extra`, `tecnologia-inovacao`, `esportes` e `famosos-entretenimento`. A categoria seleciona a cor e a ilustração correspondente. Título auxiliar, alt e legenda devem descrever a imagem com naturalidade e corresponder ao assunto do post.

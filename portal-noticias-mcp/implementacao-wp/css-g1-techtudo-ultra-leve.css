@@ -16,17 +16,26 @@
  */
 
 .g73-portal {
-  --g73-news: #c4170c;
-  --g73-money: #005a9c;
-  --g73-tech: #0077cc;
-  --g73-sports: #06aa48;
-  --g73-entertainment: #ff6700;
+  --giro-yellow: #FFEA02;
+  --giro-amber: #FFBE0B;
+  --giro-purple: #2C1067;
+  --giro-cyan: #03F1F4;
+  --giro-blue: #3A86FF;
+  --giro-pink: #FF006E;
+  --giro-orange: #FB5607;
+  --giro-black: #000000;
+  --giro-white: #FFFFFF;
+  --g73-news: var(--giro-pink);
+  --g73-money: var(--giro-blue);
+  --g73-tech: var(--giro-purple);
+  --g73-sports: var(--giro-amber);
+  --g73-entertainment: var(--giro-orange);
   --g73-section: var(--g73-news);
-  --g73-ink: #202124;
-  --g73-muted: #54585e;
+  --g73-ink: var(--giro-black);
+  --g73-muted: var(--giro-purple);
   --g73-line: #dfe3e8;
   color: var(--g73-ink);
-  background: #fff;
+  background: #F4F5F8;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   font-size: 1rem;
   line-height: 1.6;
@@ -53,10 +62,14 @@
 .g73-portal .g73-editoria-famosos-entretenimento,
 .g73-portal .category-famosos-entretenimento { --g73-section: var(--g73-entertainment); }
 
-.g73-portal a { color: #005a9c; text-underline-offset: .18em; }
+.g73-portal a { color: var(--giro-purple); text-underline-offset: .18em; }
 .g73-portal :is(h1, h2, h3, h4, h5, h6) { font-family: inherit; }
+.g73-portal :is(h1, h2, h3, h4, h5, h6) a,
+.g73-portal :is(.g73-nav a, .wp-block-button__link, button, [role="button"]) {
+  text-decoration: none;
+}
 .g73-portal a:hover { text-decoration-thickness: .12em; }
-.g73-portal :focus-visible { outline: 3px solid #005a9c; outline-offset: 4px; }
+.g73-portal :focus-visible { outline: 3px solid var(--giro-purple); outline-offset: 4px; }
 .g73-portal img { display: block; max-inline-size: 100%; block-size: auto; }
 .g73-portal figure { margin: 0; }
 
@@ -65,8 +78,12 @@
   margin-inline: auto;
 }
 
-.g73-portal .g73-header { border-block-end: 3px solid var(--g73-news); }
-.g73-portal .g73-brand { color: var(--g73-news); font-size: 2rem; font-weight: 800; text-decoration: none; }
+.g73-portal .g73-header {
+  background: var(--giro-yellow);
+  border-block-end: 3px solid var(--giro-purple);
+}
+.g73-portal .g73-brand { display: inline-flex; flex-shrink: 0; color: var(--giro-purple); font-size: 2rem; font-weight: 800; text-decoration: none; }
+.g73-portal .g73-brand img { inline-size: 11.1rem; block-size: auto; }
 .g73-portal .g73-skip { position: absolute; inset-inline-start: 1rem; inset-block-start: -10rem; padding: .75rem; background: #fff; z-index: 100; }
 .g73-portal .g73-skip:focus { inset-block-start: 1rem; }
 .g73-portal .g73-header-inner {
@@ -76,7 +93,7 @@
   gap: .75rem 1.5rem;
   padding-block: .75rem;
 }
-.g73-portal .g73-logo img { inline-size: 7.5rem; block-size: 2.5rem; object-fit: contain; }
+.g73-portal .g73-logo img { inline-size: 11.1rem; block-size: auto; object-fit: contain; }
 .g73-portal .g73-nav {
   display: flex;
   flex-wrap: wrap;
@@ -85,7 +102,8 @@
   padding: 0;
   list-style: none;
 }
-.g73-portal .g73-nav a { display: inline-flex; align-items: center; min-block-size: 2.75rem; color: var(--g73-ink); }
+.g73-portal .g73-nav a { display: inline-flex; align-items: center; min-block-size: 2.75rem; color: var(--giro-purple); font-weight: 800; text-decoration: none; }
+.g73-portal .g73-header .g73-nav a:hover { color: var(--giro-pink); }
 .g73-portal .g73-section { padding-block: 1.5rem; }
 .g73-portal .g73-home-editorias { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
 .g73-portal .g73-home-editorias > * { margin-block: 0; min-inline-size: 0; }
@@ -97,6 +115,20 @@
   border-inline-start: .3rem solid var(--g73-section);
   font-size: clamp(1.35rem, 3vw, 1.75rem);
   line-height: 1.25;
+  font-weight: 800;
+}
+.g73-portal .g73-section-title a { color: var(--giro-black); text-decoration: none; }
+.g73-portal .g73-section-title a:hover { color: var(--giro-purple); }
+.g73-portal .g73-editoria-tecnologia-inovacao .g73-section-title {
+  color: var(--giro-purple);
+  border-inline-start-color: var(--giro-cyan);
+}
+.g73-portal .g73-editoria-tecnologia-inovacao .g73-section-title a { color: var(--giro-purple); }
+.g73-portal .g73-editoria-esportes .g73-section-title a {
+  color: var(--giro-black);
+  background: var(--giro-amber);
+  padding-inline: .25rem;
+  box-decoration-break: clone;
 }
 .g73-portal .g73-grid {
   display: grid;
@@ -108,9 +140,18 @@
 }
 .g73-portal .g73-grid > * { min-inline-size: 0; }
 .g73-portal .g73-card {
-  border-block-start: 3px solid var(--g73-section);
-  border-block-end: 1px solid var(--g73-line);
+  background: var(--giro-white);
+  border-block-start: 4px solid var(--g73-section);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(44, 16, 103, 0.08);
   padding-block-end: 1rem;
+}
+.g73-portal .g73-card > :not(.g73-card-media) { margin-inline: 1rem; }
+.g73-portal .g73-card .g73-card-media { border-radius: 6px 6px 0 0; overflow: hidden; }
+.g73-portal .g73-editoria-tecnologia-inovacao .g73-card,
+.g73-portal .category-tecnologia-inovacao .g73-card {
+  border-block-start-color: var(--giro-purple);
+  border-block-end: 2px solid var(--giro-cyan);
 }
 .g73-portal .g73-card > * { margin-block: .75rem 0; }
 .g73-portal .g73-card > :first-child { margin-block-start: 0; }
@@ -129,9 +170,10 @@
   font-size: .875rem;
   font-weight: 700;
 }
-.g73-portal .g73-card-title { margin: 0 0 .5rem; font-size: 1.25rem; line-height: 1.3; }
+.g73-portal .g73-card-title { margin: 0 0 .5rem; color: var(--giro-black); font-size: 1.25rem; line-height: 1.3; font-weight: 800; }
 .g73-portal .g73-card-title a { color: var(--g73-ink); text-decoration: none; }
-.g73-portal .g73-card-title a:hover { text-decoration: underline; }
+.g73-portal .g73-card-title a:hover { color: var(--giro-purple); text-decoration: none; }
+.g73-portal .g73-card .wp-block-post-excerpt__more-link { color: var(--giro-purple); font-weight: 800; text-decoration: none; }
 .g73-portal .g73-meta,
 .g73-portal figcaption { color: var(--g73-muted); font-size: .875rem; }
 .g73-portal figcaption { padding-block-start: .375rem; }
@@ -181,8 +223,17 @@
 .g73-portal .g73-ad-label { margin: 0; color: var(--g73-muted); font-size: .75rem; line-height: 1.25rem; }
 .g73-portal .g73-ad-slot { inline-size: 100%; block-size: var(--g73-ad-height); }
 .g73-portal .g73-ad--top { --g73-ad-height: 100px; }
-.g73-portal .g73-footer { margin-block-start: 2rem; padding-block: 1.5rem; border-block-start: 1px solid var(--g73-line); }
-.g73-portal .g73-footer a { display: inline-block; padding-block: .5rem; }
+.g73-portal .g73-footer {
+  margin-block-start: 2rem;
+  padding-block: 1.5rem;
+  border-block-start: 3px solid var(--giro-cyan);
+  background: var(--giro-purple);
+  color: var(--giro-white);
+}
+.g73-portal .g73-footer a { display: inline-block; padding-block: .5rem; color: var(--giro-cyan); text-decoration: none; }
+.g73-portal .g73-footer a:hover { color: var(--giro-white); }
+.g73-portal .g73-footer :focus-visible { outline-color: var(--giro-cyan); }
+.g73-portal .g73-footer .g73-brand { display: inline-flex; color: var(--giro-white); }
 
 @media (min-width: 40rem) {
   .g73-portal .g73-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

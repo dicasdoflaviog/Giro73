@@ -6,20 +6,22 @@ Inspirar-se na hierarquia jornalística do G1 e na distribuição automática de
 
 | Editoria | Cor de destaque |
 |---|---|
-| Notícias & Região | `#C4170C` |
-| Dinheiro & Renda Extra | `#005A9C` |
-| Tecnologia & Inovação | `#0077CC` |
-| Esportes | `#06AA48` |
-| Famosos & Entretenimento | `#FF6700` |
+| Notícias & Região | `#FF006E` |
+| Dinheiro & Renda Extra | `#3A86FF` |
+| Tecnologia & Inovação | `#2C1067`, detalhe `#03F1F4` |
+| Esportes | `#FFBE0B`, texto `#000000` |
+| Famosos & Entretenimento | `#FB5607` |
 
-Aplicar cor em bordas, marcadores e rótulos. Em fundos branco/verde/laranja, testar contraste WCAG AA; usar texto escuro quando necessário. Não depender apenas da cor para identificar a categoria.
+Paleta oficial Giro73, atualizada em 22/10/2026. Aplicar cores de editoria em bordas, marcadores e rótulos; títulos dos cards em preto. Não depender apenas da cor para identificar a categoria. Tecnologia usa roxo para leitura e ciano como acento; esportes usa preto sobre ouro.
 
 ## Cabeçalho e capa automática
 
-- Cabeçalho de altura estável: logotipo com dimensões fixas, navegação sem mega menu e busca nativa WordPress. Menu mobile acessível, com botão rotulado e estado expandido.
+- Cabeçalho `#FFEA02`, borda inferior roxa de 3 px, logo horizontal colorida oficial com dimensões declaradas. Navegação roxa, peso 800, sem sublinhado, hover magenta; links visíveis com quebra de linha no mobile, sem JavaScript de menu.
+- Rodapé `#2C1067`, logo branca oficial, texto branco e links institucionais ciano/branco sem sublinhado. Favicon e logo do Schema usam a marca redonda oficial.
 - Corpo com largura máxima próxima de 1.200 px. Cards em CSS Grid: uma coluna em telas estreitas, duas em tablets e três em desktop, sem biblioteca de layout.
 - Uma consulta principal para destaques e uma por seção de categoria, limitadas e cacheadas. Excluir dos blocos seguintes os IDs já destacados; ordenar por publicação, com destaque editorial opcional e prazo definido.
-- Cada card: imagem 16:9 com dimensões declaradas, nome da editoria, título e data. Limitar texto visualmente sem esconder informação essencial dos leitores de tela.
+- Cada card: fundo branco sobre página `#F4F5F8`, raio de 10 px, sombra `0 4px 12px rgba(44,16,103,.08)` e barra superior da editoria. Imagem 16:9 com dimensões declaradas, nome da editoria, título preto peso 800 sem sublinhado e data. Limitar texto visualmente sem esconder informação essencial dos leitores de tela.
+- Capas editoriais próprias em 1200 × 675 WebP abaixo de 50.000 bytes, com o selo verificado original fornecido pela redação. Não redesenhar as marcas nem substituir PNG ausente por uma aproximação.
 - Usar paginação com links HTML; não exigir scroll infinito. Invalidar cache da capa e da categoria no evento de publicação. Nenhuma edição manual de capa é necessária.
 
 ## Artigo e anúncios
