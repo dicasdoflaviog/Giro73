@@ -1,5 +1,7 @@
 # Refinamento editorial e fotografias reais
 
+> Registro histórico. Topo, rodapé, widgets e template de artigo foram atualizados pelo relatório 14; fotografias e atribuições deste documento permanecem válidas.
+
 Aplicado no Giro73 em **22/10/2026**, substituindo a apresentação do relatório 12. Os seis ajustes foram concluídos no WordPress; as fotografias foram baixadas com a rede Wikimedia já liberada.
 
 ## Interface publicada
