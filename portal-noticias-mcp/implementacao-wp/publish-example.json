@@ -1,0 +1,11 @@
+{
+  "title": "Título revisado da matéria",
+  "content": "<p>Abertura factual com informação verificada.</p><h2>Contexto</h2><p>Desenvolvimento com fontes e detalhes relevantes.</p>",
+  "excerpt": "Resumo editorial da matéria, sem promessas não verificadas.",
+  "category": "noticias-regiao",
+  "columnist_slug": "",
+  "image_url": "https://giro73.com.br/wp-content/uploads/AAAA/MM/imagem-autorizada.webp",
+  "image_credit": "Nome do fotógrafo / organização e licença aplicável",
+  "tags": ["Extremo Sul da Bahia"],
+  "status": "draft"
+}
