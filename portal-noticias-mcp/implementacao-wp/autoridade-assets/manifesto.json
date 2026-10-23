@@ -1,0 +1,51 @@
+[
+  {
+    "slug": "arthur-valente",
+    "file": "avatar-arthur-valente.webp",
+    "width": 64,
+    "height": 64,
+    "bytes": 1358
+  },
+  {
+    "slug": "helena-gusmao",
+    "file": "avatar-helena-gusmao.webp",
+    "width": 64,
+    "height": 64,
+    "bytes": 1424
+  },
+  {
+    "slug": "lucas-vianna",
+    "file": "avatar-lucas-vianna.webp",
+    "width": 64,
+    "height": 64,
+    "bytes": 1394
+  },
+  {
+    "slug": "beto-santana",
+    "file": "avatar-beto-santana.webp",
+    "width": 64,
+    "height": 64,
+    "bytes": 1366
+  },
+  {
+    "slug": "malu-santoro",
+    "file": "avatar-malu-santoro.webp",
+    "width": 64,
+    "height": 64,
+    "bytes": 1414
+  },
+  {
+    "slug": "clara-mendes",
+    "file": "avatar-clara-mendes.webp",
+    "width": 64,
+    "height": 64,
+    "bytes": 1384
+  },
+  {
+    "file": "agenda73-ilustracao.webp",
+    "width": 600,
+    "height": 375,
+    "bytes": 56660,
+    "credit": "Ilustração gerada por IA — demonstração, não retrata um evento confirmado."
+  }
+]

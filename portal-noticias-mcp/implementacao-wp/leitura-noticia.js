@@ -1,0 +1,16 @@
+/* Giro73: leitura local sob comando do leitor; nenhum áudio ou serviço externo. */
+(()=>{'use strict';const panel=document.querySelector('.g73-audio-player');if(!panel)return;
+const play=panel.querySelector('[data-g73-voice-play]'),stop=panel.querySelector('[data-g73-voice-stop]'),status=panel.querySelector('[data-g73-voice-status]');
+if(!('speechSynthesis'in window)||!('SpeechSynthesisUtterance'in window)){play.disabled=true;status.textContent='Leitura por voz indisponível neste navegador.';return;}
+const engine=window.speechSynthesis;let state='idle',queue=[],index=0,generation=0,current=null;
+const ignored='.g73-partner-unit,.g73-read-also,.g73-related,.g73-whatsapp-card,.g73-reactions,.g73-poll,.g73-author,aside,figure,nav,[data-nosnippet]';
+function parts(){const main=document.querySelector('.g73-single');if(!main)return[];const elements=[main.querySelector('h1'),main.querySelector('.g73-summary'),...main.querySelectorAll('.entry-content p')];return elements.filter(e=>e&&!e.closest(ignored)).flatMap(e=>{let text=e.textContent.replace(/\s+/g,' ').trim(),out=[];while(text.length>220){let cut=text.lastIndexOf(' ',220);if(cut<50)cut=220;out.push(text.slice(0,cut));text=text.slice(cut).trim();}if(text)out.push(text);return out;});}
+function reset(message='Leitura encerrada.'){generation++;engine.cancel();current=null;state='idle';index=0;play.textContent='🔊 Ouvir notícia';play.setAttribute('aria-label','Ouvir notícia');play.setAttribute('aria-pressed','false');stop.hidden=true;status.textContent=message;}
+function speak(token){if(token!==generation||state==='idle')return;if(index>=queue.length){reset('Leitura concluída.');return;}
+current=new SpeechSynthesisUtterance(queue[index]);current.lang='pt-BR';current.rate=1.05;const voices=engine.getVoices();const voice=voices.find(v=>/^pt[-_]BR$/i.test(v.lang))||voices.find(v=>/^pt\b/i.test(v.lang));if(voice)current.voice=voice;
+current.onstart=()=>{if(token===generation)status.textContent=`Lendo trecho ${index+1} de ${queue.length}`;};current.onend=()=>{if(token!==generation)return;index++;if(state==='playing')speak(token);};current.onerror=e=>{if(token===generation&&!['canceled','interrupted'].includes(e.error))reset('Não foi possível iniciar a voz. Tente novamente ou verifique as vozes do aparelho.');};engine.speak(current);}
+play.addEventListener('click',()=>{if(state==='playing'){state='paused';engine.pause();play.textContent='▶ Continuar';play.setAttribute('aria-label','Continuar leitura');play.setAttribute('aria-pressed','false');status.textContent='Leitura pausada.';return;}
+if(state==='paused'){state='playing';engine.resume();play.textContent='⏸ Pausar';play.setAttribute('aria-label','Pausar leitura');play.setAttribute('aria-pressed','true');status.textContent=`Lendo trecho ${index+1} de ${queue.length}`;if(!engine.speaking)speak(generation);return;}
+queue=parts();if(!queue.length){status.textContent='Texto indisponível para leitura.';return;}engine.cancel();generation++;index=0;state='playing';play.textContent='⏸ Pausar';play.setAttribute('aria-label','Pausar leitura');play.setAttribute('aria-pressed','true');stop.hidden=false;status.textContent='Preparando a voz…';speak(generation);});
+stop.addEventListener('click',()=>reset());window.addEventListener('pagehide',()=>reset());
+})();
