@@ -1,0 +1,112 @@
+[
+  {
+    "slug": "arthur-valente",
+    "theme": "dinheiro",
+    "file": "coluna-arthur-valente.webp",
+    "width": 200,
+    "height": 200,
+    "bytes": 5330,
+    "source": {
+      "url": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-21-5f8a5cfe768c.webp",
+      "media_id": 96,
+      "source_page": "https://commons.wikimedia.org/wiki/File:Statistics_on_a_laptop_(Unsplash).jpg",
+      "author": "Carlos Muza kmuza",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+    },
+    "alt": "Foto temática ilustrativa da coluna; não é retrato de integrante da equipe."
+  },
+  {
+    "slug": "lucas-vianna",
+    "theme": "tecnologia",
+    "file": "coluna-lucas-vianna.webp",
+    "width": 200,
+    "height": 200,
+    "bytes": 3238,
+    "source": {
+      "url": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-22-822089d7588b.webp",
+      "media_id": 97,
+      "source_page": "https://commons.wikimedia.org/wiki/File:Typing_on_a_laptop_(Unsplash).jpg",
+      "author": "Simon Hattinga Verschure webmarbles",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+    },
+    "alt": "Foto temática ilustrativa da coluna; não é retrato de integrante da equipe."
+  },
+  {
+    "slug": "beto-santana",
+    "theme": "esportes",
+    "file": "coluna-beto-santana.webp",
+    "width": 200,
+    "height": 200,
+    "bytes": 8958,
+    "source": {
+      "url": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-23-5a4c87cbd163.webp",
+      "media_id": 99,
+      "source_page": "https://commons.wikimedia.org/wiki/File:Maracan%C3%A3_stadium.jpg",
+      "author": "Leandro Neumann Ciuffo",
+      "license": "CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0"
+    },
+    "alt": "Foto temática ilustrativa da coluna; não é retrato de integrante da equipe."
+  },
+  {
+    "slug": "malu-santoro",
+    "theme": "famosos",
+    "file": "coluna-malu-santoro.webp",
+    "width": 200,
+    "height": 200,
+    "bytes": 5180,
+    "source": {
+      "url": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-24-4b97b8387fdd.webp",
+      "media_id": 98,
+      "source_page": "https://commons.wikimedia.org/wiki/File:TV_remote_control_in_hand.jpg",
+      "author": "Santeri Viinamäki",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    "alt": "Foto temática ilustrativa da coluna; não é retrato de integrante da equipe."
+  },
+  {
+    "slug": "helena-gusmao",
+    "theme": "politica",
+    "file": "coluna-helena-gusmao.webp",
+    "width": 200,
+    "height": 200,
+    "bytes": 3524,
+    "source": {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/9f/Congresso_Nacional_Brasil.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Congresso_Nacional_Brasil.jpg",
+      "author": "Leandro Ciuffo",
+      "license": "CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0",
+      "date_original": "2011-07-09 11:07:10",
+      "file": "politica.webp",
+      "width": 1200,
+      "height": 675,
+      "bytes": 42610
+    },
+    "alt": "Foto temática ilustrativa da coluna; não é retrato de integrante da equipe."
+  },
+  {
+    "slug": "clara-mendes",
+    "theme": "saude",
+    "file": "coluna-clara-mendes.webp",
+    "width": 200,
+    "height": 200,
+    "bytes": 3168,
+    "source": {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/8/8a/Cup_of_black_tea.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Cup_of_black_tea.JPG",
+      "author": "AntanO",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "date_original": "2015-05-17 19:55:08",
+      "file": "saude.webp",
+      "width": 1200,
+      "height": 675,
+      "bytes": 21666
+    },
+    "alt": "Foto temática ilustrativa da coluna; não é retrato de integrante da equipe."
+  }
+]

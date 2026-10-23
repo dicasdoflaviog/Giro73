@@ -44,7 +44,7 @@ with sync_playwright() as p:
     avatar=cards.first.locator('img').bounding_box();assert avatar['width']==64 and avatar['height']==64,avatar
     gap=cards.first.evaluate('e=>e.querySelector(".g73-opinion-copy").getBoundingClientRect().top-e.querySelector(".g73-opinion-portrait").getBoundingClientRect().bottom');assert abs(gap-14)<.1,gap
     assert page.locator('.g73-opinions').bounding_box()['width']>300
-    expect(cards.nth(5).locator('h3')).to_have_text('Dra. Clara Mendes');expect(cards.nth(5).locator('.g73-opinion-pill')).to_have_text('Raiz & Vitalidade')
+    expect(cards.nth(5).locator('h3')).to_have_text('Redação Giro73');expect(cards.nth(5).locator('.g73-opinion-pill')).to_have_text('Raiz & Vitalidade')
     page.locator('.g73-event-program summary').first.click();assert page.locator('.g73-event-program').first.get_attribute('open') is not None
     result['new_home_'+str(width)]={'columnists':6,'avatars_px':[64,64],'models':4,'program_disclosure':True,'body_width':page.evaluate('document.documentElement.scrollWidth')}
     page.add_style_tag(content='.g73-portal .g73-header {position:static!important}');page.locator('.g73-opinions').screenshot(path=f'/tmp/g73-autoridade-validation/colunistas-{width}.png');page.locator('.g73-agenda-showcase').screenshot(path=f'/tmp/g73-autoridade-validation/agenda-{width}.png')

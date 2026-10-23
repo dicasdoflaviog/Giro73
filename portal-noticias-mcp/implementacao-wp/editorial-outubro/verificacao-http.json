@@ -1,0 +1,102 @@
+[
+  {
+    "id": 208,
+    "url": "https://giro73.com.br/renda-extra-calcular-ganho-real/",
+    "status": 200,
+    "title": "Renda extra: como calcular o ganho real | Giro73",
+    "description": "Aprenda a calcular o ganho real da renda extra, incluindo materiais, transporte e horas trabalhadas, antes de aceitar um serviço ou investir.",
+    "og_image": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-21-5f8a5cfe768c.webp",
+    "schema": "OpinionNewsArticle",
+    "credit": true
+  },
+  {
+    "id": 209,
+    "url": "https://giro73.com.br/orcamento-municipal-documentos-prioridades-prefeitura/",
+    "status": 200,
+    "title": "Orçamento municipal: cinco documentos para consultar | Giro73",
+    "description": "Entenda PPA, LDO, LOA, contratos e pagamentos para acompanhar o orçamento municipal e cobrar informações das prefeituras e câmaras.",
+    "og_image": "https://giro73.com.br/wp-content/uploads/2026/10/politica.webp",
+    "schema": "OpinionNewsArticle",
+    "credit": true
+  },
+  {
+    "id": 210,
+    "url": "https://giro73.com.br/conta-invadida-primeiros-passos-seguranca/",
+    "status": 200,
+    "title": "Conta invadida? Primeiros passos de segurança | Giro73",
+    "description": "Saiba como organizar a reação a uma conta invadida, proteger e-mail e celular e registrar informações sem entregar novos dados a golpistas.",
+    "og_image": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-22-822089d7588b.webp",
+    "schema": "OpinionNewsArticle",
+    "credit": true
+  },
+  {
+    "id": 211,
+    "url": "https://giro73.com.br/ba-vi-torcedor-tabela-ingressos-seguranca/",
+    "status": 200,
+    "title": "Ba-Vi: tabela, ingressos e cuidados do torcedor | Giro73",
+    "description": "Confira o que observar antes de um Ba-Vi: tabela oficial, mando de campo, regras de acesso e canais de venda de ingressos indicados pelos clubes.",
+    "og_image": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-23-5a4c87cbd163.webp",
+    "schema": "OpinionNewsArticle",
+    "credit": true
+  },
+  {
+    "id": 212,
+    "url": "https://giro73.com.br/streaming-comparar-planos-assinatura-vitalicia/",
+    "status": 200,
+    "title": "Streaming: como comparar planos e evitar golpes | Giro73",
+    "description": "Compare planos de streaming por preço total, catálogo e regras de acesso. Veja cuidados com cobranças recorrentes e ofertas de assinatura vitalícia.",
+    "og_image": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-24-4b97b8387fdd.webp",
+    "schema": "OpinionNewsArticle",
+    "credit": true
+  },
+  {
+    "id": 213,
+    "url": "https://giro73.com.br/chas-remedios-cuidados-produtos-naturais/",
+    "status": 200,
+    "title": "Chás e remédios: cuidados com produtos naturais | Giro73",
+    "description": "Entenda os cuidados ao combinar chás e remédios. Identificação da planta, procedência e orientação profissional ajudam a evitar riscos desnecessários.",
+    "og_image": "https://giro73.com.br/wp-content/uploads/2026/10/saude.webp",
+    "schema": "OpinionNewsArticle",
+    "credit": true
+  },
+  {
+    "id": 214,
+    "url": "https://giro73.com.br/transferencias-emendas-municipios-extremo-sul-bahia/",
+    "status": 200,
+    "title": "Transferências para municípios: como consultar | Giro73",
+    "description": "Veja como consultar transferências para municípios, localizar emendas e diferenciar repasse, contrato e pagamento no Extremo Sul da Bahia.",
+    "og_image": "https://giro73.com.br/wp-content/uploads/2026/10/politica.webp",
+    "schema": "NewsArticle",
+    "credit": true
+  },
+  {
+    "id": 215,
+    "url": "https://giro73.com.br/br-101-extremo-sul-bahia-checar-viagem/",
+    "status": 200,
+    "title": "BR-101 no Extremo Sul: cuidados antes de viajar | Giro73",
+    "description": "Vai usar a BR-101 no Extremo Sul da Bahia? Confira como organizar a consulta de rota, alertas e acesso ao destino antes de viajar.",
+    "og_image": "https://giro73.com.br/wp-content/uploads/2026/10/rodovia.webp",
+    "schema": "NewsArticle",
+    "credit": true
+  },
+  {
+    "id": 216,
+    "url": "https://giro73.com.br/registrato-consultar-emprestimos-cpf/",
+    "status": 200,
+    "title": "Registrato: como consultar empréstimos no CPF | Giro73",
+    "description": "Entenda como usar o Registrato para consultar informações financeiras e organizar a contestação de um empréstimo que você não reconhece.",
+    "og_image": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-21-5f8a5cfe768c.webp",
+    "schema": "NewsArticle",
+    "credit": true
+  },
+  {
+    "id": 217,
+    "url": "https://giro73.com.br/jogos-bahia-vitoria-conferir-tabela-oficial/",
+    "status": 200,
+    "title": "Jogos de Bahia e Vitória: onde conferir a tabela | Giro73",
+    "description": "Vai acompanhar os jogos de Bahia e Vitória? Saiba onde conferir tabela, mando, horário e venda oficial antes de comprar ingresso ou passagem.",
+    "og_image": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-23-5a4c87cbd163.webp",
+    "schema": "NewsArticle",
+    "credit": true
+  }
+]

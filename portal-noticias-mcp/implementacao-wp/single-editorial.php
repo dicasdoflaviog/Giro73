@@ -84,6 +84,16 @@ add_filter('render_block_core/post-content', function ($content, $parsed, $insta
     }
     return $content;
 }, 25, 3);
+// Crédito da foto no servidor; matérias anteriores já possuem o crédito no início do conteúdo.
+add_filter('render_block_core/post-featured-image', function ($html, $block, $instance) {
+    if (is_admin() || !is_singular('post') || !isset($instance->context['postId'])
+        || (int)$instance->context['postId'] !== (int)get_queried_object_id()) { return $html; }
+    $id = (int)$instance->context['postId'];
+    if (false !== strpos(get_post_field('post_content', $id), 'g73-photo-credit')) { return $html; }
+    $caption = wp_get_attachment_caption(get_post_thumbnail_id($id));
+    if (!$caption || false !== strpos($html, '<figcaption')) { return $html; }
+    return preg_replace('~</figure>\s*$~', '<figcaption class="g73-photo-credit">' . wp_kses_post($caption) . '</figcaption></figure>', $html, 1);
+}, 25, 3);
 add_shortcode('giro73_compartilhar_whatsapp', function () {
     $id = get_queried_object_id();
     if (!$id || 'post' !== get_post_type($id)) { return ''; }

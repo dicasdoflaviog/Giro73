@@ -1,0 +1,74 @@
+{
+  "/sitemap_index.xml": {
+    "status": 200,
+    "urls": [
+      "https://giro73.com.br/post-sitemap.xml",
+      "https://giro73.com.br/page-sitemap.xml",
+      "https://giro73.com.br/category-sitemap.xml"
+    ]
+  },
+  "/post-sitemap.xml": {
+    "status": 200,
+    "urls": [
+      "https://giro73.com.br/",
+      "https://giro73.com.br/jogos-bahia-vitoria-conferir-tabela-oficial/",
+      "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-23-5a4c87cbd163.webp",
+      "https://giro73.com.br/registrato-consultar-emprestimos-cpf/",
+      "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-21-5f8a5cfe768c.webp",
+      "https://giro73.com.br/br-101-extremo-sul-bahia-checar-viagem/",
+      "https://giro73.com.br/wp-content/uploads/2026/10/rodovia.webp",
+      "https://giro73.com.br/transferencias-emendas-municipios-extremo-sul-bahia/",
+      "https://giro73.com.br/wp-content/uploads/2026/10/politica.webp",
+      "https://giro73.com.br/chas-remedios-cuidados-produtos-naturais/",
+      "https://giro73.com.br/wp-content/uploads/2026/10/saude.webp",
+      "https://giro73.com.br/streaming-comparar-planos-assinatura-vitalicia/",
+      "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-24-4b97b8387fdd.webp",
+      "https://giro73.com.br/ba-vi-torcedor-tabela-ingressos-seguranca/",
+      "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-23-5a4c87cbd163.webp",
+      "https://giro73.com.br/conta-invadida-primeiros-passos-seguranca/",
+      "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-22-822089d7588b.webp",
+      "https://giro73.com.br/orcamento-municipal-documentos-prioridades-prefeitura/",
+      "https://giro73.com.br/wp-content/uploads/2026/10/politica.webp",
+      "https://giro73.com.br/renda-extra-calcular-ganho-real/",
+      "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-21-5f8a5cfe768c.webp",
+      "https://giro73.com.br/extremo-sul-bahia-economia-infraestrutura-desenvolvimento/",
+      "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-20-914aaac0a592.webp",
+      "https://giro73.com.br/planejamento-financeiro-renda-extra-credito-seguro/",
+      "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-21-5f8a5cfe768c.webp",
+      "https://giro73.com.br/inteligencia-artificial-trabalho-pequenos-negocios/",
+      "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-22-822089d7588b.webp",
+      "https://giro73.com.br/futebol-brasileiro-baiano-calendario-guia-torcedor/",
+      "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-23-5a4c87cbd163.webp",
+      "https://giro73.com.br/tv-streaming-brasil-tendencias-entretenimento/",
+      "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-24-4b97b8387fdd.webp"
+    ]
+  },
+  "/page-sitemap.xml": {
+    "status": 200,
+    "urls": [
+      "https://giro73.com.br/",
+      "https://giro73.com.br/politica-editorial/",
+      "https://giro73.com.br/contato/",
+      "https://giro73.com.br/termos-de-uso/",
+      "https://giro73.com.br/politica-de-privacidade/",
+      "https://giro73.com.br/sobre-nos/"
+    ]
+  },
+  "/category-sitemap.xml": {
+    "status": 200,
+    "urls": [
+      "https://giro73.com.br/category/noticias-regiao/",
+      "https://giro73.com.br/category/dinheiro-renda-extra/",
+      "https://giro73.com.br/category/tecnologia-inovacao/",
+      "https://giro73.com.br/category/esportes/",
+      "https://giro73.com.br/category/famosos-entretenimento/",
+      "https://giro73.com.br/category/politica/"
+    ]
+  },
+  "/orcamento-municipal-documentos-prioridades-prefeitura/": {
+    "status": 200,
+    "robots": [
+      "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+    ]
+  }
+}

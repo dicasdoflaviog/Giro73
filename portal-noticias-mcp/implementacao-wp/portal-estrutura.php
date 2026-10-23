@@ -9,9 +9,9 @@ function g73_portal_archive_heading() {
     $color = '#2C1067'; $title = 'Notícias do Giro73'; $description = '';
     if (is_category()) {
         $term = get_queried_object();
-        $colors = array('noticias-regiao' => '#FF006E', 'dinheiro-renda-extra' => '#3A86FF',
+        $colors = array('noticias-regiao' => '#FF006E', 'politica' => '#B91C1C', 'dinheiro-renda-extra' => '#3A86FF',
             'tecnologia-inovacao' => '#2C1067', 'esportes' => '#D97706', 'famosos-entretenimento' => '#FB5607');
-        $title = wp_specialchars_decode($term->name, ENT_QUOTES);
+        $title = 'politica' === $term->slug ? 'Política & Poder' : wp_specialchars_decode($term->name, ENT_QUOTES);
         $description = wp_strip_all_tags($term->description);
         $color = isset($colors[$term->slug]) ? $colors[$term->slug] : $color;
     } elseif (is_search()) {
@@ -74,6 +74,7 @@ add_filter('rank_math/json_ld', function ($data) {
     $sections = wp_get_post_categories($post_id, array('fields' => 'names'));
     $section = is_wp_error($sections) ? '' : wp_specialchars_decode(implode(', ', $sections), ENT_QUOTES);
     $found_article = false;
+    $g73_article_type = get_post_meta($post_id, 'g73_is_opinion', true) ? 'OpinionNewsArticle' : 'NewsArticle';
     foreach ($nodes as &$node) {
         if (!is_array($node)) { continue; }
         $types = isset($node['@type']) ? (array) $node['@type'] : array();
@@ -82,8 +83,8 @@ add_filter('rank_math/json_ld', function ($data) {
             $node['url'] = $author_url; $node['description'] = get_the_author_meta('description', $author_id);
             $node['sameAs'] = array(home_url());
         }
-        if (array_intersect($types, array('BlogPosting', 'Article', 'NewsArticle'))) {
-            $found_article = true; $node['@type'] = 'NewsArticle'; $node['headline'] = $title; $node['name'] = $title;
+        if (array_intersect($types, array('BlogPosting', 'Article', 'NewsArticle', 'OpinionNewsArticle'))) {
+            $found_article = true; $node['@type'] = $g73_article_type; $node['headline'] = $title; $node['name'] = $title;
             $node['description'] = $description; $node['articleSection'] = $section;
             $node['publisher'] = array('@id' => $org_id);
             $node['author'] = array('@type' => 'Person', '@id' => $author_url,
@@ -93,7 +94,7 @@ add_filter('rank_math/json_ld', function ($data) {
     }
     unset($node);
     if (!$found_article) {
-        $article = array('@type' => 'NewsArticle', '@id' => get_permalink($post_id) . '#richSnippet',
+        $article = array('@type' => $g73_article_type, '@id' => get_permalink($post_id) . '#richSnippet',
             'headline' => $title, 'description' => $description, 'articleSection' => $section, 'inLanguage' => 'pt-BR',
             'datePublished' => get_post_time(DATE_W3C, false, $post_id), 'dateModified' => get_post_modified_time(DATE_W3C, false, $post_id),
             'publisher' => array('@id' => $org_id), 'author' => array('@type' => 'Person', 'name' => get_the_author_meta('display_name', $author_id), 'url' => $author_url),

@@ -1,0 +1,314 @@
+[
+  {
+    "slug": "renda-extra-calcular-ganho-real",
+    "title": "Renda extra: quanto sobra de verdade depois dos custos?",
+    "excerpt": "Coluna Bússola do Bolso: uma conta simples ajuda a separar faturamento, despesas e tempo de trabalho antes de assumir um novo compromisso.",
+    "category": "dinheiro-renda-extra",
+    "theme": "dinheiro",
+    "columnist": "arthur-valente",
+    "keyword": "renda extra",
+    "seo_description": "Aprenda a calcular o ganho real da renda extra, incluindo materiais, transporte e horas trabalhadas, antes de aceitar um serviço ou investir.",
+    "words": 566,
+    "content_file": "artigos/renda-extra-calcular-ganho-real.html",
+    "sources": [
+      {
+        "name": "Banco Central — cidadania financeira",
+        "url": "https://www.bcb.gov.br/cidadaniafinanceira"
+      },
+      {
+        "name": "Portal do Empreendedor — serviços oficiais",
+        "url": "https://www.gov.br/empresas-e-negocios/pt-br/empreendedor"
+      }
+    ],
+    "post_id": 208,
+    "seo_title": "Renda extra: como calcular o ganho real | Giro73",
+    "featured_media": 96,
+    "url": "https://giro73.com.br/renda-extra-calcular-ganho-real/",
+    "http_status": 200,
+    "schema": "OpinionNewsArticle"
+  },
+  {
+    "slug": "orcamento-municipal-documentos-prioridades-prefeitura",
+    "title": "Orçamento municipal: cinco documentos para entender as prioridades da prefeitura",
+    "excerpt": "Radar Político & Gestão: propostas, contratos e pagamentos contam partes diferentes da execução de uma política pública.",
+    "category": "politica",
+    "theme": "politica",
+    "columnist": "helena-gusmao",
+    "keyword": "orçamento municipal",
+    "seo_description": "Entenda PPA, LDO, LOA, contratos e pagamentos para acompanhar o orçamento municipal e cobrar informações das prefeituras e câmaras.",
+    "words": 564,
+    "content_file": "artigos/orcamento-municipal-documentos-prioridades-prefeitura.html",
+    "sources": [
+      {
+        "name": "Constituição Federal — planejamento e orçamento",
+        "url": "https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm"
+      },
+      {
+        "name": "Lei de Responsabilidade Fiscal",
+        "url": "https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp101.htm"
+      },
+      {
+        "name": "Lei de Acesso à Informação",
+        "url": "https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm"
+      }
+    ],
+    "post_id": 209,
+    "seo_title": "Orçamento municipal: cinco documentos para consultar | Giro73",
+    "featured_media": 193,
+    "url": "https://giro73.com.br/orcamento-municipal-documentos-prioridades-prefeitura/",
+    "http_status": 200,
+    "schema": "OpinionNewsArticle"
+  },
+  {
+    "slug": "conta-invadida-primeiros-passos-seguranca",
+    "title": "Conta invadida? A ordem dos primeiros passos faz diferença",
+    "excerpt": "Futuro Prático: proteja os canais de recuperação, interrompa acessos desconhecidos e procure o banco por um contato oficial.",
+    "category": "tecnologia-inovacao",
+    "theme": "tecnologia",
+    "columnist": "lucas-vianna",
+    "keyword": "conta invadida",
+    "seo_description": "Saiba como organizar a reação a uma conta invadida, proteger e-mail e celular e registrar informações sem entregar novos dados a golpistas.",
+    "words": 523,
+    "content_file": "artigos/conta-invadida-primeiros-passos-seguranca.html",
+    "sources": [
+      {
+        "name": "CERT.br — Cartilha de Segurança para Internet",
+        "url": "https://cartilha.cert.br/"
+      },
+      {
+        "name": "Banco Central — canais de atendimento",
+        "url": "https://www.bcb.gov.br/acessoinformacao/faleconosco"
+      }
+    ],
+    "post_id": 210,
+    "seo_title": "Conta invadida? Primeiros passos de segurança | Giro73",
+    "featured_media": 97,
+    "url": "https://giro73.com.br/conta-invadida-primeiros-passos-seguranca/",
+    "http_status": 200,
+    "schema": "OpinionNewsArticle"
+  },
+  {
+    "slug": "ba-vi-torcedor-tabela-ingressos-seguranca",
+    "title": "Ba-Vi: a torcida começa antes do jogo — e exige conferir onde comprar",
+    "excerpt": "Arquibancada & Resenha: expectativa, deslocamento e ingresso precisam caber no mesmo planejamento do torcedor.",
+    "category": "esportes",
+    "theme": "esportes",
+    "columnist": "beto-santana",
+    "keyword": "Ba-Vi",
+    "seo_description": "Confira o que observar antes de um Ba-Vi: tabela oficial, mando de campo, regras de acesso e canais de venda de ingressos indicados pelos clubes.",
+    "words": 537,
+    "content_file": "artigos/ba-vi-torcedor-tabela-ingressos-seguranca.html",
+    "sources": [
+      {
+        "name": "Federação Bahiana de Futebol",
+        "url": "https://www.fbf.org.br/"
+      },
+      {
+        "name": "Confederação Brasileira de Futebol",
+        "url": "https://www.cbf.com.br/"
+      },
+      {
+        "name": "Esporte Clube Bahia",
+        "url": "https://www.esporteclubebahia.com.br/"
+      },
+      {
+        "name": "Esporte Clube Vitória",
+        "url": "https://ecvitoria.com.br/"
+      }
+    ],
+    "post_id": 211,
+    "seo_title": "Ba-Vi: tabela, ingressos e cuidados do torcedor | Giro73",
+    "featured_media": 99,
+    "url": "https://giro73.com.br/ba-vi-torcedor-tabela-ingressos-seguranca/",
+    "http_status": 200,
+    "schema": "OpinionNewsArticle"
+  },
+  {
+    "slug": "streaming-comparar-planos-assinatura-vitalicia",
+    "title": "Streaming no orçamento: o que olhar antes de contratar outro plano",
+    "excerpt": "Veneno & VIP: catálogo, anúncios, telas e regras de cancelamento merecem atenção antes de uma nova cobrança recorrente.",
+    "category": "famosos-entretenimento",
+    "theme": "famosos",
+    "columnist": "malu-santoro",
+    "keyword": "streaming",
+    "seo_description": "Compare planos de streaming por preço total, catálogo e regras de acesso. Veja cuidados com cobranças recorrentes e ofertas de assinatura vitalícia.",
+    "words": 515,
+    "content_file": "artigos/streaming-comparar-planos-assinatura-vitalicia.html",
+    "sources": [
+      {
+        "name": "Netflix — ajuda sobre planos",
+        "url": "https://help.netflix.com/pt/node/24926"
+      },
+      {
+        "name": "Consumidor.gov.br — canal oficial",
+        "url": "https://www.consumidor.gov.br/"
+      },
+      {
+        "name": "CERT.br — segurança em dispositivos",
+        "url": "https://cartilha.cert.br/"
+      }
+    ],
+    "post_id": 212,
+    "seo_title": "Streaming: como comparar planos e evitar golpes | Giro73",
+    "featured_media": 98,
+    "url": "https://giro73.com.br/streaming-comparar-planos-assinatura-vitalicia/",
+    "http_status": 200,
+    "schema": "OpinionNewsArticle"
+  },
+  {
+    "slug": "chas-remedios-cuidados-produtos-naturais",
+    "title": "Chás e remédios: por que “natural” não significa livre de risco",
+    "excerpt": "Raiz & Vitalidade: origem do produto, identificação da planta e uso de medicamentos são informações importantes para uma conversa com o profissional de saúde.",
+    "category": "noticias-regiao",
+    "theme": "saude",
+    "columnist": "clara-mendes",
+    "keyword": "chás e remédios",
+    "seo_description": "Entenda os cuidados ao combinar chás e remédios. Identificação da planta, procedência e orientação profissional ajudam a evitar riscos desnecessários.",
+    "words": 540,
+    "content_file": "artigos/chas-remedios-cuidados-produtos-naturais.html",
+    "sources": [
+      {
+        "name": "Anvisa — informações sobre fitoterápicos",
+        "url": "https://www.gov.br/anvisa/pt-br/assuntos/medicamentos/fitoterapicos"
+      },
+      {
+        "name": "Ministério da Saúde — canais e orientações oficiais",
+        "url": "https://www.gov.br/saude/pt-br"
+      }
+    ],
+    "post_id": 213,
+    "seo_title": "Chás e remédios: cuidados com produtos naturais | Giro73",
+    "featured_media": 194,
+    "url": "https://giro73.com.br/chas-remedios-cuidados-produtos-naturais/",
+    "http_status": 200,
+    "schema": "OpinionNewsArticle"
+  },
+  {
+    "slug": "transferencias-emendas-municipios-extremo-sul-bahia",
+    "title": "Recursos para os municípios: como acompanhar emendas e transferências no Extremo Sul",
+    "excerpt": "Guia de serviço de Política & Poder mostra como diferenciar previsão, repasse e execução e organizar perguntas às prefeituras e câmaras.",
+    "category": "politica",
+    "theme": "politica",
+    "columnist": "",
+    "keyword": "transferências para municípios",
+    "seo_description": "Veja como consultar transferências para municípios, localizar emendas e diferenciar repasse, contrato e pagamento no Extremo Sul da Bahia.",
+    "words": 556,
+    "content_file": "artigos/transferencias-emendas-municipios-extremo-sul-bahia.html",
+    "sources": [
+      {
+        "name": "Portal da Transparência — transferências",
+        "url": "https://portaldatransparencia.gov.br/transferencias/consulta"
+      },
+      {
+        "name": "Tesouro Nacional — Siconfi",
+        "url": "https://siconfi.tesouro.gov.br/siconfi/index.jsf"
+      },
+      {
+        "name": "Lei de Acesso à Informação",
+        "url": "https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm"
+      }
+    ],
+    "post_id": 214,
+    "seo_title": "Transferências para municípios: como consultar | Giro73",
+    "featured_media": 193,
+    "url": "https://giro73.com.br/transferencias-emendas-municipios-extremo-sul-bahia/",
+    "http_status": 200,
+    "schema": "NewsArticle"
+  },
+  {
+    "slug": "br-101-extremo-sul-bahia-checar-viagem",
+    "title": "BR-101 no Extremo Sul: o que conferir antes de sair de Teixeira ou seguir para Porto Seguro",
+    "excerpt": "Rodovia, acesso ao destino e tempo de deslocamento exigem consultas diferentes. Informações antigas não comprovam a situação atual da pista.",
+    "category": "noticias-regiao",
+    "theme": "rodovia",
+    "columnist": "",
+    "keyword": "BR-101 no Extremo Sul",
+    "seo_description": "Vai usar a BR-101 no Extremo Sul da Bahia? Confira como organizar a consulta de rota, alertas e acesso ao destino antes de viajar.",
+    "words": 539,
+    "content_file": "artigos/br-101-extremo-sul-bahia-checar-viagem.html",
+    "sources": [
+      {
+        "name": "Polícia Rodoviária Federal — canais de atendimento",
+        "url": "https://www.gov.br/prf/pt-br/canais-de-atendimento"
+      },
+      {
+        "name": "DNIT — condições das rodovias",
+        "url": "https://www.gov.br/dnit/pt-br/assuntos/atlas-e-mapas/condicoes-das-rodovias"
+      }
+    ],
+    "post_id": 215,
+    "seo_title": "BR-101 no Extremo Sul: cuidados antes de viajar | Giro73",
+    "featured_media": 195,
+    "url": "https://giro73.com.br/br-101-extremo-sul-bahia-checar-viagem/",
+    "http_status": 200,
+    "schema": "NewsArticle"
+  },
+  {
+    "slug": "registrato-consultar-emprestimos-cpf",
+    "title": "Empréstimo no seu CPF: como organizar a consulta ao Registrato e contestar o que não reconhece",
+    "excerpt": "Ferramenta do Banco Central ajuda na consulta de informações financeiras; divergências precisam ser levadas à instituição responsável.",
+    "category": "dinheiro-renda-extra",
+    "theme": "dinheiro",
+    "columnist": "",
+    "keyword": "Registrato",
+    "seo_description": "Entenda como usar o Registrato para consultar informações financeiras e organizar a contestação de um empréstimo que você não reconhece.",
+    "words": 557,
+    "content_file": "artigos/registrato-consultar-emprestimos-cpf.html",
+    "sources": [
+      {
+        "name": "Banco Central — Registrato",
+        "url": "https://www.bcb.gov.br/meubc/registrato"
+      },
+      {
+        "name": "Banco Central — atendimento ao cidadão",
+        "url": "https://www.bcb.gov.br/acessoinformacao/faleconosco"
+      },
+      {
+        "name": "Consumidor.gov.br",
+        "url": "https://www.consumidor.gov.br/"
+      }
+    ],
+    "post_id": 216,
+    "seo_title": "Registrato: como consultar empréstimos no CPF | Giro73",
+    "featured_media": 96,
+    "url": "https://giro73.com.br/registrato-consultar-emprestimos-cpf/",
+    "http_status": 200,
+    "schema": "NewsArticle"
+  },
+  {
+    "slug": "jogos-bahia-vitoria-conferir-tabela-oficial",
+    "title": "Jogos de Bahia e Vitória: onde conferir a tabela antes de planejar a ida ao estádio",
+    "excerpt": "Data, horário, competição e venda de ingressos devem ser confirmados em comunicados oficiais. Veja um roteiro de consulta para o torcedor.",
+    "category": "esportes",
+    "theme": "esportes",
+    "columnist": "",
+    "keyword": "jogos de Bahia e Vitória",
+    "seo_description": "Vai acompanhar os jogos de Bahia e Vitória? Saiba onde conferir tabela, mando, horário e venda oficial antes de comprar ingresso ou passagem.",
+    "words": 549,
+    "content_file": "artigos/jogos-bahia-vitoria-conferir-tabela-oficial.html",
+    "sources": [
+      {
+        "name": "CBF — competições",
+        "url": "https://www.cbf.com.br/"
+      },
+      {
+        "name": "Federação Bahiana de Futebol",
+        "url": "https://www.fbf.org.br/"
+      },
+      {
+        "name": "Bahia — comunicação oficial",
+        "url": "https://www.esporteclubebahia.com.br/"
+      },
+      {
+        "name": "Vitória — comunicação oficial",
+        "url": "https://ecvitoria.com.br/"
+      }
+    ],
+    "post_id": 217,
+    "seo_title": "Jogos de Bahia e Vitória: onde conferir a tabela | Giro73",
+    "featured_media": 99,
+    "url": "https://giro73.com.br/jogos-bahia-vitoria-conferir-tabela-oficial/",
+    "http_status": 200,
+    "schema": "NewsArticle"
+  }
+]
