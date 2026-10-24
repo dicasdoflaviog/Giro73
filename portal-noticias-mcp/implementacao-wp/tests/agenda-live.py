@@ -33,7 +33,7 @@ with sync_playwright() as p:
    assert section.locator('a.g73-event-cta').count()==0;assert section.locator('.g73-event-contact').count()==0;assert 'Falar com' not in section.inner_text();assert 'Contato da organização' not in section.inner_text()
    for card in section.locator('.g73-event-poster').all():
     assert 'Modelo • Não confirmado' in card.inner_text();assert card.locator('time[datetime]').count()==1;assert card.locator('.g73-event-facts svg').count()==2
-    for button in card.locator('.g73-event-cta').all():assert button.bounding_box()['height']>=44
+    for button in card.locator('.g73-event-cta').all():assert button.bounding_box()['height']>=48
    for link in filters.all():
     slug=link.get_attribute('data-g73-agenda-filter');link.click();expect(link).to_have_attribute('aria-current','true');expected=4 if not slug else section.locator(f'[data-g73-event-category="{slug}"]').count();expect(section.locator('.g73-event-poster:visible')).to_have_count(expected)
     assert section.locator('.g73-agenda-empty').is_visible()==(expected==0)
@@ -42,17 +42,21 @@ with sync_playwright() as p:
    if width<600:assert section.locator('.g73-agenda-filters').evaluate('e=>e.scrollWidth>e.clientWidth')
    if name=='home':expect(page.locator('.g73-feed-query .wp-block-post-template > li')).to_have_count(10)
    page.add_style_tag(content='.g73-portal .g73-header{position:static!important}')
-   section.screenshot(path=str(out/f'{name}-{width}.png'));result.append({'page':name,'width':width,'filters':7,'models':4,'cta_min_height':44,'overflow':False});print('OK',name,width,flush=True)
+   section.screenshot(path=str(out/f'{name}-{width}.png'));result.append({'page':name,'width':width,'filters':7,'models':4,'cta_min_height':48,'overflow':False});print('OK',name,width,flush=True)
  # Links nativos filtram todo o catálogo, inclusive sem JavaScript e em páginas paginadas.
  nojs=b.new_context(java_script_enabled=False,viewport={'width':390,'height':1000});nojs.route('**/*',route);q=nojs.new_page();q.goto('https://giro73.com.br/agenda-73/?g73_categoria=gastronomia_feiras',wait_until='domcontentloaded',timeout=90000);expect(q.locator('.g73-event-poster')).to_have_count(1);assert q.locator('[aria-current="true"]').inner_text()=='Gastronomia & Feiras';q.locator('[data-g73-agenda-filter=""]').click();expect(q.locator('.g73-event-poster')).to_have_count(4);nojs.close()
  if args.preview:
   d=json.loads(Path(args.preview).read_text());html=d.get('body',d)['html'];page.set_viewport_size({'width':390,'height':900});page.set_content('<main class="g73-portal"><section class="g73-agenda-showcase"><div class="g73-agenda-grid">'+html+'</div></section></main>');css=Path(__file__).resolve().parents[1]/'css-g1-techtudo-ultra-leve.css';page.add_style_tag(content=css.read_text());button=page.locator('a.g73-event-open');expect(button).to_have_count(1);expect(page.locator('.g73-event-contact')).to_have_count(0)
-  assert button.inner_text()=='Ver evento →';assert 'Falar com' not in page.locator('body').inner_text();assert page.locator('.g73-event-cta').count()==1
+  assert button.inner_text()=='Ver atrações →';assert 'Falar com' not in page.locator('body').inner_text();assert page.locator('.g73-event-cta').count()==1
   for link in page.locator('.g73-event-open,.g73-event-cover-link,.g73-event-title-link').all():
    assert link.get_attribute('href')=='https://events.example/agenda-73?origem=teste';assert link.get_attribute('target')=='_blank';assert {'nofollow','noopener'}<=set(link.get_attribute('rel').split())
    with page.expect_popup() as opened:link.click()
    popup=opened.value;popup.wait_for_load_state('domcontentloaded');assert popup.url.startswith('https://events.example/');popup.close()
-  assert button.bounding_box()['height']>=44
+  assert button.bounding_box()['height']>=48
+  page.mouse.move(0,0);expect(button).to_have_css('background-color','rgb(255, 190, 11)')
+  assert button.evaluate('e=>getComputedStyle(e).color')=='rgb(44, 16, 103)'
+  button.hover();expect(button).to_have_css('background-color','rgb(255, 234, 2)')
+  page.mouse.move(0,0)
   page.screenshot(path=str(out/'private-cta-390.png'));result.append({'private_preview_cta':True,'external_requests_intercepted':True})
  assert not [e for e in errors if 'javascript' in e],errors;b.close()
 (out/'result.json').write_text(json.dumps({'checks':result,'errors':errors},ensure_ascii=False,indent=2));print(json.dumps({'checks':result,'errors':errors},ensure_ascii=False))

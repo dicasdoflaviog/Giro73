@@ -508,10 +508,10 @@ html.g73-overlay-open { overflow:hidden; }
 .g73-event-facts svg { flex:0 0 16px; margin-top:2px; }
 .g73-event-facts span { overflow-wrap:anywhere; }
 .g73-event-actions { display:grid; gap:8px; margin-top:auto; }
-.g73-event-cta { box-sizing:border-box; display:flex; align-items:center; justify-content:center; gap:6px; width:100%; min-height:46px; padding:10px 8px; border:1px solid #2C1067; border-radius:6px; font:700 13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; text-align:center; text-decoration:none!important; cursor:pointer; }
-.g73-event-open { color:#FFF; background:#2C1067; }
-.g73-event-open:hover { color:#FFF; background:#421A8A; }
-.g73-event-cta:disabled { background:#F1F3F5; color:#626873; border-color:#E2E5E9; cursor:default; }
+.g73-event-cta { box-sizing:border-box; display:flex; align-items:center; justify-content:center; gap:6px; width:100%; min-height:48px; padding:10px 8px; border:1px solid #FFBE0B; border-radius:6px; font:700 13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; text-align:center; text-decoration:none!important; cursor:pointer; }
+.g73-event-open { color:#2C1067; background:#FFBE0B; }
+.g73-event-open:hover { color:#2C1067; background:#FFEA02; }
+.g73-event-cta:disabled { background:#FFF1C2; color:#2C1067; border-color:#FFBE0B; cursor:default; }
 .g73-event-info .g73-event-program { margin-top:12px; }
 .g73-event-info .g73-event-program summary { background:transparent; color:#2C1067; padding:8px 0; text-align:left; font-size:12px; min-height:44px; }
 .g73-event-help { margin:10px 0 0; font-size:11px; color:#666; line-height:1.5; }

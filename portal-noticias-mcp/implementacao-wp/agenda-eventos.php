@@ -6,7 +6,7 @@ function g73_agenda_categories() {
  return array('shows_festas'=>'Shows & Festas','gastronomia_feiras'=>'Gastronomia & Feiras','esportes'=>'Esportes','teatro_cultura'=>'Teatro & Cultura','negocios_cursos'=>'Negócios & Cursos','infantil_familia'=>'Infantil & Família');
 }
 function g73_agenda_fields() {
- return array('g73_event_category'=>'Categoria','g73_event_location'=>'Local físico','g73_event_price'=>'Preço / situação do ingresso','g73_event_ticket_url'=>'Link de ingressos (opcional)');
+ return array('g73_event_category'=>'Categoria','g73_event_location'=>'Local físico','g73_event_price'=>'Preço / situação do ingresso','g73_event_ticket_url'=>'Link de ingressos/inscrição (opcional)');
 }
 function g73_agenda_phone($value) {
  $value=trim((string)$value);if($value&&!preg_match('/^[+0-9().\s-]+$/D',$value)){return '';}$explicit=0===strpos($value,'+');
@@ -41,7 +41,7 @@ add_filter('rest_pre_insert_g73_event',function($post,$request){
 add_action('add_meta_boxes_g73_event',function(){add_meta_box('g73-event-sales','Categoria, local e link do evento','g73_agenda_metabox','g73_event','normal','high');});
 function g73_agenda_metabox($post) {
  wp_nonce_field('g73_agenda_save','g73_agenda_nonce');
- echo '<p>O botão Ver evento abre o Link oficial do evento. Se esse campo estiver vazio, utiliza o Link de ingressos. Sem URL, o botão fica desativado. Modelos não possuem links ativos.</p>';
+ echo '<p>O botão usa um CTA por categoria e abre o Link oficial do evento. Se esse campo estiver vazio, utiliza o Link de ingressos/inscrição. Cadastre esse link somente quando a oferta estiver confirmada; ofertas encerradas usam um CTA informativo. Sem URL, o botão fica desativado. Modelos não possuem links ativos.</p>';
  foreach(g73_agenda_fields() as $key=>$label){$v=get_post_meta($post->ID,$key,true);echo '<p><label>'.esc_html($label).'<br>';
   if('g73_event_category'===$key){echo '<select name="'.esc_attr($key).'"><option value="">Não informada</option>';foreach(g73_agenda_categories() as $slug=>$name){echo '<option value="'.esc_attr($slug).'"'.selected($v,$slug,false).'>'.esc_html($name).'</option>';}echo '</select>';}
   else{echo '<input class="large-text" type="'.('g73_event_ticket_url'===$key?'url':'text').'" maxlength="'.('g73_event_ticket_url'===$key?'2048':'240').'" name="'.esc_attr($key).'" value="'.esc_attr($v).'">';}
@@ -59,12 +59,21 @@ function g73_agenda_icon($type) {
  $path='location'===$type?'<path d="M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>':'<path d="M3 5h18v5a2 2 0 0 0 0 4v5H3v-5a2 2 0 0 0 0-4V5Z"/><path d="M15 5v3m0 3v2m0 3v3"/>';
  return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false">'.$path.'</svg>';
 }
+/** CTAs editoriais; link de ingressos/inscrição deve ser cadastrado apenas após confirmação. */
+function g73_agenda_cta_label($category,$offer=false) {
+ $labels=array('shows_festas'=>$offer?'Ver atrações e ingressos →':'Ver atrações →',
+  'gastronomia_feiras'=>'Explorar a programação →','esportes'=>'Ver programação esportiva →',
+  'teatro_cultura'=>'Ver programação cultural →','negocios_cursos'=>$offer?'Ver detalhes e inscrição →':'Ver programação →',
+  'infantil_familia'=>'Planejar meu passeio →');
+ return isset($labels[$category])?$labels[$category]:'Ver programação →';
+}
 function g73_agenda_card($id) {
  $demo=(bool)get_post_meta($id,'g73_event_demo',true);$date=get_post_meta($id,'g73_event_date',true);$d=DateTimeImmutable::createFromFormat('!Y-m-d',$date,wp_timezone());
  if(!$d){return '';}$title=preg_replace('/^MODELO\s*[—-]\s*/u','',get_the_title($id));$cats=g73_agenda_categories();$cat=get_post_meta($id,'g73_event_category',true);$city=get_post_meta($id,'g73_event_city',true);
  $location=get_post_meta($id,'g73_event_location',true);$price=get_post_meta($id,'g73_event_price',true);$url='';
  foreach(array('g73_event_url','g73_event_ticket_url') as $key){$candidate=get_post_meta($id,$key,true);if($candidate&&g73_agenda_url_valid($candidate)){$url=$candidate;break;}}
- $label='Ver evento →';$attrs=' href="'.esc_url($url).'" target="_blank" rel="nofollow noopener noreferrer"';
+ $offer=get_post_meta($id,'g73_event_ticket_url',true);$offer=!$demo&&$offer&&g73_agenda_url_valid($offer)&&!preg_match('/esgotad|encerrad/iu',$price);
+ $label=g73_agenda_cta_label($cat,$offer);$attrs=' href="'.esc_url($url).'" target="_blank" rel="nofollow noopener noreferrer"';
  $cover=get_the_post_thumbnail($id,'medium_large',array('loading'=>'lazy','decoding'=>'async','class'=>'g73-event-cover','alt'=>($demo?'Imagem ilustrativa de demonstração — ':'').$title));$heading=esc_html($title);
  if(!$demo&&$url){$cover='<a class="g73-event-cover-link"'.$attrs.' aria-label="'.esc_attr($label.' — '.$title).'">'.$cover.'</a>';$heading='<a class="g73-event-title-link"'.$attrs.'>'.$heading.'</a>';}
  $html='<article class="g73-event-poster" data-g73-event-category="'.esc_attr($cat).'"><div class="g73-event-visual">'.$cover.'<time class="g73-event-date" datetime="'.esc_attr($date).'" aria-label="'.esc_attr(($demo?'Data ilustrativa: ':'').$d->format('d/m/Y')).'"><strong>'.$d->format('d').'</strong><span>'.esc_html(wp_date('M',$d->getTimestamp(),wp_timezone())).'</span></time></div>';

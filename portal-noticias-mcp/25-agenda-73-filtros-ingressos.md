@@ -1,5 +1,7 @@
 # Agenda 73 — filtros, ingressos e contato
 
+Atualização vigente de textos e cores dos botões: `28-agenda-ctas-por-categoria.md`.
+
 Implementação publicada em `https://giro73.com.br/agenda-73/` (página 234), com a mesma vitrine na Home e link “Ver agenda completa”. Nenhum plugin adicional instalado.
 
 ## Gestão no WordPress e REST
@@ -18,7 +20,7 @@ No painel, **Agenda G73 → editar evento**: mantenha data, cidade, imagem desta
 | `g73_event_ticket_url` | Link de ingressos opcional, usado quando não houver link oficial do evento |
 | `g73_event_whatsapp` | Campo legado preservado na REST; não aparece no card nem no formulário de edição |
 
-`g73_event_date`, `g73_event_demo` e `featured_media` continuam disponíveis. O campo `g73_event_url` é o link principal. O card oferece uma única ação, **Ver evento →**, e foto/título levam ao mesmo destino.
+`g73_event_date`, `g73_event_demo` e `featured_media` continuam disponíveis. O campo `g73_event_url` é o link principal. O card oferece uma única ação com texto adequado à categoria (tabela em `28-agenda-ctas-por-categoria.md`), e foto/título levam ao mesmo destino.
 
 Os quatro modelos selecionados (147, 148, 149 e 180) continuam em rascunho, identificados como demonstração. Receberam categorias, sem inventar locais, preços, ingressos ou números. Os modelos só preenchem a vitrine enquanto não houver eventos futuros confirmados. Para divulgar um evento real, confirmar informações, retirar a marca de modelo e publicar; a validação exige data e cidade.
 
@@ -27,8 +29,8 @@ Os quatro modelos selecionados (147, 148, 149 e 180) continuam em rascunho, iden
 - Sete pílulas com “Todos” ativo inicialmente; rolagem horizontal no celular, foco visível e respeito a movimento reduzido.
 - Filtro local sem requisição quando a coleção inteira está carregada. Com mais eventos, os links filtram a consulta completa no servidor; diretório com paginação de 24 itens, Home com até quatro.
 - Funciona sem JavaScript. Filtros usam `?g73_categoria=...`; paginação usa `g73_agenda_page`.
-- Cards com foto, data, categoria/cidade, local e preço; SVGs inline e botões de pelo menos 46 px.
-- Foto, título e botão **Ver evento →** abrem a URL do evento em nova aba com `nofollow noopener noreferrer`. Não há botão de contato com a produtora.
+- Cards com foto, data, categoria/cidade, local e preço; SVGs inline e botões de pelo menos 48 px.
+- Foto, título e botão de ação abrem a URL do evento em nova aba com `nofollow noopener noreferrer`. Não há botão de contato com a produtora.
 - Sem URL ou em modelos, o botão fica desativado. O status Esgotado/Encerrado não impede consultar o site do evento.
 - JS inline condicional de 1.018 bytes; nenhuma biblioteca, fonte ou serviço externo novo. Imagens existentes carregadas sob demanda com proporção reservada.
 

@@ -1,5 +1,7 @@
 # Agenda 73 — link único por evento
 
+Atualização vigente de textos e cores dos botões: `28-agenda-ctas-por-categoria.md`.
+
 Removido o botão **Falar com Produtora**, suas mensagens de contato ausente e o campo de telefone do formulário administrativo.
 
 Cada card oferece **Ver evento →**. Foto, título e botão abrem o mesmo destino em nova aba, com `nofollow noopener noreferrer`:
