@@ -64,15 +64,23 @@ function g73_pub_validate($request) {
  $title=sanitize_text_field($p['title']);$content=g73_pub_html($p['content']);
  if(!trim($title)||strlen($title)>600||strlen($p['content'])>450000||!trim(wp_strip_all_tags($content))){return g73_pub_error('content_invalid','Título ou conteúdo vazio ou acima do limite.');}
  foreach(array('excerpt','columnist_slug','image_url','image_credit','image_credit_url','focus_keyword','status') as $key){if(isset($p[$key])&&(!is_string($p[$key])||strlen($p[$key])>('excerpt'===$key?2000:2048))){return g73_pub_error('invalid_field','Campo textual inválido: '.$key);}}
+ $seo_meta=array();
+ if(isset($p['meta'])){
+  if(!is_array($p['meta'])){return g73_pub_error('meta_invalid','O campo meta deve ser um objeto JSON.');}
+  foreach(array('rank_math_focus_keyword','rank_math_title','rank_math_description') as $field){
+   if(!array_key_exists($field,$p['meta'])){continue;}
+   if(!is_string($p['meta'][$field])||strlen($p['meta'][$field])>4000){return g73_pub_error('meta_invalid','Metadado SEO deve ser texto de até 4000 bytes: '.$field);}
+   $seo_meta[$field]=sanitize_text_field($p['meta'][$field]);
+  }
+ }
  $category=isset($p['category'])?$p['category']:null;$term=null;
  if(is_int($category)||is_string($category)&&ctype_digit($category)){$term=get_term((int)$category,'category');}
  elseif(is_string($category)&&strlen($category)<=200){$term=get_term_by('slug',sanitize_title($category),'category');if(!$term){$term=get_term_by('name',$category,'category');}}
  if(!$term||is_wp_error($term)){return g73_pub_error('category_invalid','Informe uma categoria existente por ID, slug ou nome.');}
  $slug=isset($p['columnist_slug'])?$p['columnist_slug']:'';$profiles=function_exists('g73_reg_profiles')?g73_reg_profiles():array();
  if($slug&&!isset($profiles[$slug])){return g73_pub_error('columnist_invalid','Coluna editorial não cadastrada.');}
- $status=isset($p['status'])?$p['status']:g73_pub_option('default_status','draft');
+ $status=isset($p['status'])?$p['status']:'publish';
  if(!in_array($status,array('draft','publish'),true)){return g73_pub_error('status_invalid','Use draft ou publish.');}
- if('publish'===$status&&'publish'!==g73_pub_option('default_status','draft')){return g73_pub_error('live_disabled','Publicação direta desativada. Use draft ou altere a configuração administrativa.',403);}
  $author=(int)g73_pub_option('author_id',1);if(!get_user_by('id',$author)||!user_can($author,'edit_posts')){return g73_pub_error('author_invalid','Configure um responsável editorial válido no painel.',503);}
  $tags=isset($p['tags'])?$p['tags']:array();if(!is_array($tags)||count($tags)>20){return g73_pub_error('tags_invalid','Envie uma lista de até 20 nomes de tags.');}
  $clean_tags=array();foreach($tags as $tag){if(!is_string($tag)||!trim($tag)||strlen($tag)>150){return g73_pub_error('tags_invalid','Cada tag deve ser um nome não vazio, com até 150 bytes.');}$clean_tags[]=sanitize_text_field($tag);}$clean_tags=array_values(array_unique($clean_tags));sort($clean_tags);
@@ -81,7 +89,7 @@ function g73_pub_validate($request) {
  $credit=isset($p['image_credit'])?sanitize_text_field($p['image_credit']):'';$credit_url=isset($p['image_credit_url'])?$p['image_credit_url']:'';
  if($credit_url&&(!g73_pub_url($credit_url,false)||!$credit)){return g73_pub_error('credit_invalid','Crédito com URL exige nome e endereço HTTPS válido.');}
  $key=(string)$request->get_header('idempotency-key');if($key&&!preg_match('/^[A-Za-z0-9._:-]{1,160}$/D',$key)){return g73_pub_error('idempotency_invalid','Idempotency-Key deve conter até 160 letras, números, ponto, hífen, dois-pontos ou sublinhado.');}
- return array('title'=>$title,'content'=>$content,'excerpt'=>$excerpt,'category'=>(int)$term->term_id,'columnist_slug'=>$slug,'image_url'=>$image,'tags'=>$clean_tags,'status'=>$status,'author'=>$author,'image_credit'=>$credit,'image_credit_url'=>$credit_url,'focus_keyword'=>isset($p['focus_keyword'])?wp_html_excerpt(sanitize_text_field($p['focus_keyword']),100,''):'','key'=>$key);
+ return array('title'=>$title,'content'=>$content,'excerpt'=>$excerpt,'category'=>(int)$term->term_id,'columnist_slug'=>$slug,'image_url'=>$image,'tags'=>$clean_tags,'meta'=>$seo_meta,'status'=>$status,'author'=>$author,'image_credit'=>$credit,'image_credit_url'=>$credit_url,'focus_keyword'=>isset($p['focus_keyword'])?wp_html_excerpt(sanitize_text_field($p['focus_keyword']),100,''):'','key'=>$key);
 }
 function g73_pub_url($url,$image=true) {
  $p=wp_parse_url($url);if(!is_array($p)||!isset($p['scheme'],$p['host'])||'https'!==strtolower($p['scheme'])||!empty($p['user'])||!empty($p['pass'])||isset($p['port'])&&443!==(int)$p['port']||!empty($p['fragment'])){return false;}
@@ -120,7 +128,7 @@ function g73_pub_image($url,$title,$credit='',$credit_url='') {
 function g73_pub_response($id,$created,$request_id) {
  $image_id=get_post_thumbnail_id($id);$m=$image_id?wp_get_attachment_metadata($image_id):array();$response=new WP_REST_Response(array('id'=>$id,'status'=>get_post_status($id),'permalink'=>get_permalink($id),'created'=>$created,'request_id'=>$request_id,
   'featured_media'=>$image_id,'image'=>$image_id?array('url'=>wp_get_attachment_url($image_id),'width'=>isset($m['width'])?$m['width']:0,'height'=>isset($m['height'])?$m['height']:0):null,
-  'seo'=>array('schema'=>get_post_meta($id,'g73_is_opinion',true)?'OpinionNewsArticle':'NewsArticle','title'=>get_post_meta($id,'rank_math_title',true),'description'=>get_post_meta($id,'rank_math_description',true)),
+  'seo'=>array('focus_keyword'=>get_post_meta($id,'rank_math_focus_keyword',true),'schema'=>get_post_meta($id,'g73_is_opinion',true)?'OpinionNewsArticle':'NewsArticle','title'=>get_post_meta($id,'rank_math_title',true),'description'=>get_post_meta($id,'rank_math_description',true)),
   'warnings'=>array_values(array_filter(array('draft'===get_post_status($id)?'Rascunho: permalink ainda não está público.':'',!$image_id?'Imagem destacada pendente antes da publicação.':'')))), $created?201:200);
  return $response;
 }
@@ -130,7 +138,7 @@ function g73_pub_publish($request) {
  $p=g73_pub_validate($request);if(is_wp_error($p)){return $p;}$owner=g73_pub_lock();if(!$owner){$e=g73_pub_error('busy','Outra publicação está em processamento. Repita em alguns segundos.',409);return $e;}
  $id=0;$image=null;$success=false;
  try {
-  $fingerprint=$p;unset($fingerprint['key'],$fingerprint['status']);$fingerprint=hash('sha256',wp_json_encode($fingerprint));$key=hash('sha256',$p['key']?:$fingerprint);
+  $fingerprint=$p;unset($fingerprint['key'],$fingerprint['status']);if(empty($fingerprint['meta'])){unset($fingerprint['meta']);}$fingerprint=hash('sha256',wp_json_encode($fingerprint));$key=hash('sha256',$p['key']?:$fingerprint);
   $old=get_posts(array('post_type'=>'post','post_status'=>array('draft','publish','pending','future','private','trash'),'posts_per_page'=>1,'fields'=>'ids','no_found_rows'=>true,'meta_key'=>'_g73_ingest_key','meta_value'=>$key));
   if($old){$old_id=(int)$old[0];$GLOBALS['g73_pub_request']['post_id']=$old_id;
    if(!hash_equals((string)get_post_meta($old_id,'_g73_ingest_fingerprint',true),$fingerprint)||'trash'===get_post_status($old_id)){return g73_pub_error('idempotency_conflict','Identificador já utilizado com outro conteúdo ou item na lixeira.',409);}
@@ -138,14 +146,21 @@ function g73_pub_publish($request) {
   }
   $rate=(array)get_transient('g73_pub_rate');$now=time();$rate=array_values(array_filter($rate,function($v)use($now){return $v>$now-300;}));if(count($rate)>=20){return g73_pub_error('rate_limited','Limite de 20 tentativas de criação em cinco minutos.',429);}$rate[]=$now;set_transient('g73_pub_rate',$rate,300);
   if($p['image_url']){$image=g73_pub_image($p['image_url'],$p['title'],$p['image_credit'],$p['image_credit_url']);if(is_wp_error($image)){return $image;}}
-  $id=wp_insert_post(wp_slash(array('post_type'=>'post','post_status'=>'draft','post_author'=>$p['author'],'post_title'=>$p['title'],'post_content'=>$p['content'],'post_excerpt'=>$p['excerpt'],'post_category'=>array($p['category']),'comment_status'=>'closed','ping_status'=>'closed')),true);
-  if(is_wp_error($id)){$id=0;return g73_pub_error('post_create','Não foi possível criar o rascunho.',500);}$GLOBALS['g73_pub_request']['post_id']=$id;
   $meta=array('_g73_ingest_key'=>$key,'_g73_ingest_fingerprint'=>$fingerprint,'_g73_automated'=>1,'rank_math_title'=>$p['title'],'rank_math_description'=>wp_html_excerpt($p['excerpt'],160,''),'rank_math_robots'=>array('index','follow'),'rank_math_advanced_robots'=>array('max-snippet'=>-1,'max-video-preview'=>-1,'max-image-preview'=>'large'));
-  if($p['focus_keyword']){$meta['rank_math_focus_keyword']=$p['focus_keyword'];}foreach($meta as $k=>$v){update_post_meta($id,$k,$v);}
+  if($p['focus_keyword']){$meta['rank_math_focus_keyword']=$p['focus_keyword'];}
+  // Somente os três campos SEO permitidos; meta recebido tem prioridade sobre os valores automáticos.
+  $meta=array_merge($meta,$p['meta']);
+  if($image){$meta['_thumbnail_id']=$image['id'];}
+  if($p['columnist_slug']){$meta['g73_columnist_slug']=$p['columnist_slug'];$meta['g73_is_opinion']=true;}
+  // Preparar capa e SEO antes dos hooks de publicação evita expor uma matéria incompleta.
+  $id=wp_insert_post(wp_slash(array('post_type'=>'post','post_status'=>$p['status'],'post_author'=>$p['author'],'post_title'=>$p['title'],'post_content'=>$p['content'],'post_excerpt'=>$p['excerpt'],'post_category'=>array($p['category']),'tags_input'=>$p['tags'],'meta_input'=>$meta,'comment_status'=>'closed','ping_status'=>'closed')),true);
+  if(is_wp_error($id)||!$id){$id=0;return g73_pub_error('post_create','Não foi possível criar a matéria.',500);}$GLOBALS['g73_pub_request']['post_id']=$id;
+  // Persistência explícita após confirmar o ID, incluindo os campos recebidos em parameters.meta.
+  foreach($meta as $k=>$v){update_post_meta($id,$k,is_string($v)?wp_slash($v):$v);}
   $tags=wp_set_post_terms($id,$p['tags'],'post_tag',false);if(is_wp_error($tags)){return g73_pub_error('post_tags','Não foi possível associar as tags.',500);}
   if($p['columnist_slug']){update_post_meta($id,'g73_columnist_slug',$p['columnist_slug']);if(function_exists('g73_reg_sync')){g73_reg_sync($id);}}
-  if($image){if(!set_post_thumbnail($id,$image['id'])){return g73_pub_error('featured_image','Não foi possível associar a capa.',500);}if($image['created']){wp_update_post(array('ID'=>$image['id'],'post_parent'=>$id));}}
-  if('publish'===$p['status']){$updated=wp_update_post(array('ID'=>$id,'post_status'=>'publish'),true);if(is_wp_error($updated)||'publish'!==get_post_status($id)){return g73_pub_error('post_publish','Não foi possível publicar a matéria.',500);}}
+  if($image){if((int)get_post_thumbnail_id($id)!==(int)$image['id']&&!set_post_thumbnail($id,$image['id'])){return g73_pub_error('featured_image','Não foi possível associar a capa.',500);}if($image['created']){wp_update_post(array('ID'=>$image['id'],'post_parent'=>$id));}}
+  if($p['status']!==get_post_status($id)){return g73_pub_error('post_status','O WordPress não confirmou o status solicitado.',500);}
   clean_post_cache($id);do_action('litespeed_purge_post',$id);do_action('litespeed_purge_url',home_url('/'));$success=true;
   return g73_pub_response($id,true,$GLOBALS['g73_pub_request']['request_id']);
  } finally {if(!$success&&$id){wp_delete_post($id,true);}if(!$success&&is_array($image)&&!empty($image['created'])){wp_delete_attachment($image['id'],true);}g73_pub_unlock($owner);}
@@ -168,7 +183,7 @@ add_filter('rest_post_dispatch',function($response,$server,$request){
 add_action('rest_api_init',function(){
  register_rest_route('g73/v1','/publish',array('methods'=>'POST','permission_callback'=>'g73_pub_permission','callback'=>'g73_pub_publish'));
  register_rest_route('g73/v1','/publisher/token',array('methods'=>'POST','permission_callback'=>function(){return current_user_can('manage_options');},'callback'=>function(){$r=new WP_REST_Response(array('token'=>g73_pub_rotate(),'notice'=>'Copie agora. O valor não será exibido novamente.'),201);$r->header('Cache-Control','private, no-store');return $r;}));
- register_rest_route('g73/v1','/publisher/status',array('methods'=>'GET','permission_callback'=>function(){return current_user_can('manage_options');},'callback'=>function(){$r=new WP_REST_Response(array('enabled'=>(bool)g73_pub_option('enabled',true),'default_status'=>g73_pub_option('default_status','draft'),'token_configured'=>(bool)g73_pub_option('token_hash'),'telegram_configured'=>(bool)g73_pub_option('telegram_encrypted'),'telegram_encryption_available'=>function_exists('openssl_encrypt')&&in_array('aes-256-gcm',openssl_get_cipher_methods(),true),'image_hosts'=>g73_pub_hosts(),'author_id'=>(int)g73_pub_option('author_id',1),'endpoint'=>rest_url('g73/v1/publish')));$r->header('Cache-Control','private, no-store');return $r;}));
+ register_rest_route('g73/v1','/publisher/status',array('methods'=>'GET','permission_callback'=>function(){return current_user_can('manage_options');},'callback'=>function(){$r=new WP_REST_Response(array('enabled'=>(bool)g73_pub_option('enabled',true),'default_status'=>'publish','token_configured'=>(bool)g73_pub_option('token_hash'),'telegram_configured'=>(bool)g73_pub_option('telegram_encrypted'),'telegram_encryption_available'=>function_exists('openssl_encrypt')&&in_array('aes-256-gcm',openssl_get_cipher_methods(),true),'image_hosts'=>g73_pub_hosts(),'author_id'=>(int)g73_pub_option('author_id',1),'endpoint'=>rest_url('g73/v1/publish')));$r->header('Cache-Control','private, no-store');return $r;}));
  register_rest_route('g73/v1','/publisher/logs',array('methods'=>'GET','permission_callback'=>function(){return current_user_can('manage_options');},'callback'=>function(){$r=new WP_REST_Response(g73_pub_option('logs',array()));$r->header('Cache-Control','private, no-store');return $r;}));
 });
 add_action('admin_menu',function(){add_options_page('Motor de Notícias G73','Motor de Notícias G73','manage_options','g73-publisher','g73_pub_screen');});
@@ -177,7 +192,7 @@ function g73_pub_screen() {
  echo '<div class="wrap"><h1>Motor de Notícias G73</h1>'.($notice?'<div class="notice notice-info"><p>'.esc_html($notice).'</p></div>':'');
  if($token){echo '<div class="notice notice-warning"><p><strong>Copie o novo X-G73-Token agora. Ele não será exibido novamente; o anterior deixou de funcionar.</strong></p><p><code>'.esc_html($token).'</code></p></div>';}
  echo '<p>Endpoint: <code>'.esc_html(rest_url('g73/v1/publish')).'</code> • Header: <code>X-G73-Token</code>.</p><form method="post" action="'.esc_url(admin_url('options-general.php?page=g73-publisher')).'"><input type="hidden" name="g73_action" value="save">';wp_nonce_field('g73_publisher_save');
- echo '<p><label><input type="checkbox" name="enabled" value="1"'.checked((bool)g73_pub_option('enabled',true),true,false).'> Habilitar recepção externa</label></p><p><label>Modo padrão <select name="default_status"><option value="draft"'.selected(g73_pub_option('default_status','draft'),'draft',false).'>Rascunho — revisão editorial</option><option value="publish"'.selected(g73_pub_option('default_status','draft'),'publish',false).'>Publicar diretamente — permite status publish pela API</option></select></label></p><p><label>Responsável editorial <select name="author_id">';
+ echo '<p><label><input type="checkbox" name="enabled" value="1"'.checked((bool)g73_pub_option('enabled',true),true,false).'> Habilitar recepção externa</label></p><p>O JSON define o status: <code>draft</code> ou <code>publish</code>. Se omitido, o padrão é <strong>publish</strong>. Para revisão, envie explicitamente <code>draft</code>.</p><p><label>Responsável editorial <select name="author_id">';
  foreach(get_users(array('capability'=>'edit_posts','fields'=>array('ID','display_name'))) as $user){echo '<option value="'.(int)$user->ID.'"'.selected((int)g73_pub_option('author_id',1),(int)$user->ID,false).'>'.esc_html($user->display_name).'</option>';}
  echo '</select></label></p><p><label>Domínios HTTPS autorizados para imagens (um por linha)<br><textarea class="large-text code" name="image_hosts" rows="5">'.esc_textarea(implode("\n",g73_pub_hosts())).'</textarea></label></p><p>Downloads limitados a 8 MB e 24 megapixels. Sem redirecionamentos ou endereços IP. Saída 1200×675 WebP abaixo de 60 KB.</p>';
  echo '<h2>Integração Telegram</h2><p>Estado: '.(g73_pub_option('telegram_encrypted')?'chave configurada':'chave ainda não informada').'. O bot/worker deve converter a mensagem em JSON editorial antes de chamar o endpoint; Updates nativos do Telegram não são artigos.</p><p><label>Nova chave de API do bot (vazio mantém a atual)<br><input class="large-text" type="password" autocomplete="new-password" name="telegram_token" value=""></label></p><p><label><input type="checkbox" name="clear_telegram" value="1"> Remover a chave Telegram salva</label></p>';submit_button('Salvar configurações');echo '</form><h2>Segurança do webhook</h2><p>Token: '.(g73_pub_option('token_hash')?'configurado (somente hash armazenado)':'não configurado').'. A rotação invalida imediatamente o token anterior.</p><form method="post" action="'.esc_url(admin_url('options-general.php?page=g73-publisher')).'"><input type="hidden" name="g73_action" value="rotate">';wp_nonce_field('g73_publisher_rotate');submit_button('Gerar / rotacionar token','secondary');echo '</form><h2>Últimas operações</h2><p>Até 100 registros. Sem token, chave Telegram, corpo da matéria ou URLs externas.</p><table class="widefat striped"><thead><tr><th>Data UTC</th><th>Post</th><th>HTTP</th><th>Resultado</th></tr></thead><tbody>';
@@ -185,12 +200,12 @@ function g73_pub_screen() {
  echo '</tbody></table></div>';
 }
 function g73_pub_save_settings() {
- $mode=isset($_POST['default_status'])?sanitize_key(wp_unslash($_POST['default_status'])):'draft';$author=isset($_POST['author_id'])?absint($_POST['author_id']):0;$raw=isset($_POST['image_hosts'])?wp_unslash($_POST['image_hosts']):'';$hosts=array();
+ $author=isset($_POST['author_id'])?absint($_POST['author_id']):0;$raw=isset($_POST['image_hosts'])?wp_unslash($_POST['image_hosts']):'';$hosts=array();
  foreach(preg_split('/[\s,]+/',strtolower($raw),-1,PREG_SPLIT_NO_EMPTY) as $host){if(!preg_match('/^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/D',$host)||strlen($host)>253){return 'Domínio inválido. Não use protocolo, caminho, IP ou asterisco.';}$hosts[]=$host;}
- if(count($hosts)>30||!in_array($mode,array('draft','publish'),true)||!$author||!user_can($author,'edit_posts')){return 'Configurações inválidas; nada foi alterado.';}
+ if(count($hosts)>30||!$author||!user_can($author,'edit_posts')){return 'Configurações inválidas; nada foi alterado.';}
  $telegram=isset($_POST['telegram_token'])?trim(wp_unslash($_POST['telegram_token'])):'';$encrypted=null;
  if($telegram){if(!preg_match('/^[0-9]{5,16}:[A-Za-z0-9_-]{30,100}$/D',$telegram)){return 'Formato da chave Telegram inválido; nada foi alterado.';}$encrypted=g73_pub_encrypt($telegram);if(is_wp_error($encrypted)){return $encrypted->get_error_message();}}
- g73_pub_set('enabled',!empty($_POST['enabled']));g73_pub_set('default_status',$mode);g73_pub_set('author_id',$author);g73_pub_set('image_hosts',array_values(array_unique($hosts)));
+ g73_pub_set('enabled',!empty($_POST['enabled']));g73_pub_set('author_id',$author);g73_pub_set('image_hosts',array_values(array_unique($hosts)));
  if(!empty($_POST['clear_telegram'])){delete_option('g73_publisher_telegram_encrypted');}elseif(null!==$encrypted){g73_pub_set('telegram_encrypted',$encrypted);}
  return 'Configurações salvas.';
 }

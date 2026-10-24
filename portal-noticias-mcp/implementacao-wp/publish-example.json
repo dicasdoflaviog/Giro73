@@ -6,6 +6,13 @@
   "columnist_slug": "",
   "image_url": "https://giro73.com.br/wp-content/uploads/AAAA/MM/imagem-autorizada.webp",
   "image_credit": "Nome do fotógrafo / organização e licença aplicável",
-  "tags": ["Extremo Sul da Bahia"],
-  "status": "draft"
+  "tags": [
+    "Extremo Sul da Bahia"
+  ],
+  "status": "draft",
+  "meta": {
+    "rank_math_focus_keyword": "Extremo Sul da Bahia",
+    "rank_math_title": "Título SEO revisado da matéria",
+    "rank_math_description": "Descrição editorial enviada pelo bot para o Rank Math."
+  }
 }

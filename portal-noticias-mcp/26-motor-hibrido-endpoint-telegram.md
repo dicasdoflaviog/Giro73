@@ -1,5 +1,7 @@
 # Fase 2 — recepção editorial REST e configuração Telegram
 
+Versão posterior do código, com `status` dinâmico e `meta` do Rank Math: `29-payload-status-meta-rankmath.md`. Essa versão é entregue para substituição e ainda não foi instalada no site.
+
 ## Estado implantado
 
 Endpoint **POST https://giro73.com.br/wp-json/g73/v1/publish**, autenticado exclusivamente pelo header `X-G73-Token`, via HTTPS. Token aleatório de 256 bits gerado; somente seu hash SHA-256 é armazenado. Recepção habilitada e modo padrão **draft**. A chave do bot Telegram ainda não foi fornecida.
