@@ -29,8 +29,8 @@ with sync_playwright() as p:
   for name,url in [('home','https://giro73.com.br/'),('directory','https://giro73.com.br/agenda-73/')]:
    r=page.goto(url,wait_until='domcontentloaded',timeout=90000);assert r.status==200
    section=page.locator('[data-g73-agenda]');expect(section).to_have_count(1);section.scroll_into_view_if_needed();filters=section.locator('[data-g73-agenda-filter]');assert filters.all_inner_texts()==labels
-   expect(section.locator('.g73-event-poster')).to_have_count(4);expect(section.locator('.g73-event-cta')).to_have_count(8);expect(section.locator('.g73-event-cta:disabled')).to_have_count(8)
-   assert section.locator('a.g73-event-cta').count()==0
+   expect(section.locator('.g73-event-poster')).to_have_count(4);expect(section.locator('.g73-event-cta')).to_have_count(4);expect(section.locator('.g73-event-cta:disabled')).to_have_count(4)
+   assert section.locator('a.g73-event-cta').count()==0;assert section.locator('.g73-event-contact').count()==0;assert 'Falar com' not in section.inner_text();assert 'Contato da organização' not in section.inner_text()
    for card in section.locator('.g73-event-poster').all():
     assert 'Modelo • Não confirmado' in card.inner_text();assert card.locator('time[datetime]').count()==1;assert card.locator('.g73-event-facts svg').count()==2
     for button in card.locator('.g73-event-cta').all():assert button.bounding_box()['height']>=44
@@ -46,12 +46,13 @@ with sync_playwright() as p:
  # Links nativos filtram todo o catálogo, inclusive sem JavaScript e em páginas paginadas.
  nojs=b.new_context(java_script_enabled=False,viewport={'width':390,'height':1000});nojs.route('**/*',route);q=nojs.new_page();q.goto('https://giro73.com.br/agenda-73/?g73_categoria=gastronomia_feiras',wait_until='domcontentloaded',timeout=90000);expect(q.locator('.g73-event-poster')).to_have_count(1);assert q.locator('[aria-current="true"]').inner_text()=='Gastronomia & Feiras';q.locator('[data-g73-agenda-filter=""]').click();expect(q.locator('.g73-event-poster')).to_have_count(4);nojs.close()
  if args.preview:
-  d=json.loads(Path(args.preview).read_text());html=d.get('body',d)['html'];page.set_viewport_size({'width':390,'height':900});page.set_content('<main class="g73-portal"><section class="g73-agenda-showcase"><div class="g73-agenda-grid">'+html+'</div></section></main>');css=Path(__file__).resolve().parents[1]/'css-g1-techtudo-ultra-leve.css';page.add_style_tag(content=css.read_text());buy=page.locator('a.g73-event-buy');contact=page.locator('a.g73-event-contact');expect(buy).to_have_count(1);expect(contact).to_have_count(1)
-  assert buy.get_attribute('href')=='https://tickets.example/agenda-73?origem=teste';assert contact.get_attribute('href').startswith('https://wa.me/12025550142?text=');assert 'VALIDA' in contact.get_attribute('href')
-  for button in (buy,contact):
-   assert button.get_attribute('target')=='_blank';assert {'nofollow','noopener'}<=set(button.get_attribute('rel').split());assert button.bounding_box()['height']>=44
-   with page.expect_popup() as opened:button.click()
-   popup=opened.value;popup.wait_for_load_state('domcontentloaded');assert popup.url.startswith(('https://tickets.example/','https://wa.me/'));popup.close()
+  d=json.loads(Path(args.preview).read_text());html=d.get('body',d)['html'];page.set_viewport_size({'width':390,'height':900});page.set_content('<main class="g73-portal"><section class="g73-agenda-showcase"><div class="g73-agenda-grid">'+html+'</div></section></main>');css=Path(__file__).resolve().parents[1]/'css-g1-techtudo-ultra-leve.css';page.add_style_tag(content=css.read_text());button=page.locator('a.g73-event-open');expect(button).to_have_count(1);expect(page.locator('.g73-event-contact')).to_have_count(0)
+  assert button.inner_text()=='Ver evento →';assert 'Falar com' not in page.locator('body').inner_text();assert page.locator('.g73-event-cta').count()==1
+  for link in page.locator('.g73-event-open,.g73-event-cover-link,.g73-event-title-link').all():
+   assert link.get_attribute('href')=='https://events.example/agenda-73?origem=teste';assert link.get_attribute('target')=='_blank';assert {'nofollow','noopener'}<=set(link.get_attribute('rel').split())
+   with page.expect_popup() as opened:link.click()
+   popup=opened.value;popup.wait_for_load_state('domcontentloaded');assert popup.url.startswith('https://events.example/');popup.close()
+  assert button.bounding_box()['height']>=44
   page.screenshot(path=str(out/'private-cta-390.png'));result.append({'private_preview_cta':True,'external_requests_intercepted':True})
  assert not [e for e in errors if 'javascript' in e],errors;b.close()
 (out/'result.json').write_text(json.dumps({'checks':result,'errors':errors},ensure_ascii=False,indent=2));print(json.dumps({'checks':result,'errors':errors},ensure_ascii=False))

@@ -6,7 +6,7 @@ function g73_agenda_categories() {
  return array('shows_festas'=>'Shows & Festas','gastronomia_feiras'=>'Gastronomia & Feiras','esportes'=>'Esportes','teatro_cultura'=>'Teatro & Cultura','negocios_cursos'=>'Negócios & Cursos','infantil_familia'=>'Infantil & Família');
 }
 function g73_agenda_fields() {
- return array('g73_event_category'=>'Categoria','g73_event_location'=>'Local físico','g73_event_price'=>'Preço / situação do ingresso','g73_event_ticket_url'=>'URL oficial de ingressos','g73_event_whatsapp'=>'WhatsApp da organização (com DDI e DDD)');
+ return array('g73_event_category'=>'Categoria','g73_event_location'=>'Local físico','g73_event_price'=>'Preço / situação do ingresso','g73_event_ticket_url'=>'Link de ingressos (opcional)');
 }
 function g73_agenda_phone($value) {
  $value=trim((string)$value);if($value&&!preg_match('/^[+0-9().\s-]+$/D',$value)){return '';}$explicit=0===strpos($value,'+');
@@ -27,7 +27,7 @@ function g73_agenda_validate($meta) {
  return true;
 }
 add_action('init',function(){
- foreach(g73_agenda_fields() as $key=>$label) {
+ foreach(array_merge(g73_agenda_fields(),array('g73_event_whatsapp'=>'Campo legado de integração')) as $key=>$label) {
   $schema=array('type'=>'string','default'=>'','maxLength'=>'g73_event_ticket_url'===$key?2048:240);
   if ('g73_event_category'===$key) { $schema['enum']=array_merge(array(''),array_keys(g73_agenda_categories())); }
   register_post_meta('g73_event',$key,array('single'=>true,'type'=>'string','default'=>'','show_in_rest'=>array('schema'=>$schema),
@@ -38,15 +38,15 @@ add_action('init',function(){
 add_filter('rest_pre_insert_g73_event',function($post,$request){
  if(is_wp_error($post)){return $post;}$valid=g73_agenda_validate((array)$request->get_param('meta'));return is_wp_error($valid)?$valid:$post;
 },15,2);
-add_action('add_meta_boxes_g73_event',function(){add_meta_box('g73-event-sales','Categoria, local e ingressos','g73_agenda_metabox','g73_event','normal','high');});
+add_action('add_meta_boxes_g73_event',function(){add_meta_box('g73-event-sales','Categoria, local e link do evento','g73_agenda_metabox','g73_event','normal','high');});
 function g73_agenda_metabox($post) {
  wp_nonce_field('g73_agenda_save','g73_agenda_nonce');
- echo '<p>Use apenas contatos e links oficiais. Sem URL ou telefone, o respectivo botão fica desativado. Modelos nunca oferecem compra ou contato.</p>';
+ echo '<p>O botão Ver evento abre o Link oficial do evento. Se esse campo estiver vazio, utiliza o Link de ingressos. Sem URL, o botão fica desativado. Modelos não possuem links ativos.</p>';
  foreach(g73_agenda_fields() as $key=>$label){$v=get_post_meta($post->ID,$key,true);echo '<p><label>'.esc_html($label).'<br>';
   if('g73_event_category'===$key){echo '<select name="'.esc_attr($key).'"><option value="">Não informada</option>';foreach(g73_agenda_categories() as $slug=>$name){echo '<option value="'.esc_attr($slug).'"'.selected($v,$slug,false).'>'.esc_html($name).'</option>';}echo '</select>';}
-  else{echo '<input class="large-text" type="'.('g73_event_ticket_url'===$key?'url':('g73_event_whatsapp'===$key?'tel':'text')).'" maxlength="'.('g73_event_ticket_url'===$key?'2048':'240').'" name="'.esc_attr($key).'" value="'.esc_attr($v).'">';}
+  else{echo '<input class="large-text" type="'.('g73_event_ticket_url'===$key?'url':'text').'" maxlength="'.('g73_event_ticket_url'===$key?'2048':'240').'" name="'.esc_attr($key).'" value="'.esc_attr($v).'">';}
   echo '</label></p>';
- }echo '<p>Exemplos de preço: Gratuito; A partir de R$ 40; Esgotado. Não confunda o link de programação com o endereço de venda de ingressos.</p>';
+ }echo '<p>Exemplos de preço: Gratuito; A partir de R$ 40; Esgotado. Use o Link oficial do evento para a página com programação e informações completas.</p>';
 }
 add_action('save_post_g73_event',function($id){
  if(wp_is_post_revision($id)||(defined('DOING_AUTOSAVE')&&DOING_AUTOSAVE)||!current_user_can('manage_options')||!isset($_POST['g73_agenda_nonce'])||!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['g73_agenda_nonce'])),'g73_agenda_save')){return;}
@@ -62,18 +62,17 @@ function g73_agenda_icon($type) {
 function g73_agenda_card($id) {
  $demo=(bool)get_post_meta($id,'g73_event_demo',true);$date=get_post_meta($id,'g73_event_date',true);$d=DateTimeImmutable::createFromFormat('!Y-m-d',$date,wp_timezone());
  if(!$d){return '';}$title=preg_replace('/^MODELO\s*[—-]\s*/u','',get_the_title($id));$cats=g73_agenda_categories();$cat=get_post_meta($id,'g73_event_category',true);$city=get_post_meta($id,'g73_event_city',true);
- $location=get_post_meta($id,'g73_event_location',true);$price=get_post_meta($id,'g73_event_price',true);$url=get_post_meta($id,'g73_event_ticket_url',true);$phone=ltrim(g73_agenda_phone(get_post_meta($id,'g73_event_whatsapp',true)),'+');$sold=(bool)preg_match('/esgotad[oa]|encerrad[oa]/iu',$price);
- $html='<article class="g73-event-poster" data-g73-event-category="'.esc_attr($cat).'"><div class="g73-event-visual">'.get_the_post_thumbnail($id,'medium_large',array('loading'=>'lazy','decoding'=>'async','class'=>'g73-event-cover','alt'=>($demo?'Imagem ilustrativa de demonstração — ':'').$title)).'<time class="g73-event-date" datetime="'.esc_attr($date).'" aria-label="'.esc_attr(($demo?'Data ilustrativa: ':'').$d->format('d/m/Y')).'"><strong>'.$d->format('d').'</strong><span>'.esc_html(wp_date('M',$d->getTimestamp(),wp_timezone())).'</span></time></div>';
- $html.='<div class="g73-event-info"><div class="g73-event-city-pill">'.esc_html((isset($cats[$cat])?$cats[$cat]:'Evento regional').' • '.($city?:'Cidade a confirmar')).'</div>'.($demo?'<div class="g73-event-demo">Modelo • Não confirmado</div>':'').'<h3>'.esc_html($title).'</h3><div class="g73-event-facts"><p>'.g73_agenda_icon('location').'<span>'.esc_html($location?:'Local a confirmar').'</span></p><p>'.g73_agenda_icon('price').'<span>'.esc_html($price?:'Valor a confirmar').'</span></p></div><div class="g73-event-actions">';
- $buy='🎟️ Comprar Ingresso';$contact='💬 Falar com Produtora';
- $html.=(!$demo&&!$sold&&$url&&g73_agenda_url_valid($url))?'<a class="g73-event-cta g73-event-buy" href="'.esc_url($url).'" target="_blank" rel="nofollow noopener noreferrer" aria-label="'.esc_attr($buy.' — '.$title).'">'.$buy.'</a>':'<button type="button" class="g73-event-cta g73-event-buy" disabled aria-label="'.esc_attr(($sold?'Ingressos esgotados':($demo?'Compra indisponível em modelo':'Link de ingressos não informado')).' — '.$title).'">'.$buy.'</button>';
- $wa='https://wa.me/'.$phone.'?text='.rawurlencode('Olá! Gostaria de informações sobre '.$title.'.');
- $html.=(!$demo&&$phone)?'<a class="g73-event-cta g73-event-contact" href="'.esc_url($wa).'" target="_blank" rel="nofollow noopener noreferrer" aria-label="'.esc_attr($contact.' — '.$title).'">'.$contact.'</a>':'<button type="button" class="g73-event-cta g73-event-contact" disabled aria-label="'.esc_attr(($demo?'Contato indisponível em modelo':'WhatsApp não informado').' — '.$title).'">'.$contact.'</button>';
+ $location=get_post_meta($id,'g73_event_location',true);$price=get_post_meta($id,'g73_event_price',true);$url='';
+ foreach(array('g73_event_url','g73_event_ticket_url') as $key){$candidate=get_post_meta($id,$key,true);if($candidate&&g73_agenda_url_valid($candidate)){$url=$candidate;break;}}
+ $label='Ver evento →';$attrs=' href="'.esc_url($url).'" target="_blank" rel="nofollow noopener noreferrer"';
+ $cover=get_the_post_thumbnail($id,'medium_large',array('loading'=>'lazy','decoding'=>'async','class'=>'g73-event-cover','alt'=>($demo?'Imagem ilustrativa de demonstração — ':'').$title));$heading=esc_html($title);
+ if(!$demo&&$url){$cover='<a class="g73-event-cover-link"'.$attrs.' aria-label="'.esc_attr($label.' — '.$title).'">'.$cover.'</a>';$heading='<a class="g73-event-title-link"'.$attrs.'>'.$heading.'</a>';}
+ $html='<article class="g73-event-poster" data-g73-event-category="'.esc_attr($cat).'"><div class="g73-event-visual">'.$cover.'<time class="g73-event-date" datetime="'.esc_attr($date).'" aria-label="'.esc_attr(($demo?'Data ilustrativa: ':'').$d->format('d/m/Y')).'"><strong>'.$d->format('d').'</strong><span>'.esc_html(wp_date('M',$d->getTimestamp(),wp_timezone())).'</span></time></div>';
+ $html.='<div class="g73-event-info"><div class="g73-event-city-pill">'.esc_html((isset($cats[$cat])?$cats[$cat]:'Evento regional').' • '.($city?:'Cidade a confirmar')).'</div>'.($demo?'<div class="g73-event-demo">Modelo • Não confirmado</div>':'').'<h3>'.$heading.'</h3><div class="g73-event-facts"><p>'.g73_agenda_icon('location').'<span>'.esc_html($location?:'Local a confirmar').'</span></p><p>'.g73_agenda_icon('price').'<span>'.esc_html($price?:'Valor a confirmar').'</span></p></div><div class="g73-event-actions">';
+ $html.=(!$demo&&$url)?'<a class="g73-event-cta g73-event-open"'.$attrs.' aria-label="'.esc_attr($label.' — '.$title).'">'.$label.'</a>':'<button type="button" class="g73-event-cta g73-event-open" disabled aria-label="'.esc_attr(($demo?'Link indisponível em modelo':'Link do evento não informado').' — '.$title).'">'.$label.'</button>';
  $html.='</div>';
  if($demo){$html.='<details class="g73-event-program"><summary>Sobre este modelo</summary><p>Data ilustrativa: '.esc_html($d->format('d/m/Y')).'. Evento, local, horários e atrações não confirmados. Não há ingressos à venda neste card.</p></details>';}
- elseif($sold){$html.='<p class="g73-event-help">Venda encerrada ou ingressos esgotados.</p>';}
- elseif(!$url||!$phone){$html.='<p class="g73-event-help">'.(!$url?'Ingressos: link ainda não informado. ':'').(!$phone?'Contato da organização ainda não informado.':'').'</p>';}
- $program=get_post_meta($id,'g73_event_url',true);if(!$demo&&$program&&g73_agenda_url_valid($program)&&$program!==$url){$html.='<a class="g73-event-details" href="'.esc_url($program).'" target="_blank" rel="nofollow noopener noreferrer">Ver programação →</a>';}
+ elseif(!$url){$html.='<p class="g73-event-help">Link do evento ainda não informado.</p>';}
  return $html.'</div></article>';
 }
 function g73_agenda_query_args($limit,$page=1,$category='') {
