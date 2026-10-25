@@ -26,7 +26,7 @@ uid=uuid.uuid4().hex;owned_posts=[];owned_media=[];owned_tags=[];checks=[]
 def ok(label):checks.append(label);print('OK',label,flush=True)
 status,before,_=request('/wp-json/wp/v2/posts?status=publish&per_page=100&_fields=id',admin=True);assert status==200;before={x['id'] for x in before}
 _,tags_before,_=request('/wp-json/wp/v2/tags?per_page=100',admin=True);known_tags={x['id'] for x in tags_before};names=[x['name'] for x in tags_before[:2]] or ['g73-teste-'+uid]
-_,source,_=request('/wp-json/wp/v2/posts/20?_embed',admin=True);image=source['_embedded']['wp:featuredmedia'][0]['source_url'];source_id=source['featured_media']
+_,source,_=request('/wp-json/wp/v2/posts/20?_embed',admin=True);image=source['_embedded']['wp:featuredmedia'][0]['source_url'];source_id=source['featured_media'];source_alt=source['_embedded']['wp:featuredmedia'][0]['alt_text']
 payload={'title':'VALIDAÇÃO PRIVADA — Motor Giro73 '+uid[:8],'content':'<p>Teste privado da integração editorial. Este conteúdo não deve ser publicado.</p><h2>Validação técnica</h2><p>Segundo parágrafo preservado.</p><script>alert(1)</script>[giro73_colunistas]','excerpt':'Validação privada do fluxo editorial.','category':'noticias-regiao','tags':names,'image_url':image+'?g73_pipeline_test='+uid,'image_credit':'Arquivo de teste técnico privado; mídia de origem já existente no Giro73.','focus_keyword':'palavra-chave legada','meta':{'rank_math_focus_keyword':'integração editorial','rank_math_title':'Título SEO revisado','rank_math_description':'Descrição SEO enviada pelo bot.'},'status':'draft'}
 try:
  for bad_token in (None,'invalido'):
@@ -34,7 +34,7 @@ try:
  ok('token obrigatório; publicação não depende de Basic Auth')
  for diff,expected in [({'category':'nao-existe-g73'},400),({'columnist_slug':'nao-existe'},400),({'meta':'invalido'},400),({'meta':{'rank_math_title':[]}},400),({'status':'invalido'},400)]:
   s,d,_=post(dict(payload,**diff));assert s==expected,(expected,s,d)
- # Não testar publish ao vivo: agora é válido publicar sem imagem. Coberto no teste PHP offline.
+ # Status publish é coberto offline; nenhuma fixture deve ser publicada ao vivo.
  for image_url in ['http://127.0.0.1/imagem.jpg','https://example.org/foto.jpg','https://giro73.com.br/wp-content/uploads/arquivo-inexistente.jpg']:
   s,d,_=post(dict(payload,image_url=image_url));assert s==201 and d['status']=='draft' and not d['featured_media'],(s,d)
   owned_posts.append(d['id']);assert d['warnings']
@@ -46,11 +46,14 @@ try:
  owned_tags.extend(x for x in saved['tags'] if x not in known_tags);ok('rascunho completo, HTML seguro, tags, SEO e WebP 1200×675 <60KB')
  s,two,_=post(payload,'test-'+uid);assert s==200 and two['id']==one['id'] and not two['created'];s,_,_=post(dict(payload,title=payload['title']+' alterado'),'test-'+uid);assert s==409;ok('repetição idempotente e conflito de conteúdo detectado')
  column=dict(payload,title=payload['title']+' — coluna',columnist_slug='lucas-vianna',image_url=image)
- s,col,_=post(column);assert s==201,(s,col);owned_posts.append(col['id']);assert col['featured_media']==source_id and col['seo']['schema']=='OpinionNewsArticle'
+ s,col,_=post(column);assert s==201,(s,col);owned_posts.append(col['id']);assert col['featured_media'] and col['seo']['schema']=='OpinionNewsArticle'
+ if col['featured_media']!=source_id:owned_media.append(col['featured_media'])
+ _,original_media,_=request('/wp-json/wp/v2/media/'+str(source_id),admin=True);assert original_media['alt_text']==source_alt
+ _,column_media,_=request('/wp-json/wp/v2/media/'+str(col['featured_media']),admin=True);assert column_media['alt_text']==payload['meta']['rank_math_focus_keyword']
  _,saved,_=request('/wp-json/wp/v2/posts/'+str(col['id'])+'?context=edit',admin=True);assert saved['meta']['g73_columnist_slug']=='lucas-vianna' and saved['author']==1 and 'Redação Giro73' in saved['meta']['g73_columnist_bio'];_,preview,_=request('/wp-json/g73/v1/editorial-preview/'+str(col['id']),admin=True);assert 'Redação Giro73' in preview['byline'];s,again,_=post(column);assert s==200 and again['id']==col['id'];ok('coluna editorial, autoria institucional e reaproveitamento seguro da mídia')
  parallel_payload=dict(payload,title=payload['title']+' — concorrência',image_url=image);key='parallel-'+uid
  with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:results=list(pool.map(lambda _:post(parallel_payload,key),range(2)))
- created=[d for s,d,h in results if s==201];owned_posts.extend(d['id'] for d in created);assert len(created)==1,results;assert all(s in (200,201,409) for s,_,_ in results);s,replay,_=post(parallel_payload,key);assert s==200 and replay['id']==created[0]['id'];ok('concorrência sem duplicação de matéria')
+ created=[d for s,d,h in results if s==201];owned_posts.extend(d['id'] for d in created);owned_media.extend(d['featured_media'] for d in created if d.get('featured_media') and d['featured_media']!=source_id);assert len(created)==1,results;assert all(s in (200,201,409) for s,_,_ in results);s,replay,_=post(parallel_payload,key);assert s==200 and replay['id']==created[0]['id'];ok('concorrência sem duplicação de matéria')
  s,logs,_=request('/wp-json/g73/v1/publisher/logs',admin=True);assert s==200 and any(x['http']==201 and x['post_id']==one['id'] for x in logs);text=json.dumps(logs);assert token not in text and password not in text and payload['title'] not in text
  for path in ['/wp-json/g73/v1/publisher/logs','/wp-json/g73/v1/publisher/status','/wp-json/g73/v1/publisher/token']:
   s,_,_=request(path,data={} if path.endswith('token') else None,provided=None);assert s==401,(path,s)
@@ -59,7 +62,7 @@ finally:
  for id in owned_posts:
   _,saved,_=request('/wp-json/wp/v2/posts/'+str(id)+'?context=edit',admin=True);owned_tags.extend(x for x in saved.get('tags',[]) if x not in known_tags)
   s,d,_=request('/wp-json/wp/v2/posts/'+str(id)+'?force=true',method='DELETE',admin=True);assert s==200 and d['deleted'],(id,s,d)
- for id in owned_media:
+ for id in set(owned_media):
   if id!=source_id:
    s,d,_=request('/wp-json/wp/v2/media/'+str(id)+'?force=true',method='DELETE',admin=True);assert s==200 and d['deleted'],(id,s,d)
  for id in set(owned_tags):

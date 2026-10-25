@@ -14,6 +14,7 @@ Python 3.10+ em Ubuntu 22.04/24.04 ou posterior compatível. Não depende do bot
 - `giro73-rss.logrotate`: rotação dos logs.
 - `tests/test_coletor_rss.py`: 27 testes automatizados com APIs simuladas.
 - `tests/test_configurar_fontes_rss.py`: 12 testes de descoberta e atualização segura da configuração.
+- `tests/test_imagens_rss.py`: 12 testes de seleção de fotos, validação dos bytes e figura/ALT.
 
 ## Modelo Gemini
 
@@ -41,9 +42,13 @@ O modelo recebe somente título, texto fornecido no RSS, URL, identificação da
 
 Entradas com menos de 180 caracteres de material textual são ignoradas. Material insuficiente também pode ser recusado pelo Gemini. Não se inventam falas, dados ou acontecimentos locais para alongar notícias. Os rascunhos precisam de revisão factual/editorial; esses controles não eliminam alucinações de um modelo.
 
-O payload envia `image_url: ""`. Seu endpoint permite rascunhos sem imagem. Capas autorizadas são adicionadas na etapa editorial; o coletor não copia automaticamente fotografias de outros portais.
+O coletor agora procura a foto em metadados/enclosures/HTML do feed e, se necessário, nos metadados e imagens da página original. BeautifulSoup seleciona candidatos; Pillow verifica o arquivo e dimensões mínimas de 200×200, até 8 MB e 24 megapixels. Ícones/logos/compartilhamento e arquivos não-imagem são ignorados. A página original é consultada para localizar imagens; seu texto não é acrescentado ao material fornecido ao Gemini. Use somente fotos com autorização de uso e crédito adequado.
 
-Para coletores personalizados que já preencham `image_url`, os 422 de imagem reconhecidos geram um fallback imediato sem foto. O payload novo é salvo antes do segundo POST; falhas de rede posteriores mantêm essa variante na fila. O ID e o permalink confirmado ficam em `wp_id`/`wp_url`, com migração automática e aditiva da tabela. `--retry-image-errors` recupera seletivamente bloqueios antigos de imagem, sem chamar APIs. Integração completa e mudanças PHP: `../30-imagens-resilientes-endpoint.md`. Preserve a coleta de imagens personalizada da VPS ao aplicar somente os blocos de envio.
+A URL validada vai em `image_url` e em uma figura depois do primeiro parágrafo, com ALT igual à palavra-chave Rank Math. A versão PHP correspondente remove a whitelist, anexa a imagem e troca a figura por uma URL local do WordPress. Ela ainda precisa ser instalada; detalhes e substituição em `../31-fotos-publicas-alt-rankmath.md`. Se não houver foto válida, a matéria continua como rascunho com capa pendente; os demais itens continuam. Não há promessa de nota Rank Math 80+ ou de identificar visualmente toda fotografia usando apenas essas heurísticas.
+
+Opcionalmente configure `image_credit` e `image_credit_url` em cada fonte. O crédito informado no feed/configuração é preservado; sem crédito, a legenda identifica a fonte, sem inventar autoria oficial. `Divulgação / Fonte Oficial` pode ser declarado em `image_credit` quando correto.
+
+Os 422 de imagem reconhecidos geram um fallback imediato sem foto e sem a figura gerenciada no corpo. O payload novo é salvo antes do segundo POST; falhas de rede posteriores mantêm essa variante na fila. O ID e o permalink confirmado ficam em `wp_id`/`wp_url`, com migração automática e aditiva da tabela. `--retry-image-errors` recupera seletivamente bloqueios antigos de imagem, sem chamar APIs. O fluxo anterior está registrado em `../30-imagens-resilientes-endpoint.md`.
 
 ## Instalar na VPS Ubuntu
 
@@ -225,4 +230,4 @@ python3 -m venv .venv-test
 .venv-test/bin/python -m unittest discover -s tests -v
 ```
 
-Passaram **39 testes locais**: 27 do coletor, incluindo RSS → Gemini → WordPress com APIs simuladas, 503, fallback 422 de imagem, retomada após resposta perdida, migração do banco, recuperação seletiva de bloqueados, chave idempotente, fontes autorizadas, modo dry-run e lock concorrente; mais 12 do configurador de fontes, incluindo descoberta pelo HTML, rotas PHP e sem barra final, fallback com página bloqueada, preservação de IDs/backup, repetição sem duplicatas, falha parcial, edição concorrente e pré-filtro/origem dos XMLs convertidos. Nenhuma chave real foi utilizada nem rascunho real criado por esses testes. O agente não acessou a VPS; a instalação e os testes reais relatados no chat foram executados pelo usuário.
+Passaram **51 testes locais**: 27 do coletor, 12 do configurador e 12 das imagens. Incluem RSS → Gemini → WordPress com APIs simuladas, 503, fallback 422, retomada após resposta perdida, migração do banco, deduplicação, pré-filtro editorial, fotos em Handler.ashx, rejeição de facebook.jpg, bytes/dimensões, figura e ALT. Nenhuma chave real foi utilizada nem rascunho real criado por esses testes. O agente não acessou a VPS; a instalação e os testes reais relatados no chat foram executados pelo usuário.

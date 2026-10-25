@@ -157,11 +157,15 @@ class CollectorTest(unittest.TestCase):
                '<description>Fonte autorizada</description><item><title>Notícia regional</title>'
                '<link>https://fonte.example/noticia</link><guid>guid-integracao</guid>'
                '<pubDate>'+formatdate(time.time()-60, usegmt=True)+'</pubDate>'
+               '<enclosure url="https://fonte.example/capa.jpg" type="image/jpeg" />'
                '<description><![CDATA['+'Conteúdo factual da fonte. '*20+']]></description></item></channel></rss>').encode()
         c = self.client();published = []
         def remote(method, url, **kwargs):
             if url == 'https://fonte.example/feed':
                 r = response(200);r.iter_content.return_value = [xml];return r
+            if url == 'https://fonte.example/capa.jpg':
+                image=m.BytesIO();m.Image.new('RGB',(400,250),(80,100,140)).save(image,format='JPEG')
+                r=response(200);r.iter_content.return_value=[image.getvalue()];return r
             if url.endswith(':generateContent'):
                 self.assertEqual(kwargs['headers'], {'x-goog-api-key': 'chave-google-teste'})
                 return response(200, {'candidates': [{'finishReason': 'STOP', 'content': {'parts': [{'text': json.dumps(generated())}]}}]})
@@ -171,11 +175,13 @@ class CollectorTest(unittest.TestCase):
                 self.assertEqual(kwargs['json']['status'], 'draft')
                 self.assertEqual(set(kwargs['json']['meta']), set(m.SEO_FIELDS))
                 self.assertNotIn('x-goog-api-key', kwargs['headers'])
+                self.assertEqual(kwargs['json']['image_url'],'https://fonte.example/capa.jpg')
+                self.assertIn('<figure class="g73-imported-image">',kwargs['json']['content'])
                 published.append(kwargs['json']);return response(201, {'id': 88, 'status': 'draft'})
             self.fail('Destino inesperado')
         c.session.request = Mock(side_effect=remote)
         source = dict(self.source, url='https://fonte.example/feed', name='Fonte autorizada', max_age_hours=72)
-        with patch.object(m, 'public_feed_host'):
+        with patch.object(m, 'public_feed_host'), patch.object(m, 'public_asset_host'):
             self.assertEqual(m.discover(c, self.store, [source]), (1, 0))
             self.assertEqual(m.process(c, self.store, 5), (1, False))
             self.assertEqual(m.discover(c, self.store, [source]), (0, 0))

@@ -11,6 +11,7 @@ import hashlib
 import html
 from html.parser import HTMLParser
 import ipaddress
+from io import BytesIO
 import json
 import logging
 import os
@@ -21,8 +22,11 @@ import socket
 import sqlite3
 import sys
 import time
+import warnings
 from email.utils import parsedate_to_datetime
-from urllib.parse import parse_qsl, urlencode, urljoin, urlsplit, urlunsplit
+from urllib.parse import parse_qsl, unquote, urlencode, urljoin, urlsplit, urlunsplit
+from bs4 import BeautifulSoup
+from PIL import Image, UnidentifiedImageError
 import feedparser
 import requests
 
@@ -36,6 +40,9 @@ IMAGE_ERRORS = {
     "image_register", "image_metadata", "image_processing", "featured_image",
 }
 TRACKING = {"fbclid", "gclid", "dclid", "msclkid", "mc_cid", "mc_eid"}
+IMAGE_BAD_WORDS = ("facebook", "logo", "icon", "share", "avatar", "banner-default")
+NON_IMAGE_EXTENSIONS = {".svg", ".ico", ".pdf", ".html", ".htm", ".js", ".css", ".json", ".xml",
+                        ".txt", ".mp4", ".webm", ".mp3", ".zip", ".woff", ".woff2"}
 SCHEMA = {
     "type": "OBJECT", "required": ["apto", "observacao", "title", "excerpt", "blocks", "tags", "meta"],
     "properties": {
@@ -63,6 +70,10 @@ URLs novas, Markdown ou instruções internas ao leitor. Sugira até 8 tags. Ger
 meta do Rank Math: palavra-chave específica, título SEO e descrição fiel. observacao é interna.
 Limites: title 200 caracteres; excerpt 320; de 1 a 25 blocos de até 4000 caracteres;
 focus keyword 100, título SEO 100, descrição SEO 200; até 8 tags de 60 caracteres.
+Comece o texto com um parágrafo. Use uma palavra-chave fiel aos fatos e, de modo natural,
+inclua-a no título, título SEO, descrição SEO, primeiro parágrafo e em um subtítulo quando
+apropriado. Não repita artificialmente nem aumente o texto sem informação para obter nota.
+O programa insere a fotografia e seu ALT; não invente imagens, créditos ou URLs.
 O editor humano revisará o rascunho antes de publicar. Responda apenas no JSON solicitado."""
 
 class ConfigError(Exception):
@@ -128,14 +139,106 @@ def canonical_url(value: str) -> str:
     return urlunsplit((p.scheme.lower(), host, p.path or "/", urlencode(query), ""))
 
 def public_feed_host(url: str):
-    checked_url(url, https_only=True)
+    public_asset_host(url, https_only=True)
+
+def public_asset_host(url: str, https_only=False):
+    checked_url(url, https_only=https_only)
     host = urlsplit(url).hostname
     try:
-        addresses = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
+        port = urlsplit(url).port or (443 if urlsplit(url).scheme == "https" else 80)
+        addresses = socket.getaddrinfo(host, port, type=socket.SOCK_STREAM)
     except OSError as exc:
         raise Deferred("Falha de DNS da fonte.") from exc
     if not addresses or any(not ipaddress.ip_address(x[4][0]).is_global for x in addresses):
         raise ConfigError("Fonte/redirect resolve para endereço não público.")
+
+def clean_image_url(value, base=""):
+    if not isinstance(value, str) or not value.strip() or len(value) > 2048:
+        return None
+    url = urljoin(base, html.unescape(value.strip()))
+    try:
+        checked_url(url)
+        parsed = urlsplit(url)
+        if any(word in unquote(url).lower() for word in IMAGE_BAD_WORDS):
+            return None
+        if Path(unquote(parsed.path)).suffix.lower() in NON_IMAGE_EXTENSIONS:
+            return None
+        # Handler.ashx / imagem.php são aceitos; o arquivo real é validado por MIME/dimensões.
+        try:
+            if not ipaddress.ip_address(parsed.hostname).is_global:
+                return None
+        except ValueError:
+            pass
+        return urlunsplit((parsed.scheme, parsed.netloc, parsed.path, parsed.query, ""))
+    except (ConfigError, ValueError):
+        return None
+
+def html_image_candidates(markup, base, article=False):
+    soup = BeautifulSoup(markup or "", "html.parser")
+    candidates = []
+    if article:
+        for tag in soup.find_all("meta"):
+            kind = (tag.get("property") or tag.get("name") or "").lower()
+            if kind in {"og:image", "og:image:url", "og:image:secure_url", "twitter:image", "twitter:image:src"}:
+                candidates.append({"url": tag.get("content", "")})
+        images = soup.select('article img, [itemprop="articleBody"] img, .entry-content img, .post-content img, .noticia-conteudo img, .conteudo-noticia img, main img')
+        if not images:
+            images = soup.find_all("img")
+    else:
+        images = soup.find_all("img")
+    for tag in images[:60]:
+        if tag.find_parent(["header", "footer", "nav", "aside"]):
+            continue
+        attrs = " ".join(str(tag.get(key, "")) for key in ("alt", "class", "id"))
+        if any(word in attrs.lower() for word in IMAGE_BAD_WORDS):
+            continue
+        try:
+            width, height = int(tag.get("width", 0)), int(tag.get("height", 0))
+            if (0 < width < 200) or (0 < height < 200):
+                continue
+        except (ValueError, TypeError):
+            pass
+        srcset = tag.get("data-srcset") or tag.get("srcset") or ""
+        variants = []
+        for part in srcset.split(","):
+            words = part.strip().split()
+            if words:
+                size = float(words[1][:-1]) if len(words)>1 and re.fullmatch(r"\d+(?:\.\d+)?[wx]", words[1]) else 0
+                variants.append((size, words[0]))
+        for _, url in sorted(variants, reverse=True):
+            candidates.append({"url": url})
+        for key in ("data-src", "data-lazy-src", "data-original", "src"):
+            if tag.get(key):
+                candidates.append({"url": tag[key]})
+    result, seen = [], set()
+    for candidate in candidates:
+        url = clean_image_url(candidate["url"], base)
+        if url and url not in seen:
+            seen.add(url); result.append(dict(candidate, url=url))
+    return result[:12]
+
+def feed_image_candidates(entry, base):
+    candidates = []
+    for media in entry.get("media_content", []):
+        if media.get("medium") not in {None, "image"} or str(media.get("type") or "").startswith("video/"):
+            continue
+        candidates.append({"url": media.get("url", "")})
+    for link in list(entry.get("enclosures", []))+list(entry.get("links", [])):
+        if str(link.get("type") or "").startswith("image/"):
+            candidates.append({"url": link.get("href") or link.get("url", "")})
+    for markup in [entry.get("summary", "")]+[part.get("value", "") for part in entry.get("content", [])]:
+        candidates.extend(html_image_candidates(markup, base))
+    candidates.extend({"url": media.get("url", "")} for media in entry.get("media_thumbnail", []))
+    result, seen = [], set()
+    for candidate in candidates:
+        url = clean_image_url(candidate["url"], base)
+        if url and url not in seen:
+            seen.add(url); result.append({"url": url})
+    return result[:8]
+
+def without_managed_image(content):
+    return re.sub(r'<figure\b[^>]*\bclass="[^\"]*\bg73-imported-image\b[^\"]*"[^>]*>.*?</figure\s*>',
+                  '', content, flags=re.I|re.S)
 
 class Store:
     def __init__(self, path: Path):
@@ -215,6 +318,7 @@ class Store:
                 if not isinstance(payload, dict) or payload.get("status") != "draft" or not payload.get("image_url"):
                     continue
                 payload["image_url"] = ""
+                payload["content"] = without_managed_image(payload.get("content", ""))
                 self.db.execute("UPDATE items SET status='prepared',payload=?,last_error=NULL,next_try=0,updated_at=? WHERE id=?",
                                 (json.dumps(payload, ensure_ascii=False, sort_keys=True), time.time(), row["id"]))
                 changed += 1
@@ -234,6 +338,7 @@ class Client:
         self.session.headers["User-Agent"] = "Giro73RSS/1.0"
         self.model_checked = False
         self.last_permalink = None
+        self.image_cache = {}
     def remaining(self):
         remaining = self.deadline - time.monotonic()
         if remaining <= 1:
@@ -370,6 +475,93 @@ class Client:
                 raise StopRun("A checagem WordPress não confirmou o contrato/autenticação esperado.")
         finally:
             r.close()
+    def asset(self, url, limit, deadline, image=False):
+        """GET público sem credenciais, com orçamento curto e redirects validados."""
+        for _ in range(6):
+            if image and not clean_image_url(url):
+                raise ItemError("URL de ícone/logo ou arquivo não-imagem ignorada.")
+            public_asset_host(url)
+            budget = min(self.remaining(), deadline-time.monotonic())
+            if budget <= 0:
+                raise ItemError("Tempo de busca da fotografia esgotado.")
+            response = self.session.request("GET", url, timeout=(min(5,budget),min(10,budget)),
+                                            allow_redirects=False, stream=True,
+                                            headers={"Accept": "image/*" if image else "text/html"})
+            try:
+                if response.status_code in {301,302,303,307,308}:
+                    url = urljoin(url, response.headers.get("Location", ""))
+                    continue
+                if response.status_code != 200:
+                    raise ItemError(f"Origem da imagem/página HTTP {response.status_code}.")
+                data = bytearray()
+                for chunk in response.iter_content(32768):
+                    self.remaining()
+                    if time.monotonic() > deadline:
+                        raise ItemError("Tempo de busca da fotografia esgotado.")
+                    data.extend(chunk)
+                    if len(data)>limit:
+                        raise ItemError("Imagem/página acima do limite de download.")
+                return bytes(data), url
+            finally:
+                response.close()
+        raise ItemError("Mais de cinco redirecionamentos na origem da imagem.")
+
+    def image_info(self, url, deadline):
+        if url in self.image_cache:
+            if self.image_cache[url] is None:
+                raise ItemError("Imagem já rejeitada nesta execução.")
+            return dict(self.image_cache[url])
+        try:
+            data, final_url = self.asset(url, 8*1024*1024, deadline, image=True)
+            with warnings.catch_warnings():
+                warnings.simplefilter("error", Image.DecompressionBombWarning)
+                with Image.open(BytesIO(data)) as photo:
+                    width, height = photo.size
+                    if photo.format not in {"JPEG","PNG","WEBP","GIF","AVIF"}:
+                        raise ItemError("Formato não suportado para fotografia.")
+                    if min(width,height)<200 or width*height>24000000:
+                        raise ItemError("Fotografia fora de 200×200 / 24 megapixels.")
+                    photo.verify()
+            info = {"url": final_url, "width": width, "height": height}
+            if len(self.image_cache)>=128:
+                self.image_cache.clear()
+            self.image_cache[url] = info
+            return dict(info)
+        except (UnidentifiedImageError, OSError, ValueError, SyntaxError,
+                Image.DecompressionBombWarning, Image.DecompressionBombError) as error:
+            self.image_cache[url] = None
+            raise ItemError("A origem não entregou uma imagem válida.") from error
+        except (ItemError, ConfigError, requests.exceptions.RequestException):
+            self.image_cache[url] = None
+            raise
+
+    def resolve_image(self, entry):
+        deadline = time.monotonic()+min(30,self.remaining()-1)
+        seen = set()
+        def probe(candidates):
+            for candidate in candidates[:8]:
+                url = clean_image_url(candidate.get("url", "") if isinstance(candidate,dict) else candidate, entry["url"])
+                if not url or url in seen:
+                    continue
+                if time.monotonic() >= deadline:
+                    break
+                seen.add(url)
+                try:
+                    return self.image_info(url, deadline)
+                except (ItemError, ConfigError, Deferred, requests.exceptions.RequestException):
+                    self.remaining()  # Só o limite global encerra a fila; DNS de foto não encerra.
+                    continue
+            return None
+        candidates = ([{"url":entry["image_url"]}] if entry.get("image_url") else [])+entry.get("image_candidates", [])
+        result = probe(candidates)
+        if result is None and time.monotonic()<deadline:
+            try:
+                markup, final_url = self.asset(entry["url"], 2*1024*1024, deadline)
+                result = probe(html_image_candidates(markup, final_url, article=True))
+            except (ItemError, ConfigError, Deferred, requests.exceptions.RequestException):
+                self.remaining()
+        return result
+
     def feed(self, url):
         for _ in range(4):
             public_feed_host(url)
@@ -399,7 +591,7 @@ class Client:
                 r.close()
         raise ItemError("Excesso de redirecionamentos no feed.")
 
-def payload_from(generated: dict, entry: dict, category: str) -> dict | None:
+def payload_from(generated: dict, entry: dict, category: str, image=None) -> dict | None:
     if not isinstance(generated, dict) or type(generated.get("apto")) is not bool:
         raise ItemError("Resposta editorial sem campo apto válido.")
     if not generated["apto"]:
@@ -429,12 +621,28 @@ def payload_from(generated: dict, entry: dict, category: str) -> dict | None:
     if not isinstance(meta, dict):
         raise ItemError("SEO ausente na resposta Gemini.")
     seo = {key: text(meta.get(key), limit) for key, limit in zip(SEO_FIELDS, (100, 100, 200))}
+    image_url, image_credit, image_credit_url = "", "", ""
+    if isinstance(image,dict) and clean_image_url(image.get("url", "")):
+        image_url = image["url"]
+        image_credit = entry.get("image_credit") or "Imagem da fonte: "+entry["publisher"]
+        image_credit_url = entry.get("image_credit_url", "")
+        caption = image_credit if re.match(r"^(?:foto|imagem|fonte|cr[eé]dito)\s*:",image_credit,re.I) else "Foto: "+image_credit
+        dimensions = ""
+        if image.get("width") and image.get("height"):
+            dimensions = f' width="{int(image["width"])}" height="{int(image["height"])}"'
+        figure = ('<figure class="g73-imported-image"><img src="'+html.escape(image_url,quote=True)
+                  +'" alt="'+html.escape(seo["rank_math_focus_keyword"],quote=True)+'"'
+                  +dimensions+' loading="lazy" decoding="async" /><figcaption>'
+                  +html.escape(caption)+'</figcaption></figure>')
+        position = next((index+1 for index,block in enumerate(blocks) if block["type"]=="p"),0)
+        content.insert(position,figure)
     tags = generated.get("tags", [])
     if not isinstance(tags, list) or len(tags) > 8:
         raise ItemError("Tags inválidas.")
     return {"title": title, "content": "\n".join(content), "excerpt": excerpt,
             "category": category, "tags": list(dict.fromkeys(text(x, 60) for x in tags)),
-            "image_url": "", "status": "draft", "meta": seo}
+            "image_url": image_url, "image_credit": image_credit, "image_credit_url": image_credit_url,
+            "status": "draft", "meta": seo}
 
 def load_sources(path: Path):
     data = json.loads(path.read_text(encoding="utf-8"))
@@ -459,6 +667,11 @@ def load_sources(path: Path):
                 raise ConfigError(f"{flag} deve ser booleano JSON.")
         f = dict(f)
         f["name"] = plain(f.get("name") or f["id"])
+        for field in ("image_credit", "image_credit_url"):
+            if field in f and (not isinstance(f[field],str) or len(f[field])>500):
+                raise ConfigError("Crédito de imagem inválido na fonte.")
+        if f.get("image_credit_url"):
+            checked_url(f["image_credit_url"],https_only=True)
         f["max_age_hours"] = int(f.get("max_age_hours", 72))
         if not 1 <= f["max_age_hours"] <= 720:
             raise ConfigError("max_age_hours deve ficar entre 1 e 720.")
@@ -497,6 +710,11 @@ def discover(client: Client, store: Store, sources: list):
                         "publisher": source["name"], "source_title": plain(entry.get("title", ""))[:300],
                         "source_text": material, "published_at": published,
                         "max_age_hours": source["max_age_hours"], "regional_scope": "Teixeira de Freitas e Extremo Sul da Bahia"}
+                item["image_candidates"] = feed_image_candidates(entry, url)
+                credits = entry.get("media_credit", [])
+                media_credit = " ".join(str(c.get("content") or c.get("value") or "") for c in credits if isinstance(c,dict))
+                item["image_credit"] = plain(source.get("image_credit") or media_credit)[:250]
+                item["image_credit_url"] = source.get("image_credit_url", "")
                 added += store.discover(source, item)
             total += added
             LOG.info("Fonte %s: %s candidatos novos.", source["id"], added)
@@ -519,11 +737,14 @@ def process(client: Client, store: Store, limit: int, dry_run=False):
                     store.finish(key, "skipped", error="fonte_antiga")
                     continue
                 generated = client.generate(entry)
-                payload = payload_from(generated, entry, item["category"])
+                image = client.resolve_image(entry) if isinstance(generated,dict) and generated.get("apto") and hasattr(client,"resolve_image") else None
+                payload = payload_from(generated, entry, item["category"], image=image)
                 if payload is None:
                     store.finish(key, "skipped", error="fonte_insuficiente_ou_revisao_necessaria")
                     continue
                 store.prepare(key, payload)
+                if not payload.get("image_url"):
+                    LOG.warning("Item %s: fotografia não encontrada; rascunho ficará com capa pendente.",key[:12])
             if dry_run:
                 LOG.info("Item %s preparado; dry-run não envia ao WordPress.", key[:12])
                 continue
@@ -534,6 +755,7 @@ def process(client: Client, store: Store, limit: int, dry_run=False):
                 LOG.warning("Item %s: %s; reenviando como rascunho sem imagem.", key[:12], exc)
                 payload["image_url"] = ""
                 payload["status"] = "draft"
+                payload["content"] = without_managed_image(payload.get("content", ""))
                 # Primeiro persistir. Se o segundo POST perder a resposta, repetir esta variante.
                 store.prepare(key, payload)
                 store.attempt(key)

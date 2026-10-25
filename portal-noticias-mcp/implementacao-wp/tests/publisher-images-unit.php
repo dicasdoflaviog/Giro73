@@ -23,8 +23,13 @@ class FakeRequest {
 $root=sys_get_temp_dir().'/g73-php-test-'.bin2hex(random_bytes(5));mkdir($root.'/wp-admin/includes',0777,true);mkdir($root.'/uploads');
 file_put_contents($root.'/wp-admin/includes/file.php','<?php');file_put_contents($root.'/wp-admin/includes/image.php','<?php');
 define('ABSPATH',$root.'/');
-$png=base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl6l1sAAAAASUVORK5CYII=');
-$scenario=array();$posts=array();$media=array();$meta=array();$options=array();$http=array();$actions=array();$serial=0;$editor_calls=0;
+function fixture_png($width=200,$height=200){
+ $chunk=function($type,$data){return pack('N',strlen($data)).$type.$data.pack('N',crc32($type.$data));};
+ $pixels=str_repeat("\x00".str_repeat("\xff\xff\xff",$width),$height);
+ return "\x89PNG\r\n\x1a\n".$chunk('IHDR',pack('NNCCCCC',$width,$height,8,2,0,0,0)).$chunk('IDAT',gzcompress($pixels)).$chunk('IEND','');
+}
+$png=fixture_png();
+$scenario=array();$posts=array();$media=array();$meta=array();$options=array();$http=array();$actions=array();$serial=0;$editor_calls=0;$inserted_statuses=array();
 class FakeDB {
  public $options='options';
  function prepare($sql,...$args){return $sql;}
@@ -38,7 +43,7 @@ function update_option($key,$value,$autoload=false){$GLOBALS['options'][$key]=$v
 function wp_parse_url($url,$component=-1){return parse_url($url,$component);}
 function home_url($path=''){return 'https://giro73.com.br'.$path;}
 function is_wp_error($value){return $value instanceof WP_Error;}
-function attachment_url_to_postid($url){return 0;}
+function attachment_url_to_postid($url){return str_starts_with($url,'https://giro73.com.br/')?($GLOBALS['scenario']['local_id']??0):0;}
 function wp_http_validate_url($url){return filter_var($url,FILTER_VALIDATE_URL);}
 function wp_tempnam($name){return tempnam(ABSPATH,$name);}
 function wp_safe_remote_get($url,$args){
@@ -69,6 +74,8 @@ function trailingslashit($path){return rtrim($path,'/').'/';}
 function wp_unique_filename($path,$name){return $name;}
 function wp_generate_uuid4(){return sprintf('00000000-0000-4000-8000-%012d',++$GLOBALS['serial']);}
 function esc_url($url){return htmlspecialchars($url,ENT_QUOTES);}
+function esc_attr($value){return htmlspecialchars($value,ENT_QUOTES);}
+function esc_html($value){return htmlspecialchars($value,ENT_QUOTES);}
 function wp_slash($value){return $value;}
 function wp_insert_attachment($data,$file,$parent=0,$error=false){
  if(!empty($GLOBALS['scenario']['register_error'])){return new WP_Error('register_failed');}
@@ -113,9 +120,9 @@ function get_posts($args){$found=array();foreach($GLOBALS['posts'] as $id=>$post
 function get_transient($key){return false;}
 function set_transient($key,$value,$duration){return true;}
 function wp_cache_delete(...$args){}function wp_cache_set(...$args){}
-function wp_insert_post($post,$error=false){$id=100+count($GLOBALS['posts']);$GLOBALS['posts'][$id]=$post;$GLOBALS['meta'][$id]=$post['meta_input'];return $id;}
+function wp_insert_post($post,$error=false){$GLOBALS['inserted_statuses'][]=$post['post_status'];$id=100+count($GLOBALS['posts']);$GLOBALS['posts'][$id]=$post;$GLOBALS['meta'][$id]=$post['meta_input'];return $id;}
 function wp_set_post_terms(...$args){return array();}
-function wp_update_post($post){return $post['ID'];}
+function wp_update_post($post){if(isset($GLOBALS['posts'][$post['ID']])){$GLOBALS['posts'][$post['ID']]=array_merge($GLOBALS['posts'][$post['ID']],$post);}return $post['ID'];}
 function wp_delete_post($id,$force=false){unset($GLOBALS['posts'][$id],$GLOBALS['meta'][$id]);}
 function clean_post_cache($id){}
 function do_action(...$args){$GLOBALS['actions'][]=$args;}
@@ -123,9 +130,9 @@ function do_action(...$args){$GLOBALS['actions'][]=$args;}
 require dirname(__DIR__).'/motor-publicacao.php';
 function expect($condition,$message){if(!$condition){throw new RuntimeException($message);}}
 function reset_case($changes=array()){
- global $scenario,$posts,$media,$meta,$options,$http,$actions,$editor_calls;
+ global $scenario,$posts,$media,$meta,$options,$http,$actions,$editor_calls,$inserted_statuses;
  foreach(glob(ABSPATH.'uploads/*') as $path){unlink($path);}
- $scenario=$changes;$posts=array();$media=array();$meta=array();$http=array();$actions=array();$editor_calls=0;
+ $scenario=$changes;$posts=array();$media=array();$meta=array();$http=array();$actions=array();$editor_calls=0;$inserted_statuses=array();
  $options=array('g73_publisher_image_hosts'=>array('prado.ba.gov.br','camaraprado.ba.gov.br','giro73.com.br'));
 }
 function received($request=null){
@@ -141,25 +148,32 @@ $tests=array(
  'GD ausente preserva imagem original pequena'=>function(){
   reset_case();$data=received();expect($data['featured_media']>0,'Original não anexado.');
   $id=$data['featured_media'];expect(get_post_mime_type($id)==='image/png','MIME original não preservado.');
-  expect($data['image']['width']===1&&$data['image']['height']===1,'Dimensões pequenas rejeitadas.');
+  expect($data['image']['width']===200&&$data['image']['height']===200,'Dimensões pequenas rejeitadas.');
   expect($GLOBALS['http'][0]['redirection']===5&&$GLOBALS['http'][0]['reject_unsafe_urls']&&$GLOBALS['http'][0]['sslverify'],'Transporte seguro/redirect incorreto.');
  },
  'Exceção do editor não bloqueia o post'=>function(){reset_case(array('editor'=>'throw'));$data=received();expect($data['featured_media']>0,'Exceção perdeu original.');},
  'Erro de resize preserva original'=>function(){reset_case(array('editor'=>'resize_error'));$data=received();expect($data['featured_media']>0,'Resize abortou.');},
  'Erro de WebP preserva original'=>function(){reset_case(array('editor'=>'save_error'));$data=received();expect($data['featured_media']>0,'WebP abortou.');},
  'Orçamento de 60 KB não rejeita nem deixa sobras'=>function(){reset_case(array('editor'=>'budget'));$data=received();expect($data['featured_media']>0,'Orçamento abortou.');expect(count(glob(ABSPATH.'uploads/*.webp'))===0,'WebP incompleto ficou órfão.');},
- 'Metadata vazia registra dimensões mínimas'=>function(){reset_case(array('metadata'=>'empty'));$data=received();expect($data['featured_media']>0&&$data['image']['width']===1,'Metadata vazia bloqueou original.');},
+ 'Metadata vazia registra dimensões mínimas'=>function(){reset_case(array('metadata'=>'empty'));$data=received();expect($data['featured_media']>0&&$data['image']['width']===200,'Metadata vazia bloqueou original.');},
  'Exceção de metadata não bloqueia original'=>function(){reset_case(array('metadata'=>'throw'));$data=received();expect($data['featured_media']>0,'Exceção de metadata abortou.');},
  'WP_Error de metadata não bloqueia original'=>function(){reset_case(array('metadata'=>'error'));$data=received();expect($data['featured_media']>0,'WP_Error de metadata abortou.');},
  'Falha de download cria rascunho sem capa'=>function(){reset_case(array('download'=>'error'));$data=received();expect($data['featured_media']===0&&$data['status']==='draft','Download impediu draft.');expect(str_contains(implode(' ',$data['warnings']),'g73_image_download'),'Aviso de download ausente.');},
  'Host inseguro é ignorado sem download'=>function(){reset_case();$data=received(new FakeRequest(array('image_url'=>'http://127.0.0.1/imagem.jpg')));expect($data['featured_media']===0&&count($GLOBALS['http'])===0,'Host inseguro foi acessado.');},
  'HTML não é registrado como imagem'=>function(){reset_case(array('download'=>'html'));$data=received();expect($data['featured_media']===0&&count($GLOBALS['media'])===0,'HTML virou mídia.');},
  'Falha ao registrar mídia preserva texto e limpa arquivos'=>function(){reset_case(array('register_error'=>true));$data=received();expect($data['featured_media']===0&&count(glob(ABSPATH.'uploads/*'))===0,'Mídia com erro ficou órfã.');},
- 'Status publish é respeitado sem exigir capa'=>function(){reset_case();$data=received(new FakeRequest(array('status'=>'publish','image_url'=>'')));expect($data['status']==='publish','Status solicitado mudou.');},
+ 'Publish sem capa permanece em rascunho'=>function(){reset_case();$data=received(new FakeRequest(array('status'=>'publish','image_url'=>'')));expect($data['status']==='draft','Matéria sem imagem foi publicada.');},
  'Replay mantém ID e avisos sem duplicar'=>function(){reset_case(array('download'=>'error'));$request=new FakeRequest();$data=received($request);$replay=g73_pub_publish($request);expect($replay->get_status()===200&&$replay->data['id']===$data['id']&&count($GLOBALS['posts'])===1,'Replay duplicou.');expect($replay->data['warnings']===$data['warnings'],'Avisos não persistiram.');},
  'Falha de associação da capa preserva matéria'=>function(){reset_case(array('thumbnail_error'=>true));$data=received();expect($data['featured_media']===0,'Thumbnail inválida não foi retirada.');},
  'Otimização pode ser desativada'=>function(){reset_case();$GLOBALS['options']['g73_publisher_optimize_images']=false;$data=received();expect($data['featured_media']>0&&$GLOBALS['editor_calls']===0,'Resize opcional ainda executou.');},
  'Validação do texto continua obrigatória'=>function(){reset_case();$result=g73_pub_publish(new FakeRequest(array('title'=>'')));expect(is_wp_error($result)&&count($GLOBALS['posts'])===0,'Texto inválido foi aceito.');},
+ 'Host público fora da antiga lista é aceito'=>function(){reset_case();$data=received(new FakeRequest(array('image_url'=>'https://outra-prefeitura.example/Handler.ashx?f=i&query=123')));expect($data['featured_media']>0&&count($GLOBALS['http'])===1,'Host público foi bloqueado por whitelist.');},
+ 'ALT usa exatamente a palavra-chave Rank Math'=>function(){reset_case();$keyword='crédito & renda "segura"';$request=new FakeRequest(array('meta'=>array('rank_math_title'=>'Título SEO','rank_math_description'=>'Descrição SEO','rank_math_focus_keyword'=>$keyword)));$data=received($request);expect(get_post_meta($data['featured_media'],'_wp_attachment_image_alt',true)===$keyword,'ALT divergiu da palavra-chave.');},
+ 'Figura local depois do primeiro parágrafo sem duplicação'=>function(){reset_case();$request=new FakeRequest(array('content'=>'<p>Primeiro parágrafo.</p><figure class="g73-imported-image"><img src="https://origem.example/foto.jpg" alt="antigo" /></figure><p>Segundo parágrafo.</p>'));$data=received($request);$content=$GLOBALS['posts'][$data['id']]['post_content'];expect(substr_count($content,'<figure')===1,'Figura foi duplicada.');expect(strpos($content,'</p>')<strpos($content,'<figure')&&strpos($content,'<figure')<strpos($content,'Segundo'),'Figura fora da posição.');expect(str_contains($content,'https://giro73.com.br/uploads/')&&str_contains($content,'alt="notícia regional"'),'Imagem local/ALT ausente.');},
+ 'Imagem menor que 200 pixels não vira capa'=>function(){reset_case();$normal=$GLOBALS['png'];$GLOBALS['png']=fixture_png(199,199);$data=received();$GLOBALS['png']=$normal;expect($data['featured_media']===0&&$data['status']==='draft','Ícone pequeno foi anexado.');},
+ 'Publish com foto válida mantém publicação'=>function(){reset_case();$data=received(new FakeRequest(array('status'=>'publish')));expect($data['status']==='publish'&&$data['featured_media']>0,'Foto válida não permitiu publicar.');expect($GLOBALS['inserted_statuses']===array('draft'),'Houve publicação antes da associação da capa.');},
+ 'ALT de mídia compartilhada não é alterado em outras matérias'=>function(){reset_case(array('local_id'=>500));$file=ABSPATH.'uploads/original.png';file_put_contents($file,$GLOBALS['png']);$GLOBALS['media'][500]=array('data'=>array('post_mime_type'=>'image/png'),'file'=>$file);update_post_meta(500,'_wp_attachment_metadata',array('width'=>200,'height'=>200));update_post_meta(500,'_wp_attachment_image_alt','ALT da matéria anterior');$data=received(new FakeRequest(array('image_url'=>'https://giro73.com.br/uploads/original.png')));expect($data['featured_media']!==500,'Mídia compartilhada foi reutilizada com ALT diferente.');expect(get_post_meta(500,'_wp_attachment_image_alt',true)==='ALT da matéria anterior','ALT antigo foi alterado.');expect(get_post_meta($data['featured_media'],'_wp_attachment_image_alt',true)==='notícia regional','Nova capa não recebeu a palavra-chave.');},
+ 'Publish com download indisponível preserva draft e retira figura remota'=>function(){reset_case(array('download'=>'error'));$data=received(new FakeRequest(array('status'=>'publish','content'=>'<p>Notícia.</p><figure class="g73-imported-image"><img src="https://origem.example/foto.jpg" /></figure>')));expect($data['status']==='draft'&&$data['featured_media']===0,'Publicou sem capa.');expect(!str_contains($GLOBALS['posts'][$data['id']]['post_content'],'<figure'),'Figura remota inválida permaneceu no texto.');},
 );
 foreach($tests as $name=>$test){try{$test();echo 'OK '.$name.PHP_EOL;}catch(Throwable $error){fwrite(STDERR,'FAIL '.$name.': '.$error->getMessage().PHP_EOL);exit(1);}}
 echo 'PASS '.count($tests).' verificações PHP offline'.PHP_EOL;

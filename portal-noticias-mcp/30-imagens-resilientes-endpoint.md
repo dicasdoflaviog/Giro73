@@ -1,5 +1,7 @@
 # Imagens opcionais no endpoint e fallback persistente no coletor
 
+Registro da versão anterior instalada. Nova versão sem whitelist, com ALT e figura no corpo: [31-fotos-publicas-alt-rankmath.md](31-fotos-publicas-alt-rankmath.md), entregue para substituição e ainda não instalada nesta etapa.
+
 PHP instalado no Snippet 12 do WordPress em **25/10/2026**, após autorização explícita do usuário. Código salvo e ativo, prioridade 16, conferido contra o arquivo do repositório sem a abertura `<?php`. A atualização Python continua entregue para integração: o agente não atualizou a VPS. O coletor da VPS já envia imagens, enquanto a versão de referência do repositório ainda monta `image_url: ""` por padrão; preserve a coleta de imagens personalizada ao integrar os trechos abaixo.
 
 ## Instalação confirmada no WordPress
