@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Giro73: RSS autorizado -> Gemini -> fila de RASCUNHOS. Python 3.10+ / Linux.
-Segredos apenas no ambiente: GEMINI_API_KEY e G73_TOKEN. Não usa o bot Telegram.
+"""Giro73: RSS autorizado -> OpenRouter -> fila de RASCUNHOS. Python 3.10+ / Linux.
+Segredos apenas no ambiente: OPENROUTER_API_KEY e G73_TOKEN. Não usa o bot Telegram.
 Estado/fila em SQLite, sem servidor adicional. Uma execução por cron, sem daemon.
 """
 from __future__ import annotations
@@ -27,10 +27,15 @@ from email.utils import parsedate_to_datetime
 from urllib.parse import parse_qsl, unquote, urlencode, urljoin, urlsplit, urlunsplit
 from bs4 import BeautifulSoup
 from PIL import Image, UnidentifiedImageError
+from dotenv import dotenv_values, load_dotenv
 import feedparser
 import requests
 
 LOG = logging.getLogger("giro73.rss")
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+DEFAULT_AI_MODEL = "openai/gpt-4o-mini"
+DEFAULT_ENV_FILE = Path("/opt/giro73-rss/.env")
+LEGACY_ENV_FILE = Path("/etc/giro73-rss.env")
 CATEGORIES = {"noticias-regiao", "politica", "dinheiro-renda-extra",
               "tecnologia-inovacao", "esportes", "famosos-entretenimento"}
 SEO_FIELDS = ("rank_math_focus_keyword", "rank_math_title", "rank_math_description")
@@ -44,15 +49,17 @@ IMAGE_BAD_WORDS = ("facebook", "logo", "icon", "share", "avatar", "banner-defaul
 NON_IMAGE_EXTENSIONS = {".svg", ".ico", ".pdf", ".html", ".htm", ".js", ".css", ".json", ".xml",
                         ".txt", ".mp4", ".webm", ".mp3", ".zip", ".woff", ".woff2"}
 SCHEMA = {
-    "type": "OBJECT", "required": ["apto", "observacao", "title", "excerpt", "blocks", "tags", "meta"],
+    "type": "object", "additionalProperties": False,
+    "required": ["apto", "observacao", "title", "excerpt", "blocks", "tags", "meta"],
     "properties": {
-        "apto": {"type": "BOOLEAN"}, "observacao": {"type": "STRING"},
-        "title": {"type": "STRING"}, "excerpt": {"type": "STRING"},
-        "blocks": {"type": "ARRAY", "items": {"type": "OBJECT", "required": ["type", "text"],
-                    "properties": {"type": {"type": "STRING", "enum": ["p", "h2", "h3"]}, "text": {"type": "STRING"}}}},
-        "tags": {"type": "ARRAY", "items": {"type": "STRING"}},
-        "meta": {"type": "OBJECT", "required": list(SEO_FIELDS),
-                 "properties": {key: {"type": "STRING"} for key in SEO_FIELDS}},
+        "apto": {"type": "boolean"}, "observacao": {"type": "string"},
+        "title": {"type": "string"}, "excerpt": {"type": "string"},
+        "blocks": {"type": "array", "items": {"type": "object", "additionalProperties": False,
+                    "required": ["type", "text"],
+                    "properties": {"type": {"type": "string", "enum": ["p", "h2", "h3"]}, "text": {"type": "string"}}}},
+        "tags": {"type": "array", "items": {"type": "string"}},
+        "meta": {"type": "object", "additionalProperties": False, "required": list(SEO_FIELDS),
+                 "properties": {key: {"type": "string"} for key in SEO_FIELDS}},
     },
 }
 SYSTEM = """Você prepara rascunhos jornalísticos em português do Brasil para a Redação Giro73.
@@ -87,6 +94,20 @@ class Deferred(Exception):
     pass
 class StopRun(Exception):
     pass
+
+def load_environment(path=None):
+    """Ambiente exportado > .env oficial; arquivo legado só completa dados WordPress."""
+    path = Path(path or os.environ.get("G73_RSS_ENV") or DEFAULT_ENV_FILE)
+    try:
+        if path.is_file():
+            load_dotenv(path, override=False, encoding="utf-8-sig")
+        if not os.environ.get("G73_TOKEN") and LEGACY_ENV_FILE.is_file():
+            previous = dotenv_values(LEGACY_ENV_FILE, encoding="utf-8-sig")
+            for key in ("G73_TOKEN", "G73_PUBLISH_URL", "RSS_MAX_RUN_SECONDS"):
+                if isinstance(previous.get(key), str):
+                    os.environ.setdefault(key, previous[key])
+    except OSError as error:
+        raise ConfigError("Não foi possível ler o .env; confira proprietário e permissão do usuário giro73-rss.") from error
 
 class TextOnly(HTMLParser):
     def __init__(self):
@@ -327,17 +348,18 @@ class Store:
         self.db.close()
 
 class Client:
-    def __init__(self, google_key: str, wp_token: str, model: str, endpoint: str, deadline: float, attempts=4):
-        if not re.fullmatch(r"[A-Za-z0-9._-]+", model.removeprefix("models/")):
-            raise ConfigError("GEMINI_MODEL inválido.")
-        self.model = model.removeprefix("models/")
+    def __init__(self, openrouter_key: str, wp_token: str, model: str, endpoint: str, deadline: float, attempts=4):
+        if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,199}", model):
+            raise ConfigError("AI_MODEL inválido; utilize o ID do modelo no OpenRouter.")
+        self.model = model
         self.endpoint = checked_url(endpoint, https_only=True)
-        self.google_key, self.wp_token = google_key, wp_token
+        self.openrouter_key, self.wp_token = openrouter_key, wp_token
         self.deadline, self.attempts = deadline, attempts
         self.session = requests.Session()
         self.session.headers["User-Agent"] = "Giro73RSS/1.0"
         self.model_checked = False
         self.last_permalink = None
+        self.last_featured_media = None
         self.image_cache = {}
     def remaining(self):
         remaining = self.deadline - time.monotonic()
@@ -396,43 +418,75 @@ class Client:
                 raise Deferred("Retry-After/espera excede o tempo restante; fila preservada.")
             time.sleep(delay)
         raise Deferred("Requisição adiada.")
-    def google_json(self, path, body=None):
+    def openrouter_json(self, path, body=None):
+        if path not in {"key", "models", "chat/completions"}:
+            raise ConfigError("Rota OpenRouter não permitida pelo cliente.")
         r = self.request("POST" if body is not None else "GET",
-             "https://generativelanguage.googleapis.com/v1beta/"+path, "gemini",
-             headers={"x-goog-api-key": self.google_key}, json=body)
+             OPENROUTER_BASE_URL+"/"+path, "openrouter",
+             headers={"Authorization": "Bearer "+self.openrouter_key,
+                      "HTTP-Referer": "https://giro73.com.br", "X-Title": "Giro73 RSS"}, json=body)
         try:
-            if r.status_code in {400, 401, 403, 404}:
-                raise StopRun(f"Gemini HTTP {r.status_code}: confira chave, modelo, acesso e formato. Nenhum modelo alternativo foi usado.")
+            if r.status_code in {400, 401, 402, 403, 404, 413, 422}:
+                raise StopRun(f"OpenRouter HTTP {r.status_code}: confira OPENROUTER_API_KEY, AI_MODEL, saldo e suporte a JSON Schema.")
             if r.status_code != 200:
-                raise StopRun(f"Gemini HTTP inesperado {r.status_code}.")
-            return r.json()
+                raise StopRun(f"OpenRouter HTTP inesperado {r.status_code}.")
+            result = r.json()
+            if not isinstance(result, dict):
+                raise Deferred("OpenRouter retornou uma estrutura inesperada.")
+            if result.get("error"):
+                code = result["error"].get("code") if isinstance(result["error"], dict) else None
+                if str(code) in {"429", "500", "502", "503", "504"}:
+                    raise Deferred("OpenRouter informou erro temporário do provedor; fila preservada.")
+                raise StopRun("OpenRouter recusou a solicitação; confira chave, saldo, modelo e formato.")
+            return result
         except ValueError as exc:
-            raise Deferred("Gemini retornou JSON inválido.") from exc
+            raise Deferred("OpenRouter retornou JSON inválido.") from exc
         finally:
             r.close()
     def check_model(self):
         if not self.model_checked:
-            info = self.google_json("models/"+self.model)
-            if "generateContent" not in info.get("supportedGenerationMethods", []):
-                raise StopRun("O modelo informado não oferece generateContent para esta conta.")
+            self.openrouter_json("key")  # Valida a chave sem gerar texto nem consumir tokens.
+            models = self.openrouter_json("models").get("data", [])
+            if not isinstance(models, list):
+                raise StopRun("Catálogo de modelos OpenRouter inválido.")
+            info = next((row for row in models if isinstance(row,dict) and row.get("id")==self.model), None)
+            if info is None:
+                raise StopRun("AI_MODEL não encontrado no catálogo OpenRouter. Use --list-models e confira o ID exato.")
+            supported = info.get("supported_parameters")
+            if isinstance(supported,list) and "response_format" not in supported:
+                raise StopRun("AI_MODEL não informa suporte a response_format; escolha um modelo com saída estruturada.")
             self.model_checked = True
+            LOG.info("OpenRouter: chave e modelo %s validados.", self.model)
     def generate(self, source: dict):
         self.check_model()
-        body = {"systemInstruction": {"parts": [{"text": SYSTEM}]},
-                "contents": [{"role": "user", "parts": [{"text": json.dumps(source, ensure_ascii=False)}]}],
-                "generationConfig": {"temperature": 0.2, "maxOutputTokens": 4096,
-                                     "responseMimeType": "application/json", "responseSchema": SCHEMA}}
-        result = self.google_json("models/"+self.model+":generateContent", body)
-        candidates = result.get("candidates", [])
-        if not candidates or candidates[0].get("finishReason") not in {None, "STOP"}:
-            raise ItemError("Resposta bloqueada, incompleta ou sem candidato Gemini.")
-        raw = "".join(x.get("text", "") for x in candidates[0].get("content", {}).get("parts", []) if not x.get("thought"))
+        material = {key: source[key] for key in ("source_title","source_text","url","publisher","published_at","regional_scope") if key in source}
+        body = {"model": self.model,
+                "messages": [{"role": "system", "content": SYSTEM},
+                             {"role": "user", "content": json.dumps(material, ensure_ascii=False)}],
+                "temperature": 0.2, "max_tokens": 4096, "stream": False,
+                "response_format": {"type": "json_schema", "json_schema": {
+                    "name": "giro73_draft", "strict": True, "schema": SCHEMA}},
+                "provider": {"require_parameters": True}}
+        result = self.openrouter_json("chat/completions", body)
+        choices = result.get("choices", [])
+        if not isinstance(choices,list) or not choices or not isinstance(choices[0],dict) or choices[0].get("finish_reason") not in {None, "stop"}:
+            raise ItemError("Resposta OpenRouter bloqueada, incompleta ou sem choices.")
+        message = choices[0].get("message", {})
+        if not isinstance(message,dict) or message.get("refusal"):
+            raise ItemError("O modelo recusou a geração do rascunho.")
+        raw = message.get("content")
+        if isinstance(raw,list):
+            raw = "".join(part["text"] for part in raw if isinstance(part,dict)
+                          and part.get("type") in {"text","output_text"} and isinstance(part.get("text"),str))
+        if not isinstance(raw,str) or not raw.strip():
+            raise ItemError("Resposta OpenRouter sem texto editorial.")
         try:
             return json.loads(raw)
         except ValueError as exc:
-            raise ItemError("Resposta Gemini não contém o JSON editorial esperado.") from exc
+            raise ItemError("Resposta OpenRouter não contém o JSON editorial esperado.") from exc
     def submit(self, key: str, payload: dict):
         self.last_permalink = None
+        self.last_featured_media = None
         if payload.get("status") != "draft":
             raise StopRun("Proteção local: tentativa de enviar status diferente de draft.")
         r = self.request("POST", self.endpoint, "wordpress",
@@ -454,6 +508,7 @@ class Client:
                 raise Deferred("WordPress não confirmou um ID válido; repetir com a mesma chave.")
             if result.get("status") != "draft":
                 raise StopRun(f"WordPress retornou status inesperado para post {result['id']}; verificar antes de continuar.")
+            self.last_featured_media = result.get("featured_media")
             if payload.get("image_url") and result.get("featured_media") == 0:
                 LOG.warning("WordPress confirmou o rascunho %s sem capa; consulte os avisos da matéria.", result["id"])
             permalink = result.get("permalink")
@@ -619,7 +674,7 @@ def payload_from(generated: dict, entry: dict, category: str, image=None) -> dic
     content.append('<p><strong>Fonte:</strong> <a href="'+html.escape(entry["url"], quote=True)+'" rel="noopener">'+html.escape(entry["publisher"])+"</a>.</p>")
     meta = generated.get("meta")
     if not isinstance(meta, dict):
-        raise ItemError("SEO ausente na resposta Gemini.")
+        raise ItemError("SEO ausente na resposta da IA.")
     seo = {key: text(meta.get(key), limit) for key, limit in zip(SEO_FIELDS, (100, 100, 200))}
     image_url, image_credit, image_credit_url = "", "", ""
     if isinstance(image,dict) and clean_image_url(image.get("url", "")):
@@ -762,7 +817,8 @@ def process(client: Client, store: Store, limit: int, dry_run=False):
                 post_id = client.submit(key, payload)
             store.finish(key, "sent", wp_id=post_id, wp_url=getattr(client, "last_permalink", None))
             processed += 1
-            LOG.info("Item %s confirmado como rascunho WordPress %s.", key[:12], post_id)
+            LOG.info("Item %s confirmado como rascunho WordPress %s | capa: %s | link: %s",
+                     key[:12], post_id, getattr(client,"last_featured_media",None), getattr(client,"last_permalink",None))
         except ItemError as exc:
             issues = True
             store.finish(key, "blocked", error=str(exc))
@@ -784,9 +840,10 @@ def main(argv=None):
     parser.add_argument("--feeds", type=Path, default=Path("rss_fontes.json"))
     parser.add_argument("--state", type=Path, default=Path("vistos_rss.sqlite3"))
     parser.add_argument("--limit", type=int, default=5, choices=range(1, 11), metavar="1..10")
-    parser.add_argument("--dry-run", action="store_true", help="Gera/salva os payloads, sem enviá-los; consome Gemini.")
+    parser.add_argument("--dry-run", action="store_true", help="Gera/salva os payloads, sem enviá-los; utiliza OpenRouter.")
     parser.add_argument("--check", action="store_true", help="Valida modelo, feeds e token WP sem criar matérias.")
-    parser.add_argument("--list-models", action="store_true", help="Lista IDs Gemini disponíveis à chave informada.")
+    parser.add_argument("--check-ai", action="store_true", help="Valida chave e modelo OpenRouter, sem gerar texto nem chamar WordPress.")
+    parser.add_argument("--list-models", action="store_true", help="Lista IDs de modelos do catálogo OpenRouter.")
     parser.add_argument("--status", action="store_true", help="Mostra contagem local, sem acessar APIs.")
     parser.add_argument("--retry-image-errors", action="store_true", help="Reabre apenas os bloqueados por 422 de imagem, sem foto; não chama APIs.")
     args = parser.parse_args(argv)
@@ -810,29 +867,29 @@ def main(argv=None):
         if args.retry_image_errors:
             LOG.info("Itens de imagem recuperados sem foto: %s. Estado: %s", store.retry_image_errors(), json.dumps(store.counts(), ensure_ascii=False))
             return 0
-        google_key = os.environ.get("GEMINI_API_KEY", "").strip()
+        load_environment()
+        openrouter_key = os.environ.get("OPENROUTER_API_KEY", "").strip()
         wp_token = os.environ.get("G73_TOKEN", "").strip()
-        if not google_key or (not wp_token and not args.list_models):
-            raise ConfigError("Defina GEMINI_API_KEY e G73_TOKEN no ambiente.")
+        if not openrouter_key or (not wp_token and not (args.list_models or args.check_ai)):
+            raise ConfigError("Defina OPENROUTER_API_KEY e G73_TOKEN em /opt/giro73-rss/.env ou no ambiente.")
         run_seconds = int(os.environ.get("RSS_MAX_RUN_SECONDS", "1800"))
         if not 60 <= run_seconds <= 3300:
             raise ConfigError("RSS_MAX_RUN_SECONDS deve ficar entre 60 e 3300.")
-        client = Client(google_key, wp_token, os.environ.get("GEMINI_MODEL", "gemini-3.8-flash"),
+        client = Client(openrouter_key, wp_token, os.environ.get("AI_MODEL", "").strip() or DEFAULT_AI_MODEL,
                         os.environ.get("G73_PUBLISH_URL", "https://giro73.com.br/wp-json/g73/v1/publish"),
                         time.monotonic()+run_seconds)
+        LOG.info("IA configurada: OpenRouter | modelo: %s", client.model)
         if args.list_models:
-            token = ""
-            while True:
-                params = {"pageSize": 1000}
-                if token:
-                    params["pageToken"] = token
-                result = client.google_json("models?"+urlencode(params))
-                for model in result.get("models", []):
-                    if "generateContent" in model.get("supportedGenerationMethods", []):
-                        print(model["name"].removeprefix("models/"))
-                token = result.get("nextPageToken", "")
-                if not token:
-                    return 0
+            client.openrouter_json("key")
+            result = client.openrouter_json("models")
+            for model in result.get("data", []):
+                if isinstance(model,dict) and isinstance(model.get("id"),str):
+                    print(model["id"])
+            return 0
+        if args.check_ai:
+            client.check_model()
+            LOG.info("Checagem OpenRouter concluída; nenhuma geração ou publicação solicitada.")
+            return 0
         sources = load_sources(args.feeds)
         if args.check:
             client.check_model()
@@ -845,9 +902,9 @@ def main(argv=None):
         count, deferred = process(client, store, args.limit, args.dry_run)
         LOG.info("Fim: %s rascunhos confirmados. Estado: %s", count, json.dumps(store.counts(), ensure_ascii=False))
         return 1 if errors or deferred else 0
-    except (ConfigError, StopRun, Deferred, ValueError, OSError, sqlite3.DatabaseError) as exc:
+    except (ConfigError, StopRun, Deferred, ItemError, ValueError, OSError, sqlite3.DatabaseError) as exc:
         # Não imprimir exceções HTTP com URLs/credenciais ou respostas brutas dos provedores.
-        LOG.error("Execução interrompida (%s): %s", type(exc).__name__, str(exc) if isinstance(exc, (ConfigError, StopRun, Deferred)) else "verifique configuração, acesso e banco local")
+        LOG.error("Execução interrompida (%s): %s", type(exc).__name__, str(exc) if isinstance(exc, (ConfigError, StopRun, Deferred, ItemError)) else "verifique configuração, acesso e banco local")
         return 2
     finally:
         if client:

@@ -42,7 +42,7 @@ class CollectorTest(unittest.TestCase):
         self.store.close()
         self.temp.cleanup()
     def client(self):
-        c = m.Client('chave-google-teste', 'token-wp-teste', 'gemini-3.8-flash',
+        c = m.Client('chave-openrouter-teste', 'token-wp-teste', 'openai/gpt-4o-mini',
                      'https://giro73.com.br/wp-json/g73/v1/publish', time.monotonic()+600)
         self.addCleanup(c.session.close)
         return c
@@ -68,27 +68,28 @@ class CollectorTest(unittest.TestCase):
     def test_meta_incompleto_bloqueia_item(self):
         g = generated();del g['meta']['rank_math_title']
         with self.assertRaises(m.ItemError):m.payload_from(g, entry(), 'politica')
-    def test_google_503_repete_e_recupera(self):
+    def test_openrouter_503_repete_e_recupera(self):
         c = self.client()
         c.session.request = Mock(side_effect=[response(503, headers={'Retry-After': '1'}), response(200, {'ok': True})])
         with patch.object(m.time, 'sleep') as sleep, patch.object(m.random, 'uniform', return_value=0):
-            self.assertEqual(c.google_json('models/gemini-3.8-flash'), {'ok': True})
+            self.assertEqual(c.openrouter_json('models'), {'ok': True})
         self.assertEqual(c.session.request.call_count, 2)
         sleep.assert_called_once_with(3)
         headers = c.session.request.call_args.kwargs['headers']
-        self.assertEqual(headers['x-goog-api-key'], 'chave-google-teste')
-        self.assertNotIn('chave-google-teste', c.session.request.call_args.args[1])
-    def test_google_503_persistente_tem_limite(self):
+        self.assertEqual(headers['Authorization'], 'Bearer chave-openrouter-teste')
+        self.assertEqual(c.session.request.call_args.args[1], 'https://openrouter.ai/api/v1/models')
+        self.assertNotIn('chave-openrouter-teste', c.session.request.call_args.args[1])
+    def test_openrouter_503_persistente_tem_limite(self):
         c = self.client();c.session.request = Mock(return_value=response(503))
         with patch.object(m.time, 'sleep') as sleep:
-            with self.assertRaises(m.Deferred):c.google_json('models/gemini-3.8-flash')
+            with self.assertRaises(m.Deferred):c.openrouter_json('models')
         self.assertEqual(c.session.request.call_count, 4)
         self.assertEqual(sleep.call_count, 3)
     def test_modelo_inexistente_nao_tem_fallback_silencioso(self):
-        c = self.client();c.session.request = Mock(return_value=response(404))
+        c = self.client();c.session.request = Mock(side_effect=[response(200,{'data':{}}),response(200,{'data':[]})])
         with self.assertRaises(m.StopRun):c.check_model()
-        self.assertEqual(c.model, 'gemini-3.8-flash')
-        self.assertEqual(c.session.request.call_count, 1)
+        self.assertEqual(c.model, 'openai/gpt-4o-mini')
+        self.assertEqual(c.session.request.call_count, 2)
     def test_503_de_configuracao_wordpress_nao_repete(self):
         c = self.client();c.session.request = Mock(return_value=response(503, {'code': 'g73_disabled'}))
         with patch.object(m.time, 'sleep') as sleep:
@@ -151,7 +152,7 @@ class CollectorTest(unittest.TestCase):
     def test_endpoint_retornando_publicado_interrompe(self):
         c = self.client();c.session.request = Mock(return_value=response(201, {'id': 55, 'status': 'publish'}))
         with self.assertRaises(m.StopRun):c.submit('a'*64, {'status': 'draft'})
-    def test_fluxo_rss_gemini_wordpress_e_segunda_coleta(self):
+    def test_fluxo_rss_openrouter_wordpress_e_segunda_coleta(self):
         from email.utils import formatdate
         xml = ('<rss version="2.0"><channel><title>Fonte</title><link>https://fonte.example/</link>'
                '<description>Fonte autorizada</description><item><title>Notícia regional</title>'
@@ -166,15 +167,19 @@ class CollectorTest(unittest.TestCase):
             if url == 'https://fonte.example/capa.jpg':
                 image=m.BytesIO();m.Image.new('RGB',(400,250),(80,100,140)).save(image,format='JPEG')
                 r=response(200);r.iter_content.return_value=[image.getvalue()];return r
-            if url.endswith(':generateContent'):
-                self.assertEqual(kwargs['headers'], {'x-goog-api-key': 'chave-google-teste'})
-                return response(200, {'candidates': [{'finishReason': 'STOP', 'content': {'parts': [{'text': json.dumps(generated())}]}}]})
-            if url.endswith('/models/gemini-3.8-flash'):
-                return response(200, {'supportedGenerationMethods': ['generateContent']})
+            if url == 'https://openrouter.ai/api/v1/key':
+                return response(200, {'data': {'limit_remaining':100}})
+            if url == 'https://openrouter.ai/api/v1/models':
+                return response(200, {'data': [{'id':'openai/gpt-4o-mini','supported_parameters':['response_format']}]})
+            if url == 'https://openrouter.ai/api/v1/chat/completions':
+                self.assertEqual(kwargs['headers']['Authorization'], 'Bearer chave-openrouter-teste')
+                self.assertEqual(kwargs['json']['model'], 'openai/gpt-4o-mini')
+                self.assertEqual(kwargs['json']['response_format']['type'],'json_schema')
+                return response(200, {'choices': [{'finish_reason': 'stop', 'message': {'content': json.dumps(generated())}}]})
             if url == c.endpoint:
                 self.assertEqual(kwargs['json']['status'], 'draft')
                 self.assertEqual(set(kwargs['json']['meta']), set(m.SEO_FIELDS))
-                self.assertNotIn('x-goog-api-key', kwargs['headers'])
+                self.assertNotIn('Authorization', kwargs['headers'])
                 self.assertEqual(kwargs['json']['image_url'],'https://fonte.example/capa.jpg')
                 self.assertIn('<figure class="g73-imported-image">',kwargs['json']['content'])
                 published.append(kwargs['json']);return response(201, {'id': 88, 'status': 'draft'})

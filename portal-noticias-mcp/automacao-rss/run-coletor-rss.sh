@@ -1,9 +1,7 @@
 #!/bin/sh
 set -eu
 umask 077
-set -a
-. /etc/giro73-rss.env
-set +a
+# O Python carrega /opt/giro73-rss/.env com python-dotenv, sem executar conteúdo shell.
 exec /opt/giro73-rss/.venv/bin/python \
   /opt/giro73-rss/coletor_rss.py \
   --feeds /etc/giro73-rss.json \

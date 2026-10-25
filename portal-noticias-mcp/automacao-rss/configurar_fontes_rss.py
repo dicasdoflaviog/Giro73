@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Descobre/verifica RSS e adiciona fontes sem chamar Gemini ou WordPress.
+"""Descobre/verifica RSS e adiciona fontes sem chamar a IA ou WordPress.
 
 Executar na VPS com o Python do coletor, como administrador. Preserva a fila,
 os IDs, as fontes existentes e salva backup antes de substituir a configuração.

@@ -6,28 +6,32 @@ Python 3.10+ em Ubuntu 22.04/24.04 ou posterior compatível. Não depende do bot
 
 - `coletor_rss.py`: programa completo.
 - `configurar_fontes_rss.py`: inclusão em lote das fontes selecionadas e descoberta de RSS de Portal TX/Vem Vê TX Bahia, executada na VPS.
-- `requirements-rss.txt`: requests e feedparser; SQLite já faz parte do Python.
+- `requirements-rss.txt`: requests, feedparser, BeautifulSoup, Pillow e python-dotenv; SQLite já faz parte do Python.
 - `rss_fontes.example.json`: configuração por fonte, sem inventar feeds autorizados.
 - `giro73-rss.env.example`: exemplo sem credenciais reais.
 - `run-coletor-rss.sh`: wrapper com caminhos absolutos e ambiente.
+- `atualizar-vps.sh`: atualização de uma instalação existente, com backup e bloqueio contra coleta simultânea.
 - `giro73-rss.cron`: coleta de hora em hora, com limite externo de 50 minutos.
 - `giro73-rss.logrotate`: rotação dos logs.
 - `tests/test_coletor_rss.py`: 27 testes automatizados com APIs simuladas.
 - `tests/test_configurar_fontes_rss.py`: 12 testes de descoberta e atualização segura da configuração.
 - `tests/test_imagens_rss.py`: 12 testes de seleção de fotos, validação dos bytes e figura/ALT.
+- `tests/test_openrouter.py`: 12 testes do provedor, JSON estruturado, `.env`, retentativas e confirmação da capa.
 
-## Modelo Gemini
+## Modelo OpenRouter
 
-O padrão solicitado é **gemini-3.8-flash**, configurável em `GEMINI_MODEL`. A disponibilidade desse ID não pôde ser confirmada nesta sessão. Não é feita troca silenciosa por outro modelo: antes de gerar, o script consulta o modelo usando a chave do projeto e exige suporte a `generateContent`. Se o ID não existir ou não estiver autorizado, a execução termina com erro e preserva a fila.
+O provedor oficial é **OpenRouter**, via HTTP com `requests` em `https://openrouter.ai/api/v1`. A chave é `OPENROUTER_API_KEY`; o modelo é `AI_MODEL`, com padrão **`openai/gpt-4o-mini`**. Não há SDK de IA adicional nem chamada direta a outro provedor.
 
-Use `--list-models` para listar os IDs disponíveis à chave; se necessário, selecione um ID retornado e altere explicitamente o arquivo de ambiente. O código usa a API REST Gemini, sem depender de versão de SDK Google.
+Antes da geração, o cliente valida a chave em `/key` e o ID no catálogo `/models`. O modelo precisa aceitar `response_format` com JSON Schema estrito; o pedido usa `/chat/completions` e `provider.require_parameters: true`. Não troca silenciosamente de modelo. `--list-models` lista o catálogo; a disponibilidade efetiva, permissão e saldo também são verificados na chamada de geração. `--check-ai` valida chave e catálogo sem gerar texto nem chamar WordPress.
+
+O arquivo oficial é `/opt/giro73-rss/.env`, carregado pelo Python com `python-dotenv`, inclusive sob `sudo -u giro73-rss` e cron. Variáveis já exportadas têm prioridade. Opcionalmente `G73_RSS_ENV` define outro caminho. Para compatibilidade, se faltar `G73_TOKEN`, o arquivo antigo `/etc/giro73-rss.env` pode completar somente `G73_TOKEN`, `G73_PUBLISH_URL` e `RSS_MAX_RUN_SECONDS`; sua configuração de IA é ignorada. O launcher não executa o conteúdo do `.env` como shell.
 
 ## Fluxo e garantias locais
 
 1. Ler apenas fontes com `authorized: true`, via HTTPS. A autorização é declarada pelo administrador; o script não verifica licenças de terceiros.
 2. Aceitar RSS/Atom de até 2 MB, sem DTD/entidades XML; até 50 entradas por fonte em cada coleta.
 3. Registrar GUID e URL, removendo parâmetros de rastreamento conhecidos. Fontes distintas com a mesma URL compartilham o registro.
-4. Preparar uma nota factual com Gemini; ignorar itens insuficientes ou recusados pelo modelo.
+4. Preparar uma nota factual com OpenRouter; ignorar itens insuficientes ou recusados pelo modelo.
 5. Montar o payload localmente, sempre com `status: draft` e os três campos do Rank Math em `meta`. O modelo não controla categoria, status, credenciais ou destino.
 6. Persistir o payload em SQLite **antes** do POST e enviar `Idempotency-Key: rss-[hash]`.
 7. Registrar como `sent` somente após receber ID válido e status `draft` do WordPress. Depois da confirmação, textos completos locais são descartados; identidade, URL e ID permanecem no histórico.
@@ -40,9 +44,9 @@ O banco `vistos_rss.sqlite3` guarda fila e histórico de itens. Estados: `queued
 
 O modelo recebe somente título, texto fornecido no RSS, URL, identificação da fonte e data. Não navega no artigo completo. `use_full_content: true` permite aproveitar `content:encoded` quando fornecido no próprio feed e autorizado para uso; não contorna paywall ou busca páginas externas.
 
-Entradas com menos de 180 caracteres de material textual são ignoradas. Material insuficiente também pode ser recusado pelo Gemini. Não se inventam falas, dados ou acontecimentos locais para alongar notícias. Os rascunhos precisam de revisão factual/editorial; esses controles não eliminam alucinações de um modelo.
+Entradas com menos de 180 caracteres de material textual são ignoradas. Material insuficiente também pode ser recusado pelo OpenRouter. Não se inventam falas, dados ou acontecimentos locais para alongar notícias. Os rascunhos precisam de revisão factual/editorial; esses controles não eliminam alucinações de um modelo.
 
-O coletor agora procura a foto em metadados/enclosures/HTML do feed e, se necessário, nos metadados e imagens da página original. BeautifulSoup seleciona candidatos; Pillow verifica o arquivo e dimensões mínimas de 200×200, até 8 MB e 24 megapixels. Ícones/logos/compartilhamento e arquivos não-imagem são ignorados. A página original é consultada para localizar imagens; seu texto não é acrescentado ao material fornecido ao Gemini. Use somente fotos com autorização de uso e crédito adequado.
+O coletor agora procura a foto em metadados/enclosures/HTML do feed e, se necessário, nos metadados e imagens da página original. BeautifulSoup seleciona candidatos; Pillow verifica o arquivo e dimensões mínimas de 200×200, até 8 MB e 24 megapixels. Ícones/logos/compartilhamento e arquivos não-imagem são ignorados. A página original é consultada para localizar imagens; seu texto não é acrescentado ao material fornecido ao OpenRouter. Use somente fotos com autorização de uso e crédito adequado.
 
 A URL validada vai em `image_url` e em uma figura depois do primeiro parágrafo, com ALT igual à palavra-chave Rank Math. A versão PHP correspondente remove a whitelist, anexa a imagem e troca a figura por uma URL local do WordPress; ela já foi instalada no Snippet 12, mas a atualização do coletor na VPS não foi executada pelo agente. Detalhes em `../31-fotos-publicas-alt-rankmath.md`. Se não houver foto válida, a matéria continua como rascunho com capa pendente; os demais itens continuam. Não há promessa de nota Rank Math 80+ ou de identificar visualmente toda fotografia usando apenas essas heurísticas.
 
@@ -56,7 +60,7 @@ Baixe o pacote completo, copie para sua VPS (por SCP/SFTP) e, na pasta que cont�
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y python3 python3-venv ca-certificates cron unzip logrotate
+sudo apt-get install -y python3 python3-venv ca-certificates cron unzip logrotate curl util-linux
 unzip giro73-coletor-rss.zip
 cd giro73-rss
 
@@ -76,31 +80,33 @@ sudo /opt/giro73-rss/.venv/bin/pip install --no-cache-dir \
 sudo install -o root -g giro73-rss -m 0640 \
   rss_fontes.example.json /etc/giro73-rss.json
 sudo install -o root -g giro73-rss -m 0640 \
-  giro73-rss.env.example /etc/giro73-rss.env
+  giro73-rss.env.example /opt/giro73-rss/.env
 sudo install -o root -g giro73-rss -m 0750 \
   run-coletor-rss.sh /opt/giro73-rss/run
 ```
 
-Os comandos de cópia de exemplos são para a instalação inicial: em atualizações, preserve os arquivos `/etc/giro73-rss.env` e `/etc/giro73-rss.json` já preenchidos.
+Os comandos de cópia de exemplos são para a instalação inicial: em atualizações, preserve `/opt/giro73-rss/.env`, `/etc/giro73-rss.json` e o banco de vistos já preenchidos.
 
 O endpoint atual possui um único token ativo. Use o token já utilizado pelo bot, mantendo processos/filas separados. Gerar outro token no painel invalida o anterior e exige atualizar os dois clientes.
 
 Edite o ambiente e as fontes:
 
 ```bash
-sudoedit /etc/giro73-rss.env
+sudoedit /opt/giro73-rss/.env
 sudoedit /etc/giro73-rss.json
 ```
 
 Ambiente:
 
 ```sh
-GEMINI_API_KEY='SUA_CHAVE_GOOGLE'
-GEMINI_MODEL='gemini-3.8-flash'
+OPENROUTER_API_KEY='SUA_CHAVE_OPENROUTER'
+AI_MODEL='openai/gpt-4o-mini'
 G73_TOKEN='SEU_TOKEN_X_G73_TOKEN'
 G73_PUBLISH_URL='https://giro73.com.br/wp-json/g73/v1/publish'
 RSS_MAX_RUN_SECONDS='1800'
 ```
+
+Proteja o `.env` com proprietário `root:giro73-rss` e modo `0640`. Não o envie ao Git nem cole chaves nos logs. O token WordPress é o `X-G73-Token` do motor de publicação, diferente da chave OpenRouter e do token Easy MCP.
 
 Exemplo de fonte — substitua a URL antes de habilitar:
 
@@ -131,12 +137,15 @@ Mantenha IDs estáveis. Categorias aceitas: `noticias-regiao`, `politica`, `dinh
 # Lista modelos disponíveis; não gera texto nem cria notícias.
 sudo -u giro73-rss /opt/giro73-rss/run --list-models
 
-# Confira o ID escolhido em /etc/giro73-rss.env.
+# Valida apenas a configuração OpenRouter, sem gerar texto.
+sudo -u giro73-rss /opt/giro73-rss/run --check-ai
+
+# Confira o ID escolhido em /opt/giro73-rss/.env.
 # Valida modelo, token WordPress e leitura dos feeds.
 sudo -u giro73-rss /opt/giro73-rss/run --check
 
 # Gera até cinco payloads e salva a fila local, sem POST de notícias ao WP.
-# Esta etapa utiliza a API de geração Gemini e está sujeita a custos/cotas.
+# Esta etapa utiliza a API de geração OpenRouter e está sujeita a custos/cotas.
 sudo -u giro73-rss /opt/giro73-rss/run --dry-run
 sudo -u giro73-rss /opt/giro73-rss/run --status
 
@@ -145,6 +154,20 @@ sudo -u giro73-rss /opt/giro73-rss/run
 ```
 
 `--check` testa o token WordPress com um payload deliberadamente incompleto, que deve retornar HTTP 400 `g73_invalid_title`. Isso pode gerar um registro de validação nos logs do endpoint, mas não cria uma matéria.
+
+## Atualizar uma instalação existente
+
+Baixe `atualizar-vps.sh` deste mesmo diretório no GitHub, de preferência fixando o commit, e execute como root:
+
+```bash
+bash /root/atualizar-giro73-rss.sh COMMIT_OU_MAIN
+```
+
+O atualizador baixa coletor, dependências e launcher da referência informada, confere a sintaxe, aguarda até 30 segundos pelo lock da coleta, cria backup privado dos arquivos/configurações e um backup SQLite consistente em `/root/giro73-rss-backup.*`. Depois instala as dependências, substitui os arquivos e corrige permissões. Mantém o `.env`, as fontes, o banco de vistos e o cron existentes. Também atualiza `/opt/giro73-rss/run`, evitando continuar usando o launcher antigo.
+
+Se houver coleta ativa além desse prazo, interrompe antes de substituir os arquivos: aguarde terminar e rode novamente. Ao concluir, executa `--check-ai` e `--limit 1`. Este último processa até um candidato; pode não criar matéria se não houver item novo apto. A confirmação informa ID, ID da capa e link. `capa: 0` significa rascunho com imagem pendente, não sucesso na importação da foto.
+
+Payloads já preparados continuam com o mesmo conteúdo e chave de idempotência; não são regenerados na migração. Apenas novas gerações passam pelo OpenRouter. O atualizador não altera o Snippet 12 nem o bot Telegram.
 
 ## Cron de hora em hora
 
@@ -184,13 +207,13 @@ Na VPS, como root:
 
 Ele verifica Portal TX e Vem Vê TX Bahia primeiro, procurando links RSS/Atom declarados no HTML e testando caminhos comuns quando necessário. Depois verifica os endereços informados para Liberdade News, Bahia Notícias Municípios/Esportes, G1 Bahia/Brasil, Agência Brasil Últimas/Economia, Bahia Extremo Sul, Extremo Sul Notícias, Olhar Digital, Portal Leo Dias, Sul Bahia News e Radar News. São até 15 fontes contando o Liberdade News, desde que todas sejam válidas e não haja outras fontes extras cadastradas.
 
-Somente fontes novas com RSS/Atom reconhecido são adicionadas. Fonte existente é preservada com o mesmo ID, categoria e estado de habilitação. O utilitário não altera a fila SQLite e não chama Gemini ou WordPress. Cria backup de `/etc/giro73-rss.json`, grava por substituição atômica e preserva o proprietário/grupo. Se outra pessoa editar a configuração durante os testes, interrompe a gravação para não perder essa edição.
+Somente fontes novas com RSS/Atom reconhecido são adicionadas. Fonte existente é preservada com o mesmo ID, categoria e estado de habilitação. O utilitário não altera a fila SQLite e não chama OpenRouter ou WordPress. Cria backup de `/etc/giro73-rss.json`, grava por substituição atômica e preserva o proprietário/grupo. Se outra pessoa editar a configuração durante os testes, interrompe a gravação para não perder essa edição.
 
 As fontes adicionadas são marcadas `authorized: true` conforme seleção do administrador; a verificação técnica não confirma licenças de reutilização. Portal TX e Vem Vê TX Bahia são destinados a `noticias-regiao`. A ordem de verificação não muda a prioridade dos itens que já estão na fila. Os feeds gerais também permanecem em `noticias-regiao`: esta versão não classifica automaticamente os assuntos e não inclui feed exclusivo de Política.
 
 O utilitário não pressupõe que `/feed/` exista. Nesta sessão, as consultas externas a Portal TX e Vem Vê TX Bahia foram bloqueadas pela conexão do ambiente (túnel HTTP 403); os endereços reais precisam ser confirmados pelo utilitário na VPS. Se um site não publicar RSS ou bloquear a consulta, ele aparece em `EXIGEM REVISÃO` e não é cadastrado como fonte nova. O código de saída 1 indica que houve fonte não adicionada; as fontes novas válidas já foram salvas.
 
-O prazo padrão é de até 60 segundos por fonte nova, configurável com `--timeout 10..120`. Para a checagem geral após o cadastro, use `sudo -u giro73-rss /opt/giro73-rss/run --check`; ela também depende da disponibilidade da API Gemini. O número de entradas no RSS não garante que todas cumpram os critérios de idade, data e texto mínimo do coletor.
+O prazo padrão é de até 60 segundos por fonte nova, configurável com `--timeout 10..120`. Para a checagem geral após o cadastro, use `sudo -u giro73-rss /opt/giro73-rss/run --check`; ela também depende da disponibilidade da API OpenRouter. O número de entradas no RSS não garante que todas cumpram os critérios de idade, data e texto mínimo do coletor.
 
 Para verificar somente Portal TX e Vem Vê TX Bahia: `/opt/giro73-rss/.venv/bin/python /root/configurar_fontes_rss.py --only-local`. A busca inclui `rss.php`, `/rss` e `/feed` sem barra final, `feed.xml`, `rss2.xml` e o formato de feed via `index.php`, além dos candidatos anteriores. Esses caminhos são tentativas, não feeds confirmados. O HTML trazido pelo usuário revelou templates de `srvsite.com` nos dois sites, sem link RSS declarado; isso não identifica um endpoint RSS nem comprova que não exista. Os erros de DTD podem vir de HTML retornado como fallback: mantenha o bloqueio de DTD/entidades do coletor.
 
@@ -206,16 +229,16 @@ Use `/opt/giro73-rss/.venv/bin/python /root/configurar_fontes_rss.py --only-conv
 
 São destinados a `noticias-regiao`. O cadastro usa o nome `Portal TX` quando os links de artigos encontrados apontam apenas para `portaltx.site`; se apontarem para outro domínio, usa esse domínio como identificação provisória, sem inventar o nome do criador. Feed sem links HTTP(S) para matérias fora de `politepaul.com` exige revisão e não é cadastrado. O configurador informa domínios originais, resumos com ao menos 180 caracteres, datas, itens que passam no pré-filtro e sobreposição de URLs entre os XMLs testados na mesma execução. A comparação não abrange feeds já cadastrados que foram ignorados pelo configurador; o coletor mantém sua própria deduplicação por URL/GUID.
 
-RSS válido pode ser cadastrado mesmo sem itens que passem no pré-filtro naquele momento, com aviso explícito. Ele permanece com `use_full_content: false`, `allow_undated: false`, janela de 72 horas e os mesmos requisitos de conteúdo do coletor; não gera notícias a partir de títulos insuficientes. O diagnóstico considera as primeiras 50 entradas e o resumo, como o coletor, e não garante que o Gemini aceitará esses itens. O serviço de conversão pode fornecer data de coleta em vez da data original da notícia; a revisão editorial deve conferir isso. Terceiros também podem mudar limites ou atualização do feed. A conversão não concede direitos de republicação.
+RSS válido pode ser cadastrado mesmo sem itens que passem no pré-filtro naquele momento, com aviso explícito. Ele permanece com `use_full_content: false`, `allow_undated: false`, janela de 72 horas e os mesmos requisitos de conteúdo do coletor; não gera notícias a partir de títulos insuficientes. O diagnóstico considera as primeiras 50 entradas e o resumo, como o coletor, e não garante que o OpenRouter aceitará esses itens. O serviço de conversão pode fornecer data de coleta em vez da data original da notícia; a revisão editorial deve conferir isso. Terceiros também podem mudar limites ou atualização do feed. A conversão não concede direitos de republicação.
 
-As consultas a esses três XMLs foram bloqueadas pela rede deste ambiente com túnel HTTP 403; a validação real é feita pela VPS, sem uso de chaves Gemini/WordPress e sem criar matérias.
+As consultas a esses três XMLs foram bloqueadas pela rede deste ambiente com túnel HTTP 403; a validação real é feita pela VPS, sem uso de chaves OpenRouter/WordPress e sem criar matérias.
 
 ## Resiliência e operação
 
-- Gemini: até quatro tentativas em 429/500/502/503/504 ou falhas de conexão; espera exponencial com jitter e respeito a Retry-After. Encerradas as tentativas, a fila fica para o próximo cron.
-- Modelo inexistente, chave inválida ou acesso negado: termina com erro, sem escolher outro modelo e sem marcar como enviado.
+- OpenRouter: até quatro tentativas em 429/500/502/503/504 ou falhas de conexão; espera exponencial com jitter e respeito a Retry-After. Encerradas as tentativas, a fila fica para o próximo cron.
+- Modelo inexistente, chave inválida, saldo insuficiente (402), acesso negado ou formato incompatível: termina com erro, sem escolher outro modelo e sem marcar como enviado.
 - WordPress: busy pode ser repetido; conflito de identificador, dados inválidos e outros erros permanentes ficam para revisão. Estado pausado/configuração inválida não provoca retentativas cegas de 503.
-- Payload gerado é imutável até confirmação, exceto pela retirada da imagem após 422 de imagem confirmado. Itens preparados podem ser enviados mesmo se a API Gemini estiver temporariamente indisponível.
+- Payload gerado é imutável até confirmação, exceto pela retirada da imagem após 422 de imagem confirmado. Itens preparados podem ser enviados mesmo se a API OpenRouter estiver temporariamente indisponível.
 - Credenciais somente no ambiente; logs não incluem corpo da notícia, resposta bruta, URLs de provedores ou chaves. O banco e o ambiente têm permissões restritas.
 - `--limit 1` a `--limit 10` controla candidatos processados; padrão 5. Nem todo candidato vira rascunho, pois fontes insuficientes são ignoradas/bloqueadas.
 - O código prepara matérias; não cadastra eventos no CPT da Agenda.
@@ -230,4 +253,4 @@ python3 -m venv .venv-test
 .venv-test/bin/python -m unittest discover -s tests -v
 ```
 
-Passaram **51 testes locais**: 27 do coletor, 12 do configurador e 12 das imagens. Incluem RSS → Gemini → WordPress com APIs simuladas, 503, fallback 422, retomada após resposta perdida, migração do banco, deduplicação, pré-filtro editorial, fotos em Handler.ashx, rejeição de facebook.jpg, bytes/dimensões, figura e ALT. Nenhuma chave real foi utilizada nem rascunho real criado por esses testes. O agente não acessou a VPS; a instalação e os testes reais relatados no chat foram executados pelo usuário.
+Passaram **63 testes locais**: 27 do coletor, 12 do configurador, 12 das imagens e 12 do OpenRouter. Incluem RSS → OpenRouter → WordPress com APIs simuladas, 429/503, saldo insuficiente, JSON Schema estrito, leitura/prioridade do `.env`, fallback 422, retomada após resposta perdida, migração do banco, deduplicação, pré-filtro editorial, fotos em Handler.ashx, rejeição de facebook.jpg, bytes/dimensões, figura e ALT. Nenhuma chave real foi utilizada nem rascunho real criado por esses testes. O agente não acessou a VPS; a validação real do OpenRouter e da importação deve ser feita com os comandos acima.

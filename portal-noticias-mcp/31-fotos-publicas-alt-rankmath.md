@@ -21,12 +21,12 @@ Resultado sem credenciais: `implementacao-wp/validacao-snippet12-seo-imagens.jso
 
 ## Python
 
-- Usa `BeautifulSoup` para imagens de RSS/Atom, enclosures, conteúdo HTML do feed, `og:image`, `twitter:image` e imagens do corpo da página original. A página é consultada para localizar fotos; seu texto não é enviado ao Gemini como material adicional.
+- Usa `BeautifulSoup` para imagens de RSS/Atom, enclosures, conteúdo HTML do feed, `og:image`, `twitter:image` e imagens do corpo da página original. A página é consultada para localizar fotos; seu texto não é enviado ao OpenRouter como material adicional.
 - Rejeita URLs/atributos com `facebook`, `logo`, `icon`, `share`, `avatar` e `banner-default`, cabeçalhos/rodapés/navegação e extensões não-imagem. Endpoints como `Handler.ashx?f=i&query=...` continuam válidos: a extensão não decide o tipo do arquivo.
 - Pillow verifica os bytes, formato e dimensões, mínimo 200×200 e máximo de 24 megapixels, em downloads limitados a 8 MB. O resolvedor tem orçamento curto por notícia, timeouts e limite de candidatos; uma foto inválida dá lugar à próxima candidata. Erros de DNS/HTTP de imagem não encerram as outras matérias.
 - O payload envia a URL selecionada em `image_url` e insere uma figura depois do primeiro parágrafo, com ALT exatamente igual à palavra-chave gerada. O PHP troca o `src` pelo arquivo anexado localmente.
 - Créditos fornecidos no RSS ou configurados na fonte são preservados. Para a legenda literal solicitada, declare `"image_credit": "Divulgação / Fonte Oficial"` somente nas fontes em que esse crédito for correto. Sem crédito informado, usa `Imagem da fonte: <nome da fonte>`, sem atribuir autoria/licença oficial por suposição.
-- Mantém `status: draft`, os três metadados SEO, deduplicação, fila SQLite e retentativas do Gemini. No fallback 422 de um endpoint antigo, retira também a figura gerenciada antes de persistir e reenviar o payload sem foto.
+- Mantém `status: draft`, os três metadados SEO, deduplicação, fila SQLite e retentativas do OpenRouter. No fallback 422 de um endpoint antigo, retira também a figura gerenciada antes de persistir e reenviar o payload sem foto.
 - Payloads já tentados permanecem imutáveis para preservar idempotência. Esta alteração não reescreve automaticamente matérias antigas nem garante capa para rascunhos já existentes.
 
 ## Rank Math e qualidade da imagem
@@ -48,7 +48,7 @@ sudo -u giro73-rss /opt/giro73-rss/run --check
 sudo -u giro73-rss /opt/giro73-rss/run --limit 1
 ```
 
-Preservar `/etc/giro73-rss.env`, `/etc/giro73-rss.json` e `/var/lib/giro73-rss/vistos_rss.sqlite3`. Não colocar chaves no código ou apagar o banco de vistos. `--check` valida o modelo, autenticação e feeds; a extração da fotografia é exercitada ao processar o primeiro candidato.
+Preservar `/opt/giro73-rss/.env`, `/etc/giro73-rss.json` e `/var/lib/giro73-rss/vistos_rss.sqlite3`. O coletor atual usa OpenRouter (`OPENROUTER_API_KEY` e `AI_MODEL`); consulte `automacao-rss/README.md` e `33-openrouter-coletor-vps.md` para atualizar também o launcher e as dependências. Não colocar chaves no código ou apagar o banco de vistos. `--check` valida o modelo, autenticação e feeds; a extração da fotografia é exercitada ao processar o primeiro candidato.
 
 ## Verificação offline
 

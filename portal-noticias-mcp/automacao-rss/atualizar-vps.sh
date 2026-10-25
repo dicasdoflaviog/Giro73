@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+# Atualização do coletor existente. Uso: sudo bash atualizar-vps.sh COMMIT_OU_MAIN
+set -euo pipefail
+umask 077
+
+if [[ "$(id -u)" -ne 0 ]]; then
+  echo 'Execute como root ou com sudo.' >&2
+  exit 1
+fi
+RSS_REF="${1:-main}"
+if [[ ! "$RSS_REF" =~ ^[A-Za-z0-9._-]{1,80}$ ]]; then
+  echo 'Referência Git inválida.' >&2
+  exit 1
+fi
+RSS_ROOT=/opt/giro73-rss
+RSS_STATE=/var/lib/giro73-rss/vistos_rss.sqlite3
+RSS_BASE="https://raw.githubusercontent.com/dicasdoflaviog/Giro73/${RSS_REF}/portal-noticias-mcp/automacao-rss"
+id giro73-rss >/dev/null
+command -v curl >/dev/null
+command -v flock >/dev/null
+if [[ ! -x "$RSS_ROOT/.venv/bin/python" || ! -f "$RSS_ROOT/.env" ]]; then
+  echo 'É necessário o ambiente virtual existente e /opt/giro73-rss/.env com OPENROUTER_API_KEY.' >&2
+  exit 1
+fi
+
+RSS_STAGE=$(mktemp -d "$RSS_ROOT/.update.XXXXXX")
+trap 'rm -rf -- "$RSS_STAGE"' EXIT
+for RSS_FILE in coletor_rss.py requirements-rss.txt run-coletor-rss.sh; do
+  curl --fail --silent --show-error --location --retry 3 --max-time 60 \
+    "$RSS_BASE/$RSS_FILE" --output "$RSS_STAGE/$RSS_FILE"
+done
+sh -n "$RSS_STAGE/run-coletor-rss.sh"
+"$RSS_ROOT/.venv/bin/python" -m py_compile "$RSS_STAGE/coletor_rss.py"
+
+install -d -o giro73-rss -g giro73-rss -m 0700 /var/lib/giro73-rss
+# Mesmo inode e lock do coletor; não remover nem substituir o arquivo .lock.
+touch "$RSS_STATE.lock"
+chown giro73-rss:giro73-rss "$RSS_STATE.lock"
+chmod 0600 "$RSS_STATE.lock"
+exec 9>>"$RSS_STATE.lock"
+if ! flock -w 30 9; then
+  echo 'Há uma coleta em andamento. Aguarde terminar e execute a atualização novamente; os arquivos não foram substituídos.' >&2
+  exit 1
+fi
+
+RSS_BACKUP=$(mktemp -d /root/giro73-rss-backup.XXXXXX)
+for RSS_FILE in coletor_rss.py requirements-rss.txt run .env; do
+  if [[ -f "$RSS_ROOT/$RSS_FILE" ]]; then cp -a "$RSS_ROOT/$RSS_FILE" "$RSS_BACKUP/"; fi
+done
+if [[ -f /etc/giro73-rss.env ]]; then cp -a /etc/giro73-rss.env "$RSS_BACKUP/legacy.env"; fi
+if [[ -f /etc/giro73-rss.json ]]; then cp -a /etc/giro73-rss.json "$RSS_BACKUP/feeds.json"; fi
+if [[ -f "$RSS_STATE" ]]; then
+  "$RSS_ROOT/.venv/bin/python" - "$RSS_STATE" "$RSS_BACKUP/vistos_rss.sqlite3" <<'PY'
+import sqlite3, sys
+from pathlib import Path
+with sqlite3.connect(Path(sys.argv[1]).resolve().as_uri()+"?mode=ro", uri=True) as source:
+    with sqlite3.connect(sys.argv[2]) as destination:
+        source.backup(destination)
+PY
+fi
+
+"$RSS_ROOT/.venv/bin/pip" install --no-cache-dir --timeout 30 --retries 2 \
+  -r "$RSS_STAGE/requirements-rss.txt"
+install -o root -g giro73-rss -m 0640 "$RSS_STAGE/coletor_rss.py" "$RSS_ROOT/coletor_rss.py.new"
+install -o root -g giro73-rss -m 0640 "$RSS_STAGE/requirements-rss.txt" "$RSS_ROOT/requirements-rss.txt.new"
+install -o root -g giro73-rss -m 0750 "$RSS_STAGE/run-coletor-rss.sh" "$RSS_ROOT/run.new"
+chown root:giro73-rss "$RSS_ROOT/.env"
+chmod 0640 "$RSS_ROOT/.env"
+for RSS_DB in "$RSS_STATE" "$RSS_STATE-wal" "$RSS_STATE-shm" "$RSS_STATE-journal"; do
+  if [[ -f "$RSS_DB" ]]; then chown giro73-rss:giro73-rss "$RSS_DB"; chmod 0600 "$RSS_DB"; fi
+done
+mv -f "$RSS_ROOT/coletor_rss.py.new" "$RSS_ROOT/coletor_rss.py"
+mv -f "$RSS_ROOT/requirements-rss.txt.new" "$RSS_ROOT/requirements-rss.txt"
+mv -f "$RSS_ROOT/run.new" "$RSS_ROOT/run"
+flock -u 9
+exec 9>&-
+
+echo "Atualização instalada. Backup privado: $RSS_BACKUP"
+echo 'Validando OpenRouter sem gerar texto...'
+sudo -u giro73-rss /opt/giro73-rss/run --check-ai
+echo 'Processando até um candidato; confira ID, capa e link no log...'
+sudo -u giro73-rss /opt/giro73-rss/run --limit 1

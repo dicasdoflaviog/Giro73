@@ -36,7 +36,7 @@ def entry():
 
 class ImageTests(unittest.TestCase):
     def client(self):
-        client = m.Client('google-test', 'wp-test', 'gemini-3.8-flash',
+        client = m.Client('openrouter-test', 'wp-test', 'openai/gpt-4o-mini',
                           'https://giro73.com.br/wp-json/g73/v1/publish', time.monotonic()+600)
         self.addCleanup(client.session.close)
         return client
@@ -115,7 +115,6 @@ class ImageTests(unittest.TestCase):
         headers=client.session.request.call_args.kwargs['headers']
         self.assertNotIn('Authorization',headers)
         self.assertNotIn('X-G73-Token',headers)
-        self.assertNotIn('x-goog-api-key',headers)
 
     def test_figure_after_first_paragraph_has_exact_keyword_and_same_url(self):
         keyword='crédito & renda "segura"'
