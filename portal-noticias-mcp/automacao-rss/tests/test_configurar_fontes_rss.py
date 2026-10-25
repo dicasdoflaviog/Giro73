@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import sys
 import tempfile
+import time
 import unittest
 from unittest.mock import patch
 
@@ -133,6 +134,49 @@ class ConfigureTests(unittest.TestCase):
         parser.feed('<link type="application/rss+xml" href="/comments/feed/">'
                     '<link type="application/atom+xml" href="/atom.xml">')
         self.assertEqual(parser.links, ["/atom.xml"])
+
+    def test_converted_feeds_use_original_source_and_preserve_dedup_options(self):
+        entries = [{"link": "https://portaltx.site/noticia/123",
+                    "summary": "Informação regional confirmada. "*10,
+                    "published_parsed": time.gmtime()}]
+        client = Client(feeds={source[2]: entries for source in config.CONVERTIDAS})
+        self.assertEqual(self.run_config(client, config.CONVERTIDAS), 0)
+        feeds = json.loads(self.path.read_text())["feeds"]
+        self.assertEqual(len(feeds), 4)
+        for feed in feeds[1:]:
+            self.assertEqual(feed["name"], "Portal TX")
+            self.assertEqual(feed["category"], "noticias-regiao")
+            self.assertFalse(feed["allow_undated"])
+            self.assertFalse(feed["use_full_content"])
+        stats = config.converted_stats(entries)
+        self.assertEqual(stats["eligible"], 1)
+        tracking = config.converted_stats([dict(entries[0], link="https://portaltx.site/noticia/123?utm_source=rss")])
+        self.assertEqual(stats["links"], tracking["links"])
+
+    def test_converter_without_original_links_is_not_added(self):
+        url = config.CONVERTIDAS[0][2]
+        client = Client(feeds={url: [{"link": url, "summary": "Texto suficiente. "*30}]})
+        before = self.path.read_bytes()
+        self.assertEqual(self.run_config(client, [config.CONVERTIDAS[0]]), 1)
+        self.assertEqual(self.path.read_bytes(), before)
+
+    def test_converter_title_only_does_not_pass_prefilter(self):
+        entry = {"link": "https://portaltx.site/noticia/1", "title": "Uma notícia",
+                 "summary": "Título curto", "content": [{"value": "Texto completo. "*40}]}
+        stats = config.converted_stats([entry])
+        self.assertEqual(stats["eligible"], 0)
+        self.assertEqual(stats["summaries"], 0)
+        client = Client(feeds={config.CONVERTIDAS[0][2]: [entry]})
+        self.assertEqual(self.run_config(client, [config.CONVERTIDAS[0]]), 0)
+        feed = json.loads(self.path.read_text())["feeds"][-1]
+        self.assertFalse(feed["allow_undated"])
+        self.assertFalse(feed["use_full_content"])
+
+    def test_converter_prefilter_rejects_old_and_future_dates(self):
+        entry = {"link": "https://portaltx.site/noticia/1", "summary": "Texto regional. "*30}
+        old = dict(entry, published_parsed=time.gmtime(time.time()-73*3600))
+        future = dict(entry, published_parsed=time.gmtime(time.time()+3600))
+        self.assertEqual(config.converted_stats([old, future])["eligible"], 0)
 
     def test_simultaneous_config_edit_is_preserved(self):
         definitions = [("Válida", "esportes", "https://example.org/feed/", False)]

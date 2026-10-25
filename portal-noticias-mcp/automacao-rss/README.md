@@ -13,7 +13,7 @@ Python 3.10+ em Ubuntu 22.04/24.04 ou posterior compatível. Não depende do bot
 - `giro73-rss.cron`: coleta de hora em hora, com limite externo de 50 minutos.
 - `giro73-rss.logrotate`: rotação dos logs.
 - `tests/test_coletor_rss.py`: 19 testes automatizados com APIs simuladas.
-- `tests/test_configurar_fontes_rss.py`: 8 testes de descoberta e atualização segura da configuração.
+- `tests/test_configurar_fontes_rss.py`: 12 testes de descoberta e atualização segura da configuração.
 
 ## Modelo Gemini
 
@@ -187,6 +187,22 @@ O prazo padrão é de até 60 segundos por fonte nova, configurável com `--time
 
 Para verificar somente Portal TX e Vem Vê TX Bahia: `/opt/giro73-rss/.venv/bin/python /root/configurar_fontes_rss.py --only-local`. A busca inclui `rss.php`, `/rss` e `/feed` sem barra final, `feed.xml`, `rss2.xml` e o formato de feed via `index.php`, além dos candidatos anteriores. Esses caminhos são tentativas, não feeds confirmados. O HTML trazido pelo usuário revelou templates de `srvsite.com` nos dois sites, sem link RSS declarado; isso não identifica um endpoint RSS nem comprova que não exista. Os erros de DTD podem vir de HTML retornado como fallback: mantenha o bloqueio de DTD/entidades do coletor.
 
+### XMLs convertidos do Portal TX / fontes regionais
+
+Foram acrescentados os três endereços informados pelo usuário:
+
+- `https://politepaul.com/fd/GIKEXW1XNI1F.xml`
+- `https://politepaul.com/fd/Fqe4CqOn1xIz.xml`
+- `https://politepaul.com/fd/PjntToq6bO88.xml`
+
+Use `/opt/giro73-rss/.venv/bin/python /root/configurar_fontes_rss.py --only-converted` para verificar/adicionar somente esses três. A execução padrão inclui também essas definições. O coletor principal não precisa ser substituído. Com as 13 fontes confirmadas na VPS do usuário e os três XMLs novos, o total será 16, se todos forem aceitos e não houver outras fontes cadastradas.
+
+São destinados a `noticias-regiao`. O cadastro usa o nome `Portal TX` quando os links de artigos encontrados apontam apenas para `portaltx.site`; se apontarem para outro domínio, usa esse domínio como identificação provisória, sem inventar o nome do criador. Feed sem links HTTP(S) para matérias fora de `politepaul.com` exige revisão e não é cadastrado. O configurador informa domínios originais, resumos com ao menos 180 caracteres, datas, itens que passam no pré-filtro e sobreposição de URLs entre os XMLs testados na mesma execução. A comparação não abrange feeds já cadastrados que foram ignorados pelo configurador; o coletor mantém sua própria deduplicação por URL/GUID.
+
+RSS válido pode ser cadastrado mesmo sem itens que passem no pré-filtro naquele momento, com aviso explícito. Ele permanece com `use_full_content: false`, `allow_undated: false`, janela de 72 horas e os mesmos requisitos de conteúdo do coletor; não gera notícias a partir de títulos insuficientes. O diagnóstico considera as primeiras 50 entradas e o resumo, como o coletor, e não garante que o Gemini aceitará esses itens. O serviço de conversão pode fornecer data de coleta em vez da data original da notícia; a revisão editorial deve conferir isso. Terceiros também podem mudar limites ou atualização do feed. A conversão não concede direitos de republicação.
+
+As consultas a esses três XMLs foram bloqueadas pela rede deste ambiente com túnel HTTP 403; a validação real é feita pela VPS, sem uso de chaves Gemini/WordPress e sem criar matérias.
+
 ## Resiliência e operação
 
 - Gemini: até quatro tentativas em 429/500/502/503/504 ou falhas de conexão; espera exponencial com jitter e respeito a Retry-After. Encerradas as tentativas, a fila fica para o próximo cron.
@@ -207,4 +223,4 @@ python3 -m venv .venv-test
 .venv-test/bin/python -m unittest discover -s tests -v
 ```
 
-Passaram **27 testes locais**: 19 do coletor, incluindo RSS → Gemini → WordPress com APIs simuladas, 503, retomada após resposta perdida, chave idempotente, fontes autorizadas, modo dry-run e lock concorrente; mais 8 do configurador de fontes, incluindo descoberta pelo HTML, rotas PHP e sem barra final, fallback com página bloqueada, preservação de IDs/backup, repetição sem duplicatas, falha parcial e edição concorrente. Nenhuma chave real foi utilizada nem rascunho real criado por esses testes. O agente não acessou a VPS; a instalação e os testes reais relatados no chat foram executados pelo usuário.
+Passaram **31 testes locais**: 19 do coletor, incluindo RSS → Gemini → WordPress com APIs simuladas, 503, retomada após resposta perdida, chave idempotente, fontes autorizadas, modo dry-run e lock concorrente; mais 12 do configurador de fontes, incluindo descoberta pelo HTML, rotas PHP e sem barra final, fallback com página bloqueada, preservação de IDs/backup, repetição sem duplicatas, falha parcial, edição concorrente e pré-filtro/origem dos XMLs convertidos. Nenhuma chave real foi utilizada nem rascunho real criado por esses testes. O agente não acessou a VPS; a instalação e os testes reais relatados no chat foram executados pelo usuário.

@@ -9,6 +9,8 @@ o teste técnico não verifica licenças de reutilização.
 from __future__ import annotations
 
 import argparse
+import calendar
+from collections.abc import Mapping
 import hashlib
 from html.parser import HTMLParser
 import json
@@ -22,7 +24,7 @@ from datetime import datetime
 from urllib.parse import urljoin, urlsplit
 
 sys.path.insert(0, "/opt/giro73-rss")
-from coletor_rss import Client, load_sources, public_feed_host
+from coletor_rss import Client, ConfigError, canonical_url, load_sources, plain, public_feed_host
 
 # Nome, categoria, endereço informado, procurar feed no site.
 FONTES = [
@@ -43,6 +45,12 @@ FONTES = [
     ("Radar News", "noticias-regiao", "https://radar.news/feed/", False),
 ]
 
+CONVERTIDAS = [
+    ("Regional via PolitePaul 1", "noticias-regiao", "https://politepaul.com/fd/GIKEXW1XNI1F.xml", False),
+    ("Regional via PolitePaul 2", "noticias-regiao", "https://politepaul.com/fd/Fqe4CqOn1xIz.xml", False),
+    ("Regional via PolitePaul 3", "noticias-regiao", "https://politepaul.com/fd/PjntToq6bO88.xml", False),
+]
+
 
 def announce(*parts):
     print(*parts, flush=True)
@@ -54,6 +62,31 @@ def url_key(url):
 
 def host_key(url):
     return (urlsplit(url).hostname or "").lower().removeprefix("www.")
+
+
+def converted_stats(entries):
+    """Mesmo pré-filtro do coletor (resumo, data e URL), sem gerar textos."""
+    links, dates, summaries, eligible = set(), 0, 0, 0
+    now = time.time()
+    for entry in entries[:50]:
+        if not isinstance(entry, Mapping):
+            continue
+        link = entry.get("link") or entry.get("id", "")
+        try:
+            url = canonical_url(link)
+            if host_key(url) == "politepaul.com":
+                continue
+        except (ConfigError, ValueError, TypeError):
+            continue
+        links.add(url)
+        text_ok = len(plain(entry.get("summary", ""))[:20000]) >= 180
+        stamp = entry.get("published_parsed") or entry.get("updated_parsed")
+        published = calendar.timegm(stamp) if stamp else None
+        dates += published is not None
+        summaries += text_ok
+        eligible += text_ok and published is not None and now-72*3600 <= published <= now+300
+    return {"links": links, "dates": dates, "summaries": summaries, "eligible": eligible,
+            "domains": sorted({host_key(url) for url in links})}
 
 
 class FeedLinks(HTMLParser):
@@ -134,7 +167,7 @@ def configure(path, client, definitions=FONTES, seconds=60):
     original = path.read_text(encoding="utf-8")
     data = json.loads(original)
     feeds = data["feeds"]
-    added, failures = 0, []
+    added, failures, converted_links = 0, [], set()
     for name, category, address, discover in definitions:
         existing = next((feed for feed in feeds if
             url_key(feed.get("url", "")) == url_key(address) or
@@ -161,12 +194,26 @@ def configure(path, client, definitions=FONTES, seconds=60):
                 if time.monotonic() >= client.deadline:
                     break
                 continue
+            publisher = name
+            if host_key(address) == "politepaul.com":
+                stats = converted_stats(entries)
+                announce("  RESUMOS >=180:", stats["summaries"], "| COM DATA:", stats["dates"],
+                         "| PASSAM NO PRÉ-FILTRO:", stats["eligible"], "(até 50 entradas)")
+                announce("  DOMÍNIOS ORIGINAIS:", ", ".join(stats["domains"]) or "nenhum")
+                announce("  LINKS REPETIDOS ENTRE CONVERTIDOS:", len(stats["links"] & converted_links))
+                converted_links.update(stats["links"])
+                if not stats["links"]:
+                    announce("  Sem links HTTP(S) para matérias originais; exige revisão.")
+                    continue
+                if not stats["eligible"]:
+                    announce("  AVISO: RSS válido, mas nenhum item passa no pré-filtro atual.")
+                publisher = "Portal TX" if stats["domains"] == ["portaltx.site"] else ", ".join(stats["domains"][:2])
             source_id = "fonte_"+hashlib.sha256(address.encode()).hexdigest()[:12]
             if any(feed.get("id") == source_id for feed in feeds):
                 announce("  ID já utilizado; exige revisão manual.")
                 break
             feeds.append({
-                "id": source_id, "name": name, "url": candidate,
+                "id": source_id, "name": publisher, "url": candidate,
                 "category": category, "authorized": True,
                 "use_full_content": False, "allow_undated": False,
                 "max_age_hours": 72,
@@ -174,6 +221,8 @@ def configure(path, client, definitions=FONTES, seconds=60):
             added += 1
             found = True
             announce("  RSS VALIDADO:", candidate, "| entradas:", len(entries))
+            if publisher != name:
+                announce("  FONTE NO CADASTRO:", publisher)
             break
         if not found:
             failures.append(name)
@@ -192,14 +241,18 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, default=Path("/etc/giro73-rss.json"))
     parser.add_argument("--timeout", type=int, default=60, choices=range(10, 121), metavar="10..120")
-    parser.add_argument("--only-local", action="store_true",
-                        help="Verifica apenas Portal TX e Vem Vê TX Bahia.")
+    selection = parser.add_mutually_exclusive_group()
+    selection.add_argument("--only-local", action="store_true",
+                           help="Verifica apenas Portal TX e Vem Vê TX Bahia.")
+    selection.add_argument("--only-converted", action="store_true",
+                           help="Verifica apenas os três XMLs informados via PolitePaul.")
     args = parser.parse_args()
     os.umask(0o077)
     client = Client("", "", "rss-check", "https://giro73.com.br/wp-json/g73/v1/publish",
                     time.monotonic()+args.timeout, attempts=1)
     try:
-        definitions = [source for source in FONTES if source[3]] if args.only_local else FONTES
+        definitions = (CONVERTIDAS if args.only_converted else
+                       [source for source in FONTES if source[3]] if args.only_local else FONTES+CONVERTIDAS)
         return configure(args.config, client, definitions=definitions, seconds=args.timeout)
     except json.JSONDecodeError as error:
         announce("JSON inválido na configuração | linha:", error.lineno, "| coluna:", error.colno)
