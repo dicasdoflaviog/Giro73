@@ -12,7 +12,7 @@ Python 3.10+ em Ubuntu 22.04/24.04 ou posterior compatível. Não depende do bot
 - `run-coletor-rss.sh`: wrapper com caminhos absolutos e ambiente.
 - `giro73-rss.cron`: coleta de hora em hora, com limite externo de 50 minutos.
 - `giro73-rss.logrotate`: rotação dos logs.
-- `tests/test_coletor_rss.py`: 19 testes automatizados com APIs simuladas.
+- `tests/test_coletor_rss.py`: 27 testes automatizados com APIs simuladas.
 - `tests/test_configurar_fontes_rss.py`: 12 testes de descoberta e atualização segura da configuração.
 
 ## Modelo Gemini
@@ -31,7 +31,7 @@ Use `--list-models` para listar os IDs disponíveis à chave; se necessário, se
 6. Persistir o payload em SQLite **antes** do POST e enviar `Idempotency-Key: rss-[hash]`.
 7. Registrar como `sent` somente após receber ID válido e status `draft` do WordPress. Depois da confirmação, textos completos locais são descartados; identidade, URL e ID permanecem no histórico.
 
-Retentativas de rede/503 podem repetir a chamada HTTP, mas usam o mesmo texto e chave; o endpoint WordPress existente é quem impede que isso crie outro post após uma resposta perdida. Não existe promessa de transporte HTTP exatamente uma vez. O bloqueio de processo impede dois cron jobs locais simultâneos.
+Retentativas de rede/503 podem repetir a chamada HTTP, mas usam o mesmo texto e chave; o endpoint WordPress existente é quem impede que isso crie outro post após uma resposta perdida. Um 422 confirmado de imagem permite persistir uma variante `draft` sem foto e reenviar com a mesma chave. Não existe promessa de transporte HTTP exatamente uma vez. O bloqueio de processo impede dois cron jobs locais simultâneos.
 
 O banco `vistos_rss.sqlite3` guarda fila e histórico de itens. Estados: `queued`, `prepared`, `sent`, `skipped` e `blocked`. Itens bloqueados exigem diagnóstico; não são apagados nem repetidos cegamente. Preserve e faça backup desse banco — mudar/apagar o arquivo remove a memória local do coletor. A deduplicação por identidade não reconhece automaticamente a mesma pauta publicada com URLs/GUIDs diferentes nem compartilha o histórico do bot Telegram.
 
@@ -42,6 +42,8 @@ O modelo recebe somente título, texto fornecido no RSS, URL, identificação da
 Entradas com menos de 180 caracteres de material textual são ignoradas. Material insuficiente também pode ser recusado pelo Gemini. Não se inventam falas, dados ou acontecimentos locais para alongar notícias. Os rascunhos precisam de revisão factual/editorial; esses controles não eliminam alucinações de um modelo.
 
 O payload envia `image_url: ""`. Seu endpoint permite rascunhos sem imagem. Capas autorizadas são adicionadas na etapa editorial; o coletor não copia automaticamente fotografias de outros portais.
+
+Para coletores personalizados que já preencham `image_url`, os 422 de imagem reconhecidos geram um fallback imediato sem foto. O payload novo é salvo antes do segundo POST; falhas de rede posteriores mantêm essa variante na fila. O ID e o permalink confirmado ficam em `wp_id`/`wp_url`, com migração automática e aditiva da tabela. `--retry-image-errors` recupera seletivamente bloqueios antigos de imagem, sem chamar APIs. Integração completa e mudanças PHP: `../30-imagens-resilientes-endpoint.md`. Preserve a coleta de imagens personalizada da VPS ao aplicar somente os blocos de envio.
 
 ## Instalar na VPS Ubuntu
 
@@ -208,7 +210,7 @@ As consultas a esses três XMLs foram bloqueadas pela rede deste ambiente com t�
 - Gemini: até quatro tentativas em 429/500/502/503/504 ou falhas de conexão; espera exponencial com jitter e respeito a Retry-After. Encerradas as tentativas, a fila fica para o próximo cron.
 - Modelo inexistente, chave inválida ou acesso negado: termina com erro, sem escolher outro modelo e sem marcar como enviado.
 - WordPress: busy pode ser repetido; conflito de identificador, dados inválidos e outros erros permanentes ficam para revisão. Estado pausado/configuração inválida não provoca retentativas cegas de 503.
-- Payload gerado é imutável até confirmação. Itens preparados podem ser enviados mesmo se a API Gemini estiver temporariamente indisponível.
+- Payload gerado é imutável até confirmação, exceto pela retirada da imagem após 422 de imagem confirmado. Itens preparados podem ser enviados mesmo se a API Gemini estiver temporariamente indisponível.
 - Credenciais somente no ambiente; logs não incluem corpo da notícia, resposta bruta, URLs de provedores ou chaves. O banco e o ambiente têm permissões restritas.
 - `--limit 1` a `--limit 10` controla candidatos processados; padrão 5. Nem todo candidato vira rascunho, pois fontes insuficientes são ignoradas/bloqueadas.
 - O código prepara matérias; não cadastra eventos no CPT da Agenda.
@@ -223,4 +225,4 @@ python3 -m venv .venv-test
 .venv-test/bin/python -m unittest discover -s tests -v
 ```
 
-Passaram **31 testes locais**: 19 do coletor, incluindo RSS → Gemini → WordPress com APIs simuladas, 503, retomada após resposta perdida, chave idempotente, fontes autorizadas, modo dry-run e lock concorrente; mais 12 do configurador de fontes, incluindo descoberta pelo HTML, rotas PHP e sem barra final, fallback com página bloqueada, preservação de IDs/backup, repetição sem duplicatas, falha parcial, edição concorrente e pré-filtro/origem dos XMLs convertidos. Nenhuma chave real foi utilizada nem rascunho real criado por esses testes. O agente não acessou a VPS; a instalação e os testes reais relatados no chat foram executados pelo usuário.
+Passaram **39 testes locais**: 27 do coletor, incluindo RSS → Gemini → WordPress com APIs simuladas, 503, fallback 422 de imagem, retomada após resposta perdida, migração do banco, recuperação seletiva de bloqueados, chave idempotente, fontes autorizadas, modo dry-run e lock concorrente; mais 12 do configurador de fontes, incluindo descoberta pelo HTML, rotas PHP e sem barra final, fallback com página bloqueada, preservação de IDs/backup, repetição sem duplicatas, falha parcial, edição concorrente e pré-filtro/origem dos XMLs convertidos. Nenhuma chave real foi utilizada nem rascunho real criado por esses testes. O agente não acessou a VPS; a instalação e os testes reais relatados no chat foram executados pelo usuário.

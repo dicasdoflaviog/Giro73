@@ -32,10 +32,13 @@ try:
  for bad_token in (None,'invalido'):
   s,_,_=request('/wp-json/g73/v1/publish',payload,provided=bad_token);assert s==401,s
  ok('token obrigatório; publicação não depende de Basic Auth')
- for diff,expected in [({'category':'nao-existe-g73'},400),({'columnist_slug':'nao-existe'},400),({'meta':'invalido'},400),({'meta':{'rank_math_title':[]}},400),({'status':'invalido'},400),({'status':'publish','image_url':''},400),({'image_url':'http://127.0.0.1/imagem.jpg'},422),({'image_url':'https://example.org/foto.jpg'},422),({'image_url':'https://giro73.com.br/wp-content/uploads/arquivo-inexistente.jpg'},422)]:
+ for diff,expected in [({'category':'nao-existe-g73'},400),({'columnist_slug':'nao-existe'},400),({'meta':'invalido'},400),({'meta':{'rank_math_title':[]}},400),({'status':'invalido'},400)]:
   s,d,_=post(dict(payload,**diff));assert s==expected,(expected,s,d)
- missing_status=dict(payload,image_url='');missing_status.pop('status');s,d,_=post(missing_status);assert s==400 and d['code']=='g73_image_required'
- ok('campos inválidos e URLs inseguras rejeitados; fallback publish exige capa')
+ # Não testar publish ao vivo: agora é válido publicar sem imagem. Coberto no teste PHP offline.
+ for image_url in ['http://127.0.0.1/imagem.jpg','https://example.org/foto.jpg','https://giro73.com.br/wp-content/uploads/arquivo-inexistente.jpg']:
+  s,d,_=post(dict(payload,image_url=image_url));assert s==201 and d['status']=='draft' and not d['featured_media'],(s,d)
+  owned_posts.append(d['id']);assert d['warnings']
+ ok('campos inválidos rejeitados; imagem inválida cria rascunho com aviso, sem buscar hosts inseguros')
  s,one,h=post(payload,'test-'+uid);assert s==201,(s,one);owned_posts.append(one['id']);owned_media.append(one['featured_media']);assert one['status']=='draft' and one['seo']['schema']=='NewsArticle';assert one['seo']['focus_keyword']=='integração editorial' and one['seo']['title']=='Título SEO revisado' and one['seo']['description']=='Descrição SEO enviada pelo bot.';assert one['image']['width']==1200 and one['image']['height']==675;assert 'no-store' in h.get('Cache-Control','');assert one['featured_media']!=source_id
  _,media,_=request('/wp-json/wp/v2/media/'+str(one['featured_media']),admin=True);assert media['mime_type']=='image/webp';assert media['media_details']['width']==1200 and media['media_details']['height']==675
  photo=urllib.request.urlopen(one['image']['url'],timeout=15).read();assert len(photo)<60000

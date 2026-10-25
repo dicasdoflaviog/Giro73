@@ -1,8 +1,10 @@
 import importlib.util
+import copy
 import json
 from pathlib import Path
 import sys
 import tempfile
+import sqlite3
 import time
 import unittest
 from unittest.mock import Mock, patch
@@ -195,6 +197,132 @@ class CollectorTest(unittest.TestCase):
     def test_config_sem_autorizacao_nao_e_aceita(self):
         f = Path(self.temp.name)/'feeds.json';f.write_text(json.dumps({'feeds': [{'authorized': False}]}))
         with self.assertRaises(m.ConfigError):m.load_sources(f)
+
+    def prepare_image_item(self, url='https://fonte.example/noticia', guid='imagem-1'):
+        self.store.discover(self.source, entry(url, guid))
+        key = self.store.db.execute('SELECT id FROM items WHERE article=?', (url,)).fetchone()[0]
+        payload = m.payload_from(generated(), entry(url, guid), 'noticias-regiao')
+        payload['image_url'] = 'https://prado.ba.gov.br/foto.jpeg'
+        self.store.prepare(key, payload)
+        return key, payload
+
+    def test_422_de_imagem_reconhecido_com_e_sem_prefixo(self):
+        c = self.client()
+        for code in ('image_editor', 'image_download', 'image_dimensions', 'image_host'):
+            for prefix in ('', 'g73_'):
+                with self.subTest(code=prefix+code):
+                    c.session.request = Mock(return_value=response(422, {'code': prefix+code}))
+                    with self.assertRaises(m.ImageFallback):
+                        c.submit('a'*64, {'status': 'draft', 'image_url': 'https://prado.ba.gov.br/foto.jpeg'})
+                    self.assertEqual(c.session.request.call_count, 1)
+
+    def test_fallback_persiste_antes_do_segundo_post_e_salva_permalink(self):
+        key, original = self.prepare_image_item()
+        c = self.client(); c.generate = Mock(); sends = []
+        def remote(method, url, **kwargs):
+            sends.append(copy.deepcopy(kwargs))
+            if len(sends) == 1:
+                self.assertTrue(kwargs['json']['image_url'])
+                return response(422, {'code': 'g73_image_editor'})
+            cached = json.loads(self.store.db.execute('SELECT payload FROM items WHERE id=?', (key,)).fetchone()[0])
+            self.assertEqual(cached, kwargs['json'])
+            self.assertEqual(cached['image_url'], '')
+            return response(201, {'id': 901, 'status': 'draft', 'permalink': 'https://giro73.com.br/?p=901'})
+        c.session.request = Mock(side_effect=remote)
+        with patch.object(m.time, 'sleep') as sleep:
+            self.assertEqual(m.process(c, self.store, 1), (1, False))
+        sleep.assert_not_called(); c.generate.assert_not_called()
+        self.assertEqual(len(sends), 2)
+        self.assertEqual(sends[0]['headers']['Idempotency-Key'], sends[1]['headers']['Idempotency-Key'])
+        self.assertEqual(sends[1]['json'], dict(original, image_url=''))
+        saved = self.store.db.execute('SELECT * FROM items WHERE id=?', (key,)).fetchone()
+        self.assertEqual((saved['status'], saved['wp_id'], saved['wp_url']), ('sent', 901, 'https://giro73.com.br/?p=901'))
+
+    def test_fallback_com_resposta_perdida_reinicia_sem_imagem_e_sem_duplicar(self):
+        key, original = self.prepare_image_item()
+        c = self.client(); c.attempts = 1; c.generate = Mock(); sends = []; server = {}
+        def remote(method, url, **kwargs):
+            sends.append(copy.deepcopy(kwargs))
+            if len(sends) == 1:
+                return response(422, {'code': 'g73_image_download'})
+            self.assertEqual(kwargs['json']['image_url'], '')
+            idem = kwargs['headers']['Idempotency-Key']
+            server.setdefault(idem, 902)
+            if len(sends) == 2:
+                raise m.requests.exceptions.Timeout('Resposta perdida')
+            return response(200, {'id': server[idem], 'status': 'draft', 'permalink': 'https://giro73.com.br/?p=902'})
+        c.session.request = Mock(side_effect=remote)
+        self.assertEqual(m.process(c, self.store, 1), (0, True))
+        row = self.store.db.execute('SELECT * FROM items WHERE id=?', (key,)).fetchone()
+        self.assertEqual(row['status'], 'prepared')
+        self.assertEqual(json.loads(row['payload'])['image_url'], '')
+        self.store.close(); self.store = m.Store(self.path)
+        with self.store.db:self.store.db.execute('UPDATE items SET next_try=0')
+        self.assertEqual(m.process(c, self.store, 1), (1, False))
+        self.assertEqual(sends[1]['json'], sends[2]['json'])
+        self.assertEqual(sends[1]['headers'], sends[2]['headers'])
+        self.assertEqual(len(server), 1); c.generate.assert_not_called()
+
+    def test_outros_422_e_segundo_422_nao_entram_em_loop(self):
+        c = self.client()
+        for payload, code in [({'status': 'draft', 'image_url': ''}, 'g73_image_host'),
+                              ({'status': 'draft', 'image_url': 'https://prado.ba.gov.br/foto.jpeg'}, 'g73_meta_invalid')]:
+            c.session.request = Mock(return_value=response(422, {'code': code}))
+            with self.assertRaises(m.ItemError) as error:c.submit('a'*64, payload)
+            self.assertNotIsInstance(error.exception, m.ImageFallback)
+            self.assertEqual(c.session.request.call_count, 1)
+        self.prepare_image_item()
+        c.session.request = Mock(return_value=response(422, {'code': 'g73_image_dimensions'}))
+        self.assertEqual(m.process(c, self.store, 1), (0, True))
+        self.assertEqual(c.session.request.call_count, 2)
+        self.assertEqual(self.store.counts(), {'blocked': 1})
+
+    def test_fallback_nao_impede_proximo_item_da_fila(self):
+        self.prepare_image_item()
+        self.prepare_image_item('https://fonte.example/noticia-2', 'imagem-2')
+        c = self.client()
+        c.session.request = Mock(side_effect=[
+            response(422, {'code': 'g73_image_host'}),
+            response(201, {'id': 903, 'status': 'draft'}),
+            response(201, {'id': 904, 'status': 'draft'}),
+        ])
+        self.assertEqual(m.process(c, self.store, 2), (2, False))
+        self.assertEqual(self.store.counts(), {'sent': 2})
+
+    def test_migracao_aditiva_preserva_fila_antiga(self):
+        self.store.close()
+        self.path.unlink()
+        db = sqlite3.connect(self.path)
+        db.execute('CREATE TABLE items (id TEXT PRIMARY KEY, source TEXT NOT NULL, article TEXT NOT NULL, category TEXT NOT NULL, input_json TEXT NOT NULL, status TEXT NOT NULL DEFAULT "queued", payload TEXT, wp_id INTEGER, attempts INTEGER NOT NULL DEFAULT 0, next_try REAL NOT NULL DEFAULT 0, last_error TEXT, created_at REAL NOT NULL, updated_at REAL NOT NULL)')
+        db.execute('INSERT INTO items (id,source,article,category,input_json,created_at,updated_at) VALUES (?,?,?,?,?,?,?)',
+                   ('antigo','fonte','https://fonte.example/antigo','noticias-regiao','{}',time.time(),time.time()))
+        db.commit(); db.close()
+        self.store = m.Store(self.path)
+        self.assertEqual(self.store.counts(), {'queued': 1})
+        self.store.finish('antigo', 'sent', wp_id=905, wp_url='https://giro73.com.br/?p=905')
+        saved = self.store.db.execute('SELECT * FROM items WHERE id="antigo"').fetchone()
+        self.assertEqual(saved['wp_url'], 'https://giro73.com.br/?p=905')
+
+    def test_recupera_apenas_bloqueados_por_422_de_imagem(self):
+        image, payload = self.prepare_image_item()
+        self.store.finish(image, 'blocked', error='WordPress HTTP 422: g73_image_download')
+        other, _ = self.prepare_image_item('https://fonte.example/outro', 'outro')
+        self.store.finish(other, 'blocked', error='WordPress HTTP 422: g73_meta_invalid')
+        self.assertEqual(self.store.retry_image_errors(), 1)
+        saved = self.store.db.execute('SELECT * FROM items WHERE id=?', (image,)).fetchone()
+        self.assertEqual(saved['status'], 'prepared')
+        self.assertEqual(json.loads(saved['payload']), dict(payload, image_url=''))
+        self.assertEqual(self.store.counts(), {'prepared': 1, 'blocked': 1})
+        self.assertEqual(self.store.retry_image_errors(), 0)
+
+    def test_recuperacao_nao_reabre_item_ja_sem_imagem_ou_com_id(self):
+        first, payload = self.prepare_image_item()
+        payload['image_url'] = ''
+        self.store.prepare(first, payload)
+        self.store.finish(first, 'blocked', error='WordPress HTTP 422: g73_image_editor')
+        second, _ = self.prepare_image_item('https://fonte.example/outro', 'outro')
+        self.store.finish(second, 'blocked', wp_id=999, error='WordPress HTTP 422: g73_image_editor')
+        self.assertEqual(self.store.retry_image_errors(), 0)
 
 if __name__ == '__main__':
     unittest.main()

@@ -30,6 +30,11 @@ LOG = logging.getLogger("giro73.rss")
 CATEGORIES = {"noticias-regiao", "politica", "dinheiro-renda-extra",
               "tecnologia-inovacao", "esportes", "famosos-entretenimento"}
 SEO_FIELDS = ("rank_math_focus_keyword", "rank_math_title", "rank_math_description")
+IMAGE_ERRORS = {
+    "image_editor", "image_download", "image_dimensions", "image_host", "image_url",
+    "image_large", "image_temp", "image_storage", "image_webp", "image_budget",
+    "image_register", "image_metadata", "image_processing", "featured_image",
+}
 TRACKING = {"fbclid", "gclid", "dclid", "msclkid", "mc_cid", "mc_eid"}
 SCHEMA = {
     "type": "OBJECT", "required": ["apto", "observacao", "title", "excerpt", "blocks", "tags", "meta"],
@@ -63,6 +68,9 @@ O editor humano revisará o rascunho antes de publicar. Responda apenas no JSON 
 class ConfigError(Exception):
     pass
 class ItemError(Exception):
+    pass
+class ImageFallback(ItemError):
+    """422 de imagem confirmado: permite persistir a variante sem foto antes de reenviar."""
     pass
 class Deferred(Exception):
     pass
@@ -138,7 +146,7 @@ class Store:
         CREATE TABLE IF NOT EXISTS items (
           id TEXT PRIMARY KEY, source TEXT NOT NULL, article TEXT NOT NULL,
           category TEXT NOT NULL, input_json TEXT NOT NULL,
-          status TEXT NOT NULL DEFAULT 'queued', payload TEXT, wp_id INTEGER,
+          status TEXT NOT NULL DEFAULT 'queued', payload TEXT, wp_id INTEGER, wp_url TEXT,
           attempts INTEGER NOT NULL DEFAULT 0, next_try REAL NOT NULL DEFAULT 0,
           last_error TEXT, created_at REAL NOT NULL, updated_at REAL NOT NULL
         );
@@ -147,6 +155,10 @@ class Store:
         );
         CREATE INDEX IF NOT EXISTS ready ON items(status,next_try,created_at);
         """)
+        # Migração aditiva: preserva a fila e todos os GUIDs/URLs já vistos.
+        if "wp_url" not in {row[1] for row in self.db.execute("PRAGMA table_info(items)")}:
+            self.db.execute("ALTER TABLE items ADD COLUMN wp_url TEXT")
+            self.db.commit()
     def discover(self, source: dict, entry: dict) -> bool:
         url = canonical_url(entry["url"])
         # HTTP e HTTPS do mesmo endereço compartilham identidade; utm/fbclid são removidos.
@@ -172,10 +184,10 @@ class Store:
         with self.db:
             self.db.execute("UPDATE items SET payload=?,status='prepared',last_error=NULL,updated_at=? WHERE id=?",
                 (json.dumps(payload, ensure_ascii=False, sort_keys=True), time.time(), key))
-    def finish(self, key: str, status: str, wp_id=None, error=None, delay=0):
+    def finish(self, key: str, status: str, wp_id=None, error=None, delay=0, wp_url=None):
         with self.db:
-            self.db.execute("UPDATE items SET status=?,wp_id=COALESCE(?,wp_id),last_error=?,next_try=?,updated_at=? WHERE id=?",
-                            (status, wp_id, error, time.time()+delay, time.time(), key))
+            self.db.execute("UPDATE items SET status=?,wp_id=COALESCE(?,wp_id),wp_url=COALESCE(?,wp_url),last_error=?,next_try=?,updated_at=? WHERE id=?",
+                            (status, wp_id, wp_url, error, time.time()+delay, time.time(), key))
             if status == "sent":
                 # Depois da confirmação, preservar identidade/ID basta; não acumular textos completos.
                 self.db.execute("UPDATE items SET input_json='{}',payload=NULL WHERE id=?", (key,))
@@ -184,6 +196,29 @@ class Store:
             self.db.execute("UPDATE items SET attempts=attempts+1,updated_at=? WHERE id=?", (time.time(), key))
     def counts(self):
         return dict(self.db.execute("SELECT status,count(*) FROM items GROUP BY status").fetchall())
+    def retry_image_errors(self):
+        """Recuperação explícita e limitada aos 422 de imagem anteriores à criação."""
+        changed = 0
+        rows = self.db.execute("SELECT id,payload,last_error FROM items WHERE status='blocked' AND wp_id IS NULL").fetchall()
+        with self.db:
+            for row in rows:
+                error = row["last_error"] or ""
+                if not error.startswith("WordPress HTTP 422: "):
+                    continue
+                code = error.removeprefix("WordPress HTTP 422: ").removeprefix("g73_")
+                if code not in IMAGE_ERRORS:
+                    continue
+                try:
+                    payload = json.loads(row["payload"] or "null")
+                except ValueError:
+                    continue
+                if not isinstance(payload, dict) or payload.get("status") != "draft" or not payload.get("image_url"):
+                    continue
+                payload["image_url"] = ""
+                self.db.execute("UPDATE items SET status='prepared',payload=?,last_error=NULL,next_try=0,updated_at=? WHERE id=?",
+                                (json.dumps(payload, ensure_ascii=False, sort_keys=True), time.time(), row["id"]))
+                changed += 1
+        return changed
     def close(self):
         self.db.close()
 
@@ -198,6 +233,7 @@ class Client:
         self.session = requests.Session()
         self.session.headers["User-Agent"] = "Giro73RSS/1.0"
         self.model_checked = False
+        self.last_permalink = None
     def remaining(self):
         remaining = self.deadline - time.monotonic()
         if remaining <= 1:
@@ -291,6 +327,7 @@ class Client:
         except ValueError as exc:
             raise ItemError("Resposta Gemini não contém o JSON editorial esperado.") from exc
     def submit(self, key: str, payload: dict):
+        self.last_permalink = None
         if payload.get("status") != "draft":
             raise StopRun("Proteção local: tentativa de enviar status diferente de draft.")
         r = self.request("POST", self.endpoint, "wordpress",
@@ -304,11 +341,24 @@ class Client:
                 raise StopRun("WordPress negou autenticação/permissão. Confira G73_TOKEN e configuração.")
             if r.status_code not in {200, 201}:
                 code = result.get("code", "erro_sem_codigo") if isinstance(result, dict) else "erro_sem_codigo"
+                if (r.status_code == 422 and isinstance(code, str)
+                        and code.removeprefix("g73_") in IMAGE_ERRORS and payload.get("image_url")):
+                    raise ImageFallback(f"WordPress HTTP 422: {code}")
                 raise ItemError(f"WordPress HTTP {r.status_code}: {code}")
             if not isinstance(result, dict) or type(result.get("id")) is not int or result["id"] <= 0:
                 raise Deferred("WordPress não confirmou um ID válido; repetir com a mesma chave.")
             if result.get("status") != "draft":
                 raise StopRun(f"WordPress retornou status inesperado para post {result['id']}; verificar antes de continuar.")
+            if payload.get("image_url") and result.get("featured_media") == 0:
+                LOG.warning("WordPress confirmou o rascunho %s sem capa; consulte os avisos da matéria.", result["id"])
+            permalink = result.get("permalink")
+            if permalink:
+                try:
+                    checked_url(permalink, https_only=True)
+                    if urlsplit(permalink).hostname == urlsplit(self.endpoint).hostname:
+                        self.last_permalink = permalink
+                except (ConfigError, ValueError):
+                    pass
             return result["id"]
         finally:
             r.close()
@@ -478,8 +528,17 @@ def process(client: Client, store: Store, limit: int, dry_run=False):
                 LOG.info("Item %s preparado; dry-run não envia ao WordPress.", key[:12])
                 continue
             store.attempt(key)
-            post_id = client.submit(key, payload)
-            store.finish(key, "sent", wp_id=post_id)
+            try:
+                post_id = client.submit(key, payload)
+            except ImageFallback as exc:
+                LOG.warning("Item %s: %s; reenviando como rascunho sem imagem.", key[:12], exc)
+                payload["image_url"] = ""
+                payload["status"] = "draft"
+                # Primeiro persistir. Se o segundo POST perder a resposta, repetir esta variante.
+                store.prepare(key, payload)
+                store.attempt(key)
+                post_id = client.submit(key, payload)
+            store.finish(key, "sent", wp_id=post_id, wp_url=getattr(client, "last_permalink", None))
             processed += 1
             LOG.info("Item %s confirmado como rascunho WordPress %s.", key[:12], post_id)
         except ItemError as exc:
@@ -507,6 +566,7 @@ def main(argv=None):
     parser.add_argument("--check", action="store_true", help="Valida modelo, feeds e token WP sem criar matérias.")
     parser.add_argument("--list-models", action="store_true", help="Lista IDs Gemini disponíveis à chave informada.")
     parser.add_argument("--status", action="store_true", help="Mostra contagem local, sem acessar APIs.")
+    parser.add_argument("--retry-image-errors", action="store_true", help="Reabre apenas os bloqueados por 422 de imagem, sem foto; não chama APIs.")
     args = parser.parse_args(argv)
     os.umask(0o077)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -524,6 +584,9 @@ def main(argv=None):
         store = Store(args.state)
         if args.status:
             print(json.dumps(store.counts(), ensure_ascii=False))
+            return 0
+        if args.retry_image_errors:
+            LOG.info("Itens de imagem recuperados sem foto: %s. Estado: %s", store.retry_image_errors(), json.dumps(store.counts(), ensure_ascii=False))
             return 0
         google_key = os.environ.get("GEMINI_API_KEY", "").strip()
         wp_token = os.environ.get("G73_TOKEN", "").strip()

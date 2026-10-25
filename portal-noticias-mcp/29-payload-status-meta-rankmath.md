@@ -1,5 +1,7 @@
 # Endpoint publish — payload com status e meta Rank Math
 
+Atualização posterior do tratamento de imagens: [30-imagens-resilientes-endpoint.md](30-imagens-resilientes-endpoint.md). Ela torna a capa opcional e substitui a exigência de imagem para publicação direta descrita nesta versão histórica.
+
 Versão completa para substituir `implementacao-wp/motor-publicacao.php` no snippet 12 existente. Esta entrega altera o código no repositório; não instala a versão nova no WordPress nem publica matérias de teste.
 
 ## Novo contrato
