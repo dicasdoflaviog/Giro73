@@ -74,8 +74,7 @@ sudo install -d -o giro73-rss -g giro73-rss -m 0700 \
 sudo install -o root -g giro73-rss -m 0640 \
   coletor_rss.py requirements-rss.txt /opt/giro73-rss/
 sudo python3 -m venv /opt/giro73-rss/.venv
-sudo /opt/giro73-rss/.venv/bin/pip install --no-cache-dir \
-  -r /opt/giro73-rss/requirements-rss.txt
+sudo sh -c 'umask 022; /opt/giro73-rss/.venv/bin/python -m pip install --no-cache-dir -r /opt/giro73-rss/requirements-rss.txt'
 
 sudo install -o root -g giro73-rss -m 0640 \
   rss_fontes.example.json /etc/giro73-rss.json
@@ -165,9 +164,28 @@ bash /root/atualizar-giro73-rss.sh COMMIT_OU_MAIN
 
 O atualizador baixa coletor, dependências e launcher da referência informada, confere a sintaxe, aguarda até 30 segundos pelo lock da coleta, cria backup privado dos arquivos/configurações e um backup SQLite consistente em `/root/giro73-rss-backup.*`. Depois instala as dependências, substitui os arquivos e corrige permissões. Mantém o `.env`, as fontes, o banco de vistos e o cron existentes. Também atualiza `/opt/giro73-rss/run`, evitando continuar usando o launcher antigo.
 
+A instalação das bibliotecas usa `umask 022`, isolado em um subshell; backup, `.env` e SQLite continuam restritos. O atualizador testa os imports como `giro73-rss` antes de substituir o coletor. Se `python-dotenv` não puder ser importado, reinstala somente esse pacote com as permissões corretas, inclusive quando o pip o considera já instalado.
+
 Se houver coleta ativa além desse prazo, interrompe antes de substituir os arquivos: aguarde terminar e rode novamente. Ao concluir, executa `--check-ai` e `--limit 1`. Este último processa até um candidato; pode não criar matéria se não houver item novo apto. A confirmação informa ID, ID da capa e link. `capa: 0` significa rascunho com imagem pendente, não sucesso na importação da foto.
 
 Payloads já preparados continuam com o mesmo conteúdo e chave de idempotência; não são regenerados na migração. Apenas novas gerações passam pelo OpenRouter. O atualizador não altera o Snippet 12 nem o bot Telegram.
+
+### Erro `cannot import name 'dotenv_values' from 'dotenv' (unknown location)`
+
+Esse erro ocorre antes de autenticar no OpenRouter. Uma causa é a instalação feita por root com `umask 077`: os arquivos do pacote podem ficar inacessíveis ao usuário de serviço. Também pode haver um módulo local com o mesmo nome. O atualizador atual repara a instalação do pacote e testa os imports sob o usuário correto. Não altere as permissões do `.env` para tentar corrigir um problema nas bibliotecas.
+
+Para reparar apenas o pacote numa instalação já atualizada, execute como root:
+
+```bash
+(
+  umask 022
+  /opt/giro73-rss/.venv/bin/python -m pip install --force-reinstall --no-deps \
+    --no-cache-dir --timeout 30 --retries 2 'python-dotenv>=1.1,<2'
+) && \
+sudo -u giro73-rss /opt/giro73-rss/run --check-ai
+```
+
+Se o import continuar falhando, confira os caminhos e permissões antes de reinstalar novamente. Não imprima o conteúdo do `.env` para diagnosticar bibliotecas.
 
 ## Cron de hora em hora
 

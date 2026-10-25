@@ -18,6 +18,7 @@ RSS_BASE="https://raw.githubusercontent.com/dicasdoflaviog/Giro73/${RSS_REF}/por
 id giro73-rss >/dev/null
 command -v curl >/dev/null
 command -v flock >/dev/null
+command -v sudo >/dev/null
 if [[ ! -x "$RSS_ROOT/.venv/bin/python" || ! -f "$RSS_ROOT/.env" ]]; then
   echo 'É necessário o ambiente virtual existente e /opt/giro73-rss/.env com OPENROUTER_API_KEY.' >&2
   exit 1
@@ -59,8 +60,29 @@ with sqlite3.connect(Path(sys.argv[1]).resolve().as_uri()+"?mode=ro", uri=True) 
 PY
 fi
 
-"$RSS_ROOT/.venv/bin/pip" install --no-cache-dir --timeout 30 --retries 2 \
-  -r "$RSS_STAGE/requirements-rss.txt"
+# Bibliotecas não contêm credenciais e precisam ser legíveis pelo usuário de serviço.
+# O umask 077 permanece no restante do script (backup, .env e banco).
+(
+  umask 022
+  "$RSS_ROOT/.venv/bin/python" -m pip install --no-cache-dir --timeout 30 --retries 2 \
+    -r "$RSS_STAGE/requirements-rss.txt"
+)
+# Repara instalações anteriores em que python-dotenv já existe, mas ficou privado
+# para root: pip normalmente responderia "Requirement already satisfied".
+if ! (cd "$RSS_ROOT" && sudo -u giro73-rss "$RSS_ROOT/.venv/bin/python" \
+  -c 'from dotenv import dotenv_values, load_dotenv') >/dev/null 2>&1; then
+  echo 'Reinstalando python-dotenv com permissões de leitura para o usuário de serviço...'
+  (
+    umask 022
+    "$RSS_ROOT/.venv/bin/python" -m pip install --force-reinstall --no-deps \
+      --no-cache-dir --timeout 30 --retries 2 'python-dotenv>=1.1,<2'
+  )
+fi
+if ! (cd "$RSS_ROOT" && sudo -u giro73-rss "$RSS_ROOT/.venv/bin/python" \
+  -c 'from dotenv import dotenv_values, load_dotenv; import requests, feedparser; from bs4 import BeautifulSoup; from PIL import Image'); then
+  echo 'O usuário giro73-rss não consegue importar as bibliotecas. Confira permissões do venv e arquivos locais com nomes de módulos; o coletor não foi substituído.' >&2
+  exit 1
+fi
 install -o root -g giro73-rss -m 0640 "$RSS_STAGE/coletor_rss.py" "$RSS_ROOT/coletor_rss.py.new"
 install -o root -g giro73-rss -m 0640 "$RSS_STAGE/requirements-rss.txt" "$RSS_ROOT/requirements-rss.txt.new"
 install -o root -g giro73-rss -m 0750 "$RSS_STAGE/run-coletor-rss.sh" "$RSS_ROOT/run.new"
