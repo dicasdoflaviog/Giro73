@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-25",
+  "snippet_id": 12,
+  "active": true,
+  "code_matches": true,
+  "code_error": null,
+  "priority": 16,
+  "sha256": "07baca1eab7be583a8aca7e381217242756091f31f384242095e5702632cb9a7",
+  "image_policy": "public_urls_no_allowlist",
+  "image_min_pixels": 200,
+  "publisher_enabled": true,
+  "vps_python_updated_by_agent": false,
+  "litespeed_page_cache": "cleared",
+  "home_http": 200
+}

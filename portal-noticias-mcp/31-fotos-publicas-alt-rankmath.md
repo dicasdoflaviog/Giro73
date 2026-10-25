@@ -6,7 +6,9 @@ Arquivos completos:
 - `automacao-rss/coletor_rss.py`
 - `automacao-rss/requirements-rss.txt`
 
-Esta versão foi preparada e testada offline. Não foi instalada no WordPress nem na VPS nesta etapa. A implantação anterior, registrada em `30-imagens-resilientes-endpoint.md`, continua sendo a versão verificada no site até a substituição.
+PHP instalado e confirmado ativo no Snippet 12 em **25/10/2026**, após a verificação de que o site ainda utilizava a versão anterior. Prioridade 16; código conferido contra o arquivo sem a abertura PHP; `code_error: null`. O endpoint informa `image_policy: public_urls_no_allowlist` e mínimo de 200 pixels. Cache de páginas LiteSpeed limpo e página inicial HTTP 200. O agente não atualizou o Python da VPS.
+
+Resultado sem credenciais: `implementacao-wp/validacao-snippet12-seo-imagens.json`. A conferência encontrou rascunhos anteriores com capas pendentes; essa atualização não recupera automaticamente imagens de matérias já criadas. Nenhum artigo foi alterado ou criado para validar a instalação.
 
 ## PHP
 
