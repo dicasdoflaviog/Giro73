@@ -1,0 +1,20 @@
+{
+  "snippet_id": 12,
+  "active": true,
+  "code_matches": true,
+  "priority": 16,
+  "sha256": "141fd649761062c3b27ecc5f8b04466300ab1c19e406b04983279dbdc2d16da9",
+  "publisher_enabled": true,
+  "prado_allowed": true,
+  "camara_prado_allowed": true,
+  "previous_hosts_preserved": true,
+  "home_http": 200,
+  "date": "2026-10-25",
+  "site": "https://giro73.com.br",
+  "snippet_name": "Giro73 — Motor de publicação REST e integração Telegram",
+  "litespeed_page_cache": "cleared",
+  "verification_scope": "Code saved and active; publisher status and home HTTP 200. No live image import or article creation test.",
+  "temporary_helper_trashed": true,
+  "temporary_helper_active": false,
+  "vps_python_updated_by_agent": false
+}

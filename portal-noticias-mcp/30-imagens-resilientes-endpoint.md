@@ -1,6 +1,16 @@
 # Imagens opcionais no endpoint e fallback persistente no coletor
 
-Código entregue para substituição/revisão. Esta alteração não foi instalada no WordPress nem na VPS pelo agente. O coletor da VPS já envia imagens, enquanto a versão de referência do repositório ainda monta `image_url: ""` por padrão; preserve a coleta de imagens personalizada ao integrar os trechos abaixo.
+PHP instalado no Snippet 12 do WordPress em **25/10/2026**, após autorização explícita do usuário. Código salvo e ativo, prioridade 16, conferido contra o arquivo do repositório sem a abertura `<?php`. A atualização Python continua entregue para integração: o agente não atualizou a VPS. O coletor da VPS já envia imagens, enquanto a versão de referência do repositório ainda monta `image_url: ""` por padrão; preserve a coleta de imagens personalizada ao integrar os trechos abaixo.
+
+## Instalação confirmada no WordPress
+
+- Backup privado da versão anterior e das configurações criado antes da substituição.
+- Atualização feita pela REST API do Code Snippets através do Easy MCP (`wp_rest_write`). Nesta atualização o plugin salvou o código desativado; uma segunda chamada com somente `active: true` o reativou. Conferir `active` e `code_error` após cada atualização, sem supor que o envio de código e ativação em uma chamada garanta ambos.
+- SHA-256 do código salvo, sem a abertura PHP: `141fd649761062c3b27ecc5f8b04466300ab1c19e406b04983279dbdc2d16da9`.
+- A versão anterior tinha 11 domínios fixos no PHP. Eles foram preservados na opção `g73_publisher_image_hosts`, agora usada pelo código novo, incluindo `prado.ba.gov.br` e `camaraprado.ba.gov.br`. Um auxiliar temporário fez somente essa migração e foi desativado e enviado à lixeira.
+- Endpoint habilitado, página inicial HTTP 200 e cache de páginas LiteSpeed limpo. Cache de objetos e CDN não foram limpos.
+- Nenhum artigo ou mídia de teste foi criado. A importação real das fotos e o fallback do coletor na VPS não foram executados nesta instalação.
+- Resultado sem credenciais: `implementacao-wp/validacao-snippet12-imagens.json`.
 
 ## PHP completo — Snippet 12
 
