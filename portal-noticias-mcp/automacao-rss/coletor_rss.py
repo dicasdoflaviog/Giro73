@@ -56,6 +56,8 @@ sensacionalismo e promessas de dinheiro/saúde. Se a fonte for insuficiente para
 Se apto=true, entregue título preciso, resumo e blocos de texto simples p/h2/h3, sem HTML,
 URLs novas, Markdown ou instruções internas ao leitor. Sugira até 8 tags. Gere os três campos
 meta do Rank Math: palavra-chave específica, título SEO e descrição fiel. observacao é interna.
+Limites: title 200 caracteres; excerpt 320; de 1 a 25 blocos de até 4000 caracteres;
+focus keyword 100, título SEO 100, descrição SEO 200; até 8 tags de 60 caracteres.
 O editor humano revisará o rascunho antes de publicar. Responda apenas no JSON solicitado."""
 
 class ConfigError(Exception):

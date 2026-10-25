@@ -74,6 +74,8 @@ sudo install -o root -g giro73-rss -m 0750 \
 
 Os comandos de cópia de exemplos são para a instalação inicial: em atualizações, preserve os arquivos `/etc/giro73-rss.env` e `/etc/giro73-rss.json` já preenchidos.
 
+O endpoint atual possui um único token ativo. Use o token já utilizado pelo bot, mantendo processos/filas separados. Gerar outro token no painel invalida o anterior e exige atualizar os dois clientes.
+
 Edite o ambiente e as fontes:
 
 ```bash
