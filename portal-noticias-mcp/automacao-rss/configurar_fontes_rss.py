@@ -100,6 +100,8 @@ def discover_candidates(client, site):
         announce("  Descoberta no HTML indisponível:", type(error).__name__)
     for base in dict.fromkeys([site, current]):
         candidates.extend(urljoin(base, path) for path in (
+            "rss.php", "rss", "feed", "feed.xml", "rss2.xml",
+            "index.php?format=feed&type=rss",
             "feed/", "?feed=rss2", "rss/", "rss.xml", "?format=feed&type=rss"
         ))
     return list(dict.fromkeys(candidates))
@@ -190,12 +192,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, default=Path("/etc/giro73-rss.json"))
     parser.add_argument("--timeout", type=int, default=60, choices=range(10, 121), metavar="10..120")
+    parser.add_argument("--only-local", action="store_true",
+                        help="Verifica apenas Portal TX e Vem Vê TX Bahia.")
     args = parser.parse_args()
     os.umask(0o077)
     client = Client("", "", "rss-check", "https://giro73.com.br/wp-json/g73/v1/publish",
                     time.monotonic()+args.timeout, attempts=1)
     try:
-        return configure(args.config, client, seconds=args.timeout)
+        definitions = [source for source in FONTES if source[3]] if args.only_local else FONTES
+        return configure(args.config, client, definitions=definitions, seconds=args.timeout)
     except json.JSONDecodeError as error:
         announce("JSON inválido na configuração | linha:", error.lineno, "| coluna:", error.colno)
         return 2

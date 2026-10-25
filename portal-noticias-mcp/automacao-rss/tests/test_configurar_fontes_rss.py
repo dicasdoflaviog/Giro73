@@ -91,6 +91,20 @@ class ConfigureTests(unittest.TestCase):
         self.assertEqual(json.loads(self.path.read_text())["feeds"][-1]["url"],
                          "https://vemvetxbahia.com.br/?feed=rss2")
 
+    def test_legacy_php_and_rss_without_trailing_slash(self):
+        definitions = [
+            ("Portal TX", "noticias-regiao", "https://portaltx.site/", True),
+            ("Vem Vê TX Bahia", "noticias-regiao", "https://vemvetxbahia.com.br/", True),
+        ]
+        client = Client(feeds={
+            "https://portaltx.site/rss.php": [1],
+            "https://vemvetxbahia.com.br/rss": [1],
+        })
+        self.assertEqual(self.run_config(client, definitions), 0)
+        urls = [feed["url"] for feed in json.loads(self.path.read_text())["feeds"]]
+        self.assertIn("https://portaltx.site/rss.php", urls)
+        self.assertIn("https://vemvetxbahia.com.br/rss", urls)
+
     def test_invalid_feeds_do_not_change_config(self):
         before = self.path.read_bytes()
         definitions = [("Sem RSS", "noticias-regiao", "https://example.org/", True)]

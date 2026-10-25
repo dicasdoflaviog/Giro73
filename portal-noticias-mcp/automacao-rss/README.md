@@ -13,7 +13,7 @@ Python 3.10+ em Ubuntu 22.04/24.04 ou posterior compatível. Não depende do bot
 - `giro73-rss.cron`: coleta de hora em hora, com limite externo de 50 minutos.
 - `giro73-rss.logrotate`: rotação dos logs.
 - `tests/test_coletor_rss.py`: 19 testes automatizados com APIs simuladas.
-- `tests/test_configurar_fontes_rss.py`: 7 testes de descoberta e atualização segura da configuração.
+- `tests/test_configurar_fontes_rss.py`: 8 testes de descoberta e atualização segura da configuração.
 
 ## Modelo Gemini
 
@@ -185,6 +185,8 @@ O utilitário não pressupõe que `/feed/` exista. Nesta sessão, as consultas e
 
 O prazo padrão é de até 60 segundos por fonte nova, configurável com `--timeout 10..120`. Para a checagem geral após o cadastro, use `sudo -u giro73-rss /opt/giro73-rss/run --check`; ela também depende da disponibilidade da API Gemini. O número de entradas no RSS não garante que todas cumpram os critérios de idade, data e texto mínimo do coletor.
 
+Para verificar somente Portal TX e Vem Vê TX Bahia: `/opt/giro73-rss/.venv/bin/python /root/configurar_fontes_rss.py --only-local`. A busca inclui `rss.php`, `/rss` e `/feed` sem barra final, `feed.xml`, `rss2.xml` e o formato de feed via `index.php`, além dos candidatos anteriores. Esses caminhos são tentativas, não feeds confirmados. O HTML trazido pelo usuário revelou templates de `srvsite.com` nos dois sites, sem link RSS declarado; isso não identifica um endpoint RSS nem comprova que não exista. Os erros de DTD podem vir de HTML retornado como fallback: mantenha o bloqueio de DTD/entidades do coletor.
+
 ## Resiliência e operação
 
 - Gemini: até quatro tentativas em 429/500/502/503/504 ou falhas de conexão; espera exponencial com jitter e respeito a Retry-After. Encerradas as tentativas, a fila fica para o próximo cron.
@@ -205,4 +207,4 @@ python3 -m venv .venv-test
 .venv-test/bin/python -m unittest discover -s tests -v
 ```
 
-Passaram **26 testes locais**: 19 do coletor, incluindo RSS → Gemini → WordPress com APIs simuladas, 503, retomada após resposta perdida, chave idempotente, fontes autorizadas, modo dry-run e lock concorrente; mais 7 do configurador de fontes, incluindo descoberta pelo HTML, fallback com página bloqueada, preservação de IDs/backup, repetição sem duplicatas, falha parcial e edição concorrente. Nenhuma chave real foi utilizada nem rascunho real criado por esses testes. O agente não acessou a VPS; a instalação e os testes reais relatados no chat foram executados pelo usuário.
+Passaram **27 testes locais**: 19 do coletor, incluindo RSS → Gemini → WordPress com APIs simuladas, 503, retomada após resposta perdida, chave idempotente, fontes autorizadas, modo dry-run e lock concorrente; mais 8 do configurador de fontes, incluindo descoberta pelo HTML, rotas PHP e sem barra final, fallback com página bloqueada, preservação de IDs/backup, repetição sem duplicatas, falha parcial e edição concorrente. Nenhuma chave real foi utilizada nem rascunho real criado por esses testes. O agente não acessou a VPS; a instalação e os testes reais relatados no chat foram executados pelo usuário.
