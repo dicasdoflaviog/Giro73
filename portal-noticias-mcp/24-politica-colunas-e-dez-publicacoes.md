@@ -1,5 +1,7 @@
 # Política, colunas institucionais e dez publicações
 
+Atualização dos avatares enviados pelo administrador em 25/10/2026: [32-avatares-colunistas.md](32-avatares-colunistas.md).
+
 Aplicado em **22/10/2026**, horário de Brasília/Bahia. A editoria Política é o termo **18**, slug `politica`, com cabeçalho **Política & Poder** e cor **#B91C1C**. Está na topbar depois de notícias, no menu gaveta e no rodapé. Os três blocos de destaque e o feed incluem o novo termo.
 
 ## Publicações

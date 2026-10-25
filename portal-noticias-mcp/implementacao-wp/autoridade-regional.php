@@ -17,7 +17,10 @@ function g73_reg_profile($id=0) {
  $id=$id?:get_the_ID();$slug=get_post_meta($id,'g73_columnist_slug',true);$rows=g73_reg_profiles();return isset($rows[$slug])?$rows[$slug]:null;
 }
 function g73_reg_avatar($p) {
- return $p['avatar']?'<figure class="g73-opinion-portrait">'.wp_get_attachment_image($p['avatar'],'full',false,array('class'=>'g73-opinion-avatar','width'=>64,'height'=>64,'loading'=>'lazy','decoding'=>'async','alt'=>'Imagem temática da coluna '.(isset($p['title'])?$p['title']:$p['name']))).'</figure>':'';
+ if(empty($p['avatar'])){return '';}
+ $alt='Avatar editorial de '.$p['name'].(isset($p['title'])?' — '.$p['title']:'');
+ $attributes=array('class'=>'g73-opinion-avatar','width'=>64,'height'=>64,'sizes'=>'64px','loading'=>'lazy','decoding'=>'async','alt'=>$alt);
+ return '<figure class="g73-opinion-portrait">'.wp_get_attachment_image($p['avatar'],'thumbnail',false,$attributes).'</figure>';
 }
 add_action('init',function(){
  register_post_type('g73_columnist',array('labels'=>array('name'=>'Colunistas G73','singular_name'=>'Coluna editorial','add_new_item'=>'Nova coluna editorial','edit_item'=>'Editar coluna editorial'),
