@@ -5,6 +5,7 @@ Python 3.10+ em Ubuntu 22.04/24.04 ou posterior compatível. Não depende do bot
 ## Arquivos
 
 - `coletor_rss.py`: programa completo.
+- `configurar_fontes_rss.py`: inclusão em lote das fontes selecionadas e descoberta de RSS de Portal TX/Vem Vê TX Bahia, executada na VPS.
 - `requirements-rss.txt`: requests e feedparser; SQLite já faz parte do Python.
 - `rss_fontes.example.json`: configuração por fonte, sem inventar feeds autorizados.
 - `giro73-rss.env.example`: exemplo sem credenciais reais.
@@ -12,6 +13,7 @@ Python 3.10+ em Ubuntu 22.04/24.04 ou posterior compatível. Não depende do bot
 - `giro73-rss.cron`: coleta de hora em hora, com limite externo de 50 minutos.
 - `giro73-rss.logrotate`: rotação dos logs.
 - `tests/test_coletor_rss.py`: 19 testes automatizados com APIs simuladas.
+- `tests/test_configurar_fontes_rss.py`: 7 testes de descoberta e atualização segura da configuração.
 
 ## Modelo Gemini
 
@@ -159,6 +161,30 @@ A linha instalada é:
 
 O usuário está presente porque o arquivo é de `/etc/cron.d`, não de um crontab pessoal. Para pausar, remova ou mova esse arquivo para fora de `/etc/cron.d`; preserve o banco local.
 
+## Adicionar as fontes selecionadas em lote
+
+O utilitário `configurar_fontes_rss.py` pode ser enviado separadamente à VPS onde o coletor já está instalado. No computador em que o arquivo foi baixado:
+
+```bash
+scp configurar_fontes_rss.py root@IP_DA_VPS:/root/
+```
+
+Na VPS, como root:
+
+```bash
+/opt/giro73-rss/.venv/bin/python /root/configurar_fontes_rss.py
+```
+
+Ele verifica Portal TX e Vem Vê TX Bahia primeiro, procurando links RSS/Atom declarados no HTML e testando caminhos comuns quando necessário. Depois verifica os endereços informados para Liberdade News, Bahia Notícias Municípios/Esportes, G1 Bahia/Brasil, Agência Brasil Últimas/Economia, Bahia Extremo Sul, Extremo Sul Notícias, Olhar Digital, Portal Leo Dias, Sul Bahia News e Radar News. São até 15 fontes contando o Liberdade News, desde que todas sejam válidas e não haja outras fontes extras cadastradas.
+
+Somente fontes novas com RSS/Atom reconhecido são adicionadas. Fonte existente é preservada com o mesmo ID, categoria e estado de habilitação. O utilitário não altera a fila SQLite e não chama Gemini ou WordPress. Cria backup de `/etc/giro73-rss.json`, grava por substituição atômica e preserva o proprietário/grupo. Se outra pessoa editar a configuração durante os testes, interrompe a gravação para não perder essa edição.
+
+As fontes adicionadas são marcadas `authorized: true` conforme seleção do administrador; a verificação técnica não confirma licenças de reutilização. Portal TX e Vem Vê TX Bahia são destinados a `noticias-regiao`. A ordem de verificação não muda a prioridade dos itens que já estão na fila. Os feeds gerais também permanecem em `noticias-regiao`: esta versão não classifica automaticamente os assuntos e não inclui feed exclusivo de Política.
+
+O utilitário não pressupõe que `/feed/` exista. Nesta sessão, as consultas externas a Portal TX e Vem Vê TX Bahia foram bloqueadas pela conexão do ambiente (túnel HTTP 403); os endereços reais precisam ser confirmados pelo utilitário na VPS. Se um site não publicar RSS ou bloquear a consulta, ele aparece em `EXIGEM REVISÃO` e não é cadastrado como fonte nova. O código de saída 1 indica que houve fonte não adicionada; as fontes novas válidas já foram salvas.
+
+O prazo padrão é de até 60 segundos por fonte nova, configurável com `--timeout 10..120`. Para a checagem geral após o cadastro, use `sudo -u giro73-rss /opt/giro73-rss/run --check`; ela também depende da disponibilidade da API Gemini. O número de entradas no RSS não garante que todas cumpram os critérios de idade, data e texto mínimo do coletor.
+
 ## Resiliência e operação
 
 - Gemini: até quatro tentativas em 429/500/502/503/504 ou falhas de conexão; espera exponencial com jitter e respeito a Retry-After. Encerradas as tentativas, a fila fica para o próximo cron.
@@ -179,4 +205,4 @@ python3 -m venv .venv-test
 .venv-test/bin/python -m unittest discover -s tests -v
 ```
 
-Passaram **19 testes locais**, incluindo o fluxo RSS → Gemini → WordPress com APIs simuladas, 503, retomada após resposta perdida, chave idempotente, fontes autorizadas, modo dry-run e lock concorrente. Nenhuma chave real foi utilizada; nenhum rascunho real foi criado; o coletor não foi instalado na VPS nesta entrega.
+Passaram **26 testes locais**: 19 do coletor, incluindo RSS → Gemini → WordPress com APIs simuladas, 503, retomada após resposta perdida, chave idempotente, fontes autorizadas, modo dry-run e lock concorrente; mais 7 do configurador de fontes, incluindo descoberta pelo HTML, fallback com página bloqueada, preservação de IDs/backup, repetição sem duplicatas, falha parcial e edição concorrente. Nenhuma chave real foi utilizada nem rascunho real criado por esses testes. O agente não acessou a VPS; a instalação e os testes reais relatados no chat foram executados pelo usuário.
