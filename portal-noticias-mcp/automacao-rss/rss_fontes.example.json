@@ -1,0 +1,14 @@
+{
+  "feeds": [
+    {
+      "id": "fonte_regional_autorizada",
+      "name": "Nome da fonte autorizada",
+      "url": "https://fonte-autorizada.example/feed/",
+      "category": "noticias-regiao",
+      "authorized": false,
+      "use_full_content": false,
+      "allow_undated": false,
+      "max_age_hours": 72
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+/var/log/giro73-rss/coletor.log {
+    weekly
+    rotate 8
+    compress
+    missingok
+    notifempty
+    copytruncate
+    su giro73-rss giro73-rss
+}

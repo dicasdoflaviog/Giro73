@@ -1,0 +1,4 @@
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+MAILTO=""
+0 * * * * giro73-rss /usr/bin/timeout 50m /opt/giro73-rss/run >> /var/log/giro73-rss/coletor.log 2>&1
