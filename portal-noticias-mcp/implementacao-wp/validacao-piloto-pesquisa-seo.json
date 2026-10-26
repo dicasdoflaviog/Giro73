@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-26",
+  "ga4": {
+    "property_id": "560739453",
+    "site": "https://giro73.com.br",
+    "timezone": "America/Bahia",
+    "measurement_id": "G-VZZWMKPKM9",
+    "default_property_needs_correction": true,
+    "period": "2026-09-28 até 2026-10-25",
+    "metrics": {
+      "sessions": "3",
+      "activeUsers": "1",
+      "screenPageViews": "5",
+      "engagementRate": "1"
+    }
+  },
+  "dataforseo": {
+    "status": "account_verification_required",
+    "http_status": 403,
+    "provider_code": 40104,
+    "balance_before_usd": 1,
+    "balance_after_usd": 1,
+    "observed_cost_usd": 0,
+    "keyword_results_returned": false
+  },
+  "se_ranking": {
+    "country": "br",
+    "keywords_requested": 44,
+    "credits_used": 500,
+    "credits_remaining": 99500,
+    "source_of_keyword_metrics": "SE Ranking, não DataForSEO",
+    "cpc_currency_explicit_in_response": false
+  },
+  "selected_keyword": {
+    "keyword": "conta digital PJ",
+    "volume": 440,
+    "cpc_as_returned": 4.39,
+    "organic_difficulty": 7,
+    "advertiser_competition": 0.76
+  },
+  "serp_analysis": {
+    "completed": false,
+    "reason": "DataForSEO bloqueado; acesso direto ao Google e fontes externas recusado pelo proxy HTTP 403. Dados das páginas de marcas no SE Ranking não demonstram os primeiros resultados da palavra genérica."
+  },
+  "article": {
+    "id": 481,
+    "status": "draft",
+    "title": "Conta digital PJ: 7 cuidados antes de abrir para seu negócio",
+    "gutenberg": true,
+    "publication_pending_serp_and_sources": true,
+    "edit_url": "https://giro73.com.br/wp-admin/post.php?post=481&action=edit",
+    "block_count": 39,
+    "seo_title_characters": 60,
+    "seo_description_characters": 154,
+    "seo_fields_verified": 9,
+    "featured_media": 96,
+    "verified_status": "draft",
+    "content_saved_matches_source": true,
+    "first_create_attempts_failed_without_duplicate": true,
+    "creation_workaround": "REST nativa com campos mínimos; configuração e SEO após a criação via Easy MCP.",
+    "public_checks": {
+      "draft": 404,
+      "image": 200,
+      "internal_renda": 200,
+      "internal_registrato": 200,
+      "internal_seguranca": 200
+    },
+    "absent_from_public_sitemap": true
+  }
+}
