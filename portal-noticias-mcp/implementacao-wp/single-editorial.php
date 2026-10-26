@@ -2,6 +2,48 @@
 /** Giro73: leitura editorial, link de compartilhamento e inserções no servidor. */
 if (!defined('ABSPATH')) { return; }
 if (!function_exists('g73_single_paragraph_ends')) {
+// Identidade da mídia sem parâmetros de versão; aceita variantes reais registradas no WP.
+function g73_single_image_key($url) {
+    if (!is_string($url) || '' === $url) { return ''; }
+    $parts = wp_parse_url(html_entity_decode($url, ENT_QUOTES, 'UTF-8'));
+    if (!is_array($parts) || empty($parts['path'])) { return ''; }
+    return strtolower(isset($parts['host']) ? $parts['host'] : '') . rawurldecode($parts['path']);
+}
+// Só retira figuras automáticas que repetem a capa; nunca altera o post_content salvo.
+function g73_single_unique_cover($content, $post_id) {
+    $result = array('content' => $content, 'caption' => '');
+    if (false === strpos($content, 'g73-imported-image') || !class_exists('WP_HTML_Tag_Processor')) { return $result; }
+    $cover_id = (int) get_post_thumbnail_id($post_id);
+    if (!$cover_id) { return $result; }
+    $url = (string) wp_get_attachment_url($cover_id);
+    $urls = array(g73_single_image_key($url));
+    $base = substr($url, 0, strrpos($url, '/') + 1);
+    $meta = wp_get_attachment_metadata($cover_id);
+    if (is_array($meta)) {
+        foreach (isset($meta['sizes']) ? $meta['sizes'] : array() as $size) {
+            if (!empty($size['file'])) { $urls[] = g73_single_image_key($base . $size['file']); }
+        }
+        if (!empty($meta['original_image'])) { $urls[] = g73_single_image_key($base . $meta['original_image']); }
+    }
+    $urls = array_filter($urls);
+    $result['content'] = preg_replace_callback('~<figure\b[^>]*>[\s\S]*?</figure\s*>~i', function ($match) use ($cover_id, $urls, &$result) {
+        $tags = new WP_HTML_Tag_Processor($match[0]);
+        if (!$tags->next_tag('FIGURE') || !$tags->has_class('g73-imported-image')) { return $match[0]; }
+        $images = 0; $same = false;
+        while ($tags->next_tag('IMG')) {
+            ++$images;
+            if ($tags->has_class('wp-image-' . $cover_id)
+                || in_array(g73_single_image_key($tags->get_attribute('src')), $urls, true)) { $same = true; }
+        }
+        // Uma figura com várias fotos deve ser preservada integralmente.
+        if (1 !== $images || !$same) { return $match[0]; }
+        if ('' === $result['caption'] && preg_match('~<figcaption\b[^>]*>([\s\S]*?)</figcaption\s*>~i', $match[0], $caption)) {
+            $result['caption'] = $caption[1];
+        }
+        return '';
+    }, $content);
+    return $result;
+}
 // Posições dos parágrafos editoriais completos, preservando o HTML original.
 function g73_single_paragraph_ends($content) {
     $pattern = '~<!--[\s\S]*?-->|<(?:"[^"]*"|\x27[^\x27]*\x27|[^\x27">])*>~';
@@ -62,6 +104,11 @@ function g73_single_read_also($post_id) {
 add_filter('render_block_core/post-content', function ($content, $parsed, $instance) {
     if (is_admin() || !is_singular('post') || is_feed() || !isset($instance->context['postId'])
         || (int) $instance->context['postId'] !== (int) get_queried_object_id()) { return $content; }
+    $post_id = (int) $instance->context['postId'];
+    if (!empty($GLOBALS['g73_single_cover_rendered'][$post_id])) {
+        $unique = g73_single_unique_cover($content, $post_id);
+        $content = $unique['content'];
+    }
     $ends = g73_single_paragraph_ends($content);
     if (!$ends) { return $content; }
     $insertions = array();
@@ -89,10 +136,15 @@ add_filter('render_block_core/post-featured-image', function ($html, $block, $in
     if (is_admin() || !is_singular('post') || !isset($instance->context['postId'])
         || (int)$instance->context['postId'] !== (int)get_queried_object_id()) { return $html; }
     $id = (int)$instance->context['postId'];
-    if (false !== strpos(get_post_field('post_content', $id), 'g73-photo-credit')) { return $html; }
-    $caption = wp_get_attachment_caption(get_post_thumbnail_id($id));
+    if (false === stripos($html, '<img')) { return $html; }
+    $GLOBALS['g73_single_cover_rendered'][$id] = true;
+    $unique = g73_single_unique_cover(get_post_field('post_content', $id), $id);
+    if (false !== strpos($unique['content'], 'g73-photo-credit')) { return $html; }
+    $caption = '' !== $unique['caption'] ? $unique['caption'] : wp_get_attachment_caption(get_post_thumbnail_id($id));
     if (!$caption || false !== strpos($html, '<figcaption')) { return $html; }
-    return preg_replace('~</figure>\s*$~', '<figcaption class="g73-photo-credit">' . wp_kses_post($caption) . '</figcaption></figure>', $html, 1);
+    return preg_replace_callback('~</figure>\s*$~', function () use ($caption) {
+        return '<figcaption class="g73-photo-credit">' . wp_kses_post($caption) . '</figcaption></figure>';
+    }, $html, 1);
 }, 25, 3);
 add_shortcode('giro73_compartilhar_whatsapp', function () {
     $id = get_queried_object_id();

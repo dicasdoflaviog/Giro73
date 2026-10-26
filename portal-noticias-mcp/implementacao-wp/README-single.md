@@ -10,6 +10,18 @@ Chapéu colorido de 13 px, H1 de 36 px/800/1,15, resumo de 19 px/1,45 e metadado
 
 A variável `--cor-editoria` acompanha as cinco cores já mapeadas no chapéu. Fontes do sistema, sem biblioteca ou fonte remota adicionada.
 
+## Capa única nos artigos importados
+
+Correção de 26/10/2026 no mesmo snippet 7: quando o template já exibiu a imagem destacada, o conteúdo renderizado omite somente a figura automática `g73-imported-image` que repete essa mídia. Identifica o attachment por `wp-image-ID` ou pelas URLs/tamanhos registrados no WordPress, usando a HTML API nativa. Não adiciona JavaScript nem CSS para esconder uma imagem que continuaria carregando.
+
+A legenda da figura importada é preservada junto à capa. Outras fotos, figuras manuais e figuras com várias imagens permanecem intactas. Sem bloco de capa renderizado, a imagem do corpo é mantida. Editor, REST e feeds não recebem a remoção; o `post_content` salvo continua com figura/ALT para a análise do Rank Math e a retomada idempotente do motor de publicação. Não é necessário atualizar o coletor da VPS nem recriar matérias.
+
+`tests/single-cover-unit.php` cobre 20 casos com classes HTML API reais do WordPress 6.8.3 e stubs das demais APIs. Para executar, disponibilize nesse diretório externo as classes `class-wp-token-map.php`, `html5-named-character-references.php`, `class-wp-html-span.php`, `class-wp-html-attribute-token.php`, `class-wp-html-text-replacement.php`, `class-wp-html-decoder.php`, `class-wp-html-doctype-info.php` e `class-wp-html-tag-processor.php`:
+
+```bash
+G73_WP_HTML_API=/caminho/das/classes php tests/single-cover-unit.php
+```
+
 ## Inserções automáticas
 
 O filtro `render_block_core/post-content` atua só no post principal de uma página singular. Calcula os finais dos parágrafos editoriais uma vez e insere os componentes a partir do final, preservando os offsets e o HTML original:

@@ -1,0 +1,67 @@
+{
+  "checked_at": "2026-10-26T12:49:46-03:00",
+  "snippet": {
+    "id": 7,
+    "active": true,
+    "priority": 11,
+    "code_error": null,
+    "sha256": "fdd6b99b9a4c8ec3971aefa2562b76b3909e426d978a240734ac9d83c158e093"
+  },
+  "article_id": 411,
+  "article_url": "https://giro73.com.br/inscricoes-para-vagas-remanescentes-do-fies-estao-abertas/",
+  "public": {
+    "http": 200,
+    "cache": "miss",
+    "hero_count": 1,
+    "imported_figures_before": 1,
+    "imported_figures_after": 0,
+    "cover_credit": "Foto: Imagem da fonte: Agência Brasil — Últimas",
+    "alt_unchanged": true,
+    "ads_positions": [
+      "in_article_1",
+      "in_article_2"
+    ],
+    "og:title_unchanged": true,
+    "og:description_unchanged": true,
+    "og:image_unchanged": true,
+    "og:url_unchanged": true
+  },
+  "raw_content_unchanged": true,
+  "raw_content_sha256": "66c4284d88cf9393ac2e7db31118ec1fef9bbcf8498db4fcc26f7e672f8402ae",
+  "exposed_post_meta_unchanged": true,
+  "featured_media_unchanged": true,
+  "attachment_alt_caption_unchanged": true,
+  "other_observed_post_fields_changed": [
+    "modified",
+    "modified_gmt"
+  ],
+  "browser": {
+    "method": "Chromium com recursos HTTPS próprios verificados e interceptados localmente",
+    "results": [
+      {
+        "width": 390,
+        "heroCount": 1,
+        "duplicateCount": 0,
+        "credit": "Foto: Imagem da fonte: Agência Brasil — Últimas",
+        "alt": "Fies",
+        "overflow": false,
+        "heroWidth": 358
+      },
+      {
+        "width": 1440,
+        "heroCount": 1,
+        "duplicateCount": 0,
+        "credit": "Foto: Imagem da fonte: Agência Brasil — Últimas",
+        "alt": "Fies",
+        "overflow": false,
+        "heroWidth": 708
+      }
+    ]
+  },
+  "tests": {
+    "php_unit_checks": 20,
+    "html_api": "WordPress 6.8.3 classes",
+    "php_syntax": "passed"
+  },
+  "cache": "LiteSpeed page cache purged via Easy MCP; canonical article fetched after purge"
+}
