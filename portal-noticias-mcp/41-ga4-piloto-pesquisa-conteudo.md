@@ -1,5 +1,7 @@
 # GA4 e primeiro piloto de pesquisa editorial
 
+**Estado posterior:** o post 481 foi publicado com os recursos ativos, conforme nova orientação do responsável. Veja a [conclusão da publicação](42-publicacao-conta-digital-pj.md). O texto abaixo preserva o registro da preparação e dos bloqueios encontrados naquela etapa.
+
 Execução em 26/10/2026. Esta etapa não publicou uma nova matéria: o artigo 481 foi preparado em rascunho porque a consulta dos primeiros resultados do Google e a leitura das fontes continuam pendentes.
 
 ## GA4 conferido

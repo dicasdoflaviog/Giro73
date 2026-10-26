@@ -1,0 +1,101 @@
+{
+  "checked_at": "2026-10-26T19:42:13.205807-03:00",
+  "id": 481,
+  "status": "publish",
+  "url": "https://giro73.com.br/conta-digital-pj-como-escolher/",
+  "date": "2026-10-26T19:40:20",
+  "date_gmt": "2026-10-26T22:40:20",
+  "title": "Conta digital PJ: 7 cuidados antes de abrir para seu negócio",
+  "http": 200,
+  "canonical": "https://giro73.com.br/conta-digital-pj-como-escolher/",
+  "robots": "follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large",
+  "og": {
+    "og:title": "Conta digital PJ: 7 cuidados antes de abrir para seu negócio",
+    "og:description": "Conta digital PJ: confira tarifas, cobranças, segurança e atendimento antes de abrir. Veja um exemplo de custo para comparar as opções para o seu negócio.",
+    "og:image": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-21-5f8a5cfe768c.webp",
+    "og:url": "https://giro73.com.br/conta-digital-pj-como-escolher/"
+  },
+  "headline_count": 1,
+  "schema_type": "NewsArticle",
+  "schema_date_published": "2026-10-26T19:40:20-03:00",
+  "gutenberg_preserved": true,
+  "raw_matches_reviewed": true,
+  "featured_images_on_page": 1,
+  "imported_cover_repetitions": 0,
+  "featured_image": {
+    "width": 1200,
+    "height": 675,
+    "bytes": 53798,
+    "type": "image/webp",
+    "credit_present": true
+  },
+  "on_home": true,
+  "on_category": true,
+  "on_sitemap": true,
+  "same_slug_post_count": 1,
+  "internal_links_http_200": 5,
+  "keyword_research": {
+    "provider": "SE Ranking",
+    "additional_questions_returned": 0,
+    "credits_used_this_step": 0,
+    "credits_left": 99500
+  },
+  "google_live_serp_reviewed": false,
+  "external_reference_pages_fetched": false,
+  "limitations": "DataForSEO bloqueado. Publicação autorizada com ferramentas ativas: guia original de critérios e cálculo hipotético, sem ranking de bancos ou condições comerciais atuais não verificadas. Links externos apresentados como referências para consulta.",
+  "cache": {
+    "summary": "2 cleared, 1 skipped. See layers[] for each cache.",
+    "changed": true,
+    "dry_run": false,
+    "scope": "posts",
+    "urls": [
+      {
+        "url": "https://giro73.com.br/conta-digital-pj-como-escolher/",
+        "source": "permalink",
+        "post_id": 481
+      },
+      {
+        "url": "https://giro73.com.br/",
+        "source": "post_type_archive"
+      },
+      {
+        "url": "https://giro73.com.br/category/dinheiro-renda-extra/",
+        "source": "term_archive"
+      }
+    ],
+    "layers": [
+      {
+        "id": "rank-math-sitemap",
+        "label": "Rank Math sitemap cache",
+        "kind": "data",
+        "status": "cleared",
+        "applies": "now",
+        "detail": "Rank Math cleared the index, post sitemap cache."
+      },
+      {
+        "id": "elementor",
+        "label": "Elementor",
+        "kind": "asset",
+        "status": "skipped",
+        "reason": "not_selected",
+        "detail": "Not in the `caches` list of this call."
+      },
+      {
+        "id": "litespeed-cache",
+        "label": "LiteSpeed Cache",
+        "kind": "page",
+        "status": "cleared",
+        "applies": "after_response",
+        "detail": "LiteSpeed Cache cleared 1 post(s) with their related pages, and 3 page(s)."
+      }
+    ],
+    "not_covered": [],
+    "verify": {
+      "urls": [
+        "https://giro73.com.br/conta-digital-pj-como-escolher/"
+      ],
+      "after_seconds": 5,
+      "how": "Fetch each URL exactly as written, with no added query string (a query string bypasses or changes the cache key), and check that the change is in the HTML."
+    }
+  }
+}
