@@ -154,3 +154,60 @@ add_action('parse_request', function ($wp) {
 add_action('update_option_g73_adsense_publisher_id', function () { do_action('litespeed_purge_url', home_url('/ads.txt')); });
 add_action('add_option_g73_adsense_publisher_id', function () { do_action('litespeed_purge_url', home_url('/ads.txt')); });
 }
+
+// Linha editorial dos feeds: publicação original, horário da Bahia e editoria.
+if (!function_exists('g73_portal_feed_age')) {
+function g73_portal_feed_age($published, $now) {
+    $seconds = $now - $published;
+    if ($seconds < -60) { return 'Agendada'; }
+    if ($seconds < 60) { return 'Agora'; }
+    if ($seconds < HOUR_IN_SECONDS) { $n = (int) floor($seconds / MINUTE_IN_SECONDS); $unit = 1 === $n ? 'minuto' : 'minutos'; }
+    elseif ($seconds < DAY_IN_SECONDS) { $n = (int) floor($seconds / HOUR_IN_SECONDS); $unit = 1 === $n ? 'hora' : 'horas'; }
+    elseif ($seconds < 30 * DAY_IN_SECONDS) { $n = (int) floor($seconds / DAY_IN_SECONDS); $unit = 1 === $n ? 'dia' : 'dias'; }
+    elseif ($seconds < 365 * DAY_IN_SECONDS) { $n = (int) floor($seconds / (30 * DAY_IN_SECONDS)); $unit = 1 === $n ? 'mês' : 'meses'; }
+    else { $n = (int) floor($seconds / (365 * DAY_IN_SECONDS)); $unit = 1 === $n ? 'ano' : 'anos'; }
+    return 'Há ' . $n . ' ' . $unit;
+}
+function g73_portal_feed_date($html, $parsed, $instance = null) {
+    $classes = preg_split('/\s+/', trim(isset($parsed['attrs']['className']) ? $parsed['attrs']['className'] : ''));
+    if (is_admin() || !in_array('g73-news-date', $classes, true)) { return $html; }
+    $id = isset($instance->context['postId']) ? (int) $instance->context['postId'] : get_the_ID();
+    if (!$id || 'post' !== get_post_type($id)) { return $html; }
+    $published = (int) get_post_time('U', true, $id);
+    if (!$published) { return $html; }
+    $terms = get_the_category($id); $term = null;
+    $primary = (int) get_post_meta($id, 'rank_math_primary_category', true);
+    foreach ($terms as $candidate) {
+        if (null === $term || (int) $candidate->term_id === $primary) { $term = $candidate; }
+        if ((int) $candidate->term_id === $primary) { break; }
+    }
+    $zone = new DateTimeZone('America/Bahia');
+    $absolute = wp_date('d/m/Y \à\s H\hi', $published, $zone);
+    $iso = wp_date(DATE_W3C, $published, $zone);
+    $GLOBALS['g73_feed_date_needed'] = true;
+    $out = '<div class="wp-block-post-date g73-news-date"><time class="g73-relative-time" datetime="' . esc_attr($iso)
+        . '" data-g73-published="' . $published . '" title="' . esc_attr($absolute . ' — horário da Bahia') . '">'
+        . esc_html(g73_portal_feed_age($published, time())) . '</time><span class="g73-absolute-date"><span class="g73-date-divider" aria-hidden="true">· </span>' . esc_html($absolute) . '</span>';
+    if ($term) {
+        $url = get_category_link($term->term_id);
+        if (!is_wp_error($url)) { $out .= '<span class="g73-feed-section">— Em <a href="' . esc_url($url) . '">' . esc_html(wp_specialchars_decode($term->name, ENT_QUOTES)) . '</a></span>'; }
+    }
+    return $out . '</div>';
+}
+add_filter('render_block_core/post-date', 'g73_portal_feed_date', 20, 3);
+add_action('wp_head', function () {
+    echo '<style id="g73-feed-date-style">.g73-portal .g73-news-date{color:#666;display:flex;flex-wrap:wrap;align-items:baseline;column-gap:6px}.g73-news-date .g73-relative-time{display:inline-block;flex:0 0 13ch;width:13ch;white-space:nowrap}.g73-news-date .g73-absolute-date{white-space:nowrap}.g73-portal .g73-news-date a{color:inherit;text-decoration:none}.g73-news-date a:hover{text-decoration:underline}@media(max-width:48rem){.g73-news-date .g73-feed-section{order:1;flex:1;min-width:0}.g73-news-date .g73-absolute-date{order:2;flex-basis:100%}.g73-news-date .g73-date-divider{display:none}}</style>';
+}, 100);
+add_action('wp_footer', function () {
+    if (empty($GLOBALS['g73_feed_date_needed'])) { return; }
+    echo '<script id="g73-feed-date-clock">' . g73_portal_feed_clock_js() . '</script>';
+}, 40);
+function g73_portal_feed_clock_js() {
+    return <<<'G73DATE'
+(()=>{'use strict';const nodes=document.querySelectorAll('.g73-news-date time[data-g73-published]');if(!nodes.length)return;
+const label=seconds=>{if(seconds< -60)return 'Agendada';if(seconds<60)return 'Agora';let n,unit;if(seconds<3600){n=Math.floor(seconds/60);unit=n===1?'minuto':'minutos';}else if(seconds<86400){n=Math.floor(seconds/3600);unit=n===1?'hora':'horas';}else if(seconds<2592000){n=Math.floor(seconds/86400);unit=n===1?'dia':'dias';}else if(seconds<31536000){n=Math.floor(seconds/2592000);unit=n===1?'mês':'meses';}else{n=Math.floor(seconds/31536000);unit=n===1?'ano':'anos';}return 'Há '+n+' '+unit;};
+const update=()=>{if(document.hidden)return;const now=Date.now()/1000;nodes.forEach(node=>{const stamp=Number(node.dataset.g73Published);if(!Number.isFinite(stamp)||stamp<=0)return;const text=label(now-stamp);if(node.textContent!==text)node.textContent=text;});};update();setInterval(update,60000);document.addEventListener('visibilitychange',update);
+})();
+G73DATE;
+}
+}
