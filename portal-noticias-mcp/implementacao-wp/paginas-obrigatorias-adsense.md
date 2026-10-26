@@ -1,6 +1,6 @@
 # Páginas institucionais do Giro73 — modelos para WordPress
 
-**Estado: rascunhos para revisão.** Criar como páginas nativas, não como posts. Preencher os campos entre colchetes com dados reais e revisar todas as declarações antes de publicar. A existência destas páginas não assegura aprovação no AdSense.
+**Este arquivo contém os modelos originais, não um espelho do site.** As cinco páginas já estão publicadas no WordPress. As versões atualizadas em 26/10/2026 de [Privacidade](politica-de-privacidade.html) e [Sobre Nós](sobre-nos.html) estão versionadas separadamente; veja também a [execução da etapa 1](../38-prontidao-adsense-etapa1.md). Não recriar páginas nem substituir versões publicadas por estes modelos. Para uma nova implantação, preencher os campos abaixo com dados reais e revisar as práticas efetivas. A existência destas páginas não assegura aprovação no AdSense.
 
 ## Dados que precisam ser confirmados
 

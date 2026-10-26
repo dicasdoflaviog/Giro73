@@ -1,0 +1,453 @@
+{
+  "data_local": "2026-10-26",
+  "timezone": "America/Bahia",
+  "published_posts": 31,
+  "category_count": 6,
+  "internal_urls_checked_before": 51,
+  "broken_internal_urls_before": 1,
+  "broken_link_occurrences_fixed": 4,
+  "featured_media_unique": 28,
+  "featured_images_under_1200_posts": [
+    414,
+    372,
+    336,
+    341,
+    346,
+    333,
+    351,
+    289,
+    290,
+    306,
+    317,
+    319
+  ],
+  "alt_added_media": [
+    365,
+    361,
+    359,
+    328
+  ],
+  "shared_media_detached_from_trashed_parents": [
+    96,
+    97,
+    98,
+    99
+  ],
+  "privacy_page_updated": 3,
+  "about_page_updated": 7,
+  "editorial_review_queue": [
+    381,
+    333,
+    306,
+    335,
+    370,
+    340,
+    345,
+    308
+  ],
+  "ga4": {
+    "accessible_accounts": 0,
+    "collection_status": "not_verified",
+    "note": "Ausência de contas acessíveis pela conta de serviço não prova ausência de coleta no site."
+  },
+  "se_ranking_paid_calls": 0,
+  "inspections": [
+    {
+      "page": "home",
+      "verdict": "PASS",
+      "coverageState": "Enviada e indexada",
+      "indexingState": "INDEXING_ALLOWED",
+      "robotsTxtState": "ALLOWED",
+      "lastCrawlTime": "2026-10-22T13:09:31Z",
+      "userCanonical": "https://giro73.com.br/",
+      "googleCanonical": "https://giro73.com.br/"
+    },
+    {
+      "page": "politica",
+      "verdict": "PASS",
+      "coverageState": "Enviada e indexada",
+      "indexingState": "INDEXING_ALLOWED",
+      "robotsTxtState": "ALLOWED",
+      "lastCrawlTime": "2026-10-23T04:57:09Z",
+      "userCanonical": "https://giro73.com.br/category/politica/",
+      "googleCanonical": "https://giro73.com.br/category/politica/"
+    },
+    {
+      "page": "registrato",
+      "verdict": "PASS",
+      "coverageState": "Enviada e indexada",
+      "indexingState": "INDEXING_ALLOWED",
+      "robotsTxtState": "ALLOWED",
+      "lastCrawlTime": "2026-10-23T06:04:48Z",
+      "userCanonical": "https://giro73.com.br/registrato-consultar-emprestimos-cpf/",
+      "googleCanonical": "https://giro73.com.br/registrato-consultar-emprestimos-cpf/"
+    },
+    {
+      "page": "fies",
+      "verdict": "NEUTRAL",
+      "coverageState": "O Google não reconhece o URL",
+      "indexingState": "INDEXING_STATE_UNSPECIFIED",
+      "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED"
+    }
+  ],
+  "limitations": [
+    "Fontes oficiais externas: tentativa de leitura recusada pelo proxy HTTP 403. Não houve confirmação factual externa.",
+    "Atualização da política não equivale à implementação ou validação do consentimento.",
+    "A inspeção da API informa indexação; não solicita indexação nem executa teste ao vivo."
+  ],
+  "featured_media_missing_alt_after": 0,
+  "internal_urls_checked_after": 50,
+  "internal_link_http_errors_after": 0,
+  "checked_internal_urls_noindex_after": 0,
+  "public_checks": [
+    {
+      "url": "https://giro73.com.br/saude-fortalecida-ubs-de-cumuruxatiba-e-reinaugurada-com-estrutura-moderna/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/saude-fortalecida-ubs-de-cumuruxatiba-e-reinaugurada-com-estrutura-moderna/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/obras-da-nova-ponte-sobre-o-rio-jucurucu-avancam-em-ritmo-acelerado/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/obras-da-nova-ponte-sobre-o-rio-jucurucu-avancam-em-ritmo-acelerado/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/macrodrenagem-em-prado-avancos-e-impactos-na-comunidade/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/macrodrenagem-em-prado-avancos-e-impactos-na-comunidade/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/prado-realiza-audiencia-publica-de-prestacao-de-contas-do-2o-quadrimestre-de-2026/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/prado-realiza-audiencia-publica-de-prestacao-de-contas-do-2o-quadrimestre-de-2026/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/atencao-horario-de-funcionamento-da-camara-de-teixeira-de-freitas/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/atencao-horario-de-funcionamento-da-camara-de-teixeira-de-freitas/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/ba-vi-torcedor-tabela-ingressos-seguranca/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/ba-vi-torcedor-tabela-ingressos-seguranca/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/br-101-extremo-sul-bahia-checar-viagem/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/br-101-extremo-sul-bahia-checar-viagem/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/category/esportes/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/category/esportes/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/conta-invadida-primeiros-passos-seguranca/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/conta-invadida-primeiros-passos-seguranca/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/renda-extra-calcular-ganho-real/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/renda-extra-calcular-ganho-real/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/transferencias-emendas-municipios-extremo-sul-bahia/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/transferencias-emendas-municipios-extremo-sul-bahia/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/orcamento-municipal-documentos-prioridades-prefeitura/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/orcamento-municipal-documentos-prioridades-prefeitura/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/category/politica/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/category/politica/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/contato/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/contato/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/category/noticias-regiao/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/category/noticias-regiao/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/jogos-bahia-vitoria-conferir-tabela-oficial/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/jogos-bahia-vitoria-conferir-tabela-oficial/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/registrato-consultar-emprestimos-cpf/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/registrato-consultar-emprestimos-cpf/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/agenda-73/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/agenda-73/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/agenda-73/?g73_categoria=shows_festas",
+      "status": 200,
+      "final_url": "https://giro73.com.br/agenda-73/?g73_categoria=shows_festas",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/agenda-73/?g73_categoria=gastronomia_feiras",
+      "status": 200,
+      "final_url": "https://giro73.com.br/agenda-73/?g73_categoria=gastronomia_feiras",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/agenda-73/?g73_categoria=esportes",
+      "status": 200,
+      "final_url": "https://giro73.com.br/agenda-73/?g73_categoria=esportes",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/agenda-73/?g73_categoria=teatro_cultura",
+      "status": 200,
+      "final_url": "https://giro73.com.br/agenda-73/?g73_categoria=teatro_cultura",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/agenda-73/?g73_categoria=negocios_cursos",
+      "status": 200,
+      "final_url": "https://giro73.com.br/agenda-73/?g73_categoria=negocios_cursos",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/agenda-73/?g73_categoria=infantil_familia",
+      "status": 200,
+      "final_url": "https://giro73.com.br/agenda-73/?g73_categoria=infantil_familia",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/termos-de-uso/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/termos-de-uso/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/politica-editorial/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/politica-editorial/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/politica-de-privacidade/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/politica-de-privacidade/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/sobre-nos/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/sobre-nos/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/category/dinheiro-renda-extra/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/category/dinheiro-renda-extra/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/category/tecnologia-inovacao/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/category/tecnologia-inovacao/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/category/famosos-entretenimento/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/category/famosos-entretenimento/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/eleitora-da-espanha-chega-tarde-e-perde-chance-de-votar-na-bahia/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/eleitora-da-espanha-chega-tarde-e-perde-chance-de-votar-na-bahia/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/prefeito-de-teixeira-de-freitas-mobiliza-equipes-para-recuperacao-apos-vendaval/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/prefeito-de-teixeira-de-freitas-mobiliza-equipes-para-recuperacao-apos-vendaval/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/inscricoes-para-vagas-remanescentes-do-fies-estao-abertas/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/inscricoes-para-vagas-remanescentes-do-fies-estao-abertas/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/missao-empresarial-leva-empresarios-da-costa-das-baleias-para-imersao-em-turismo-de-experiencia-no-ceara/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/missao-empresarial-leva-empresarios-da-costa-das-baleias-para-imersao-em-turismo-de-experiencia-no-ceara/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/prefeitura-de-teixeira-de-freitas-realiza-acao-do-outubro-rosa-no-cras-vila-vargas/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/prefeitura-de-teixeira-de-freitas-realiza-acao-do-outubro-rosa-no-cras-vila-vargas/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/itabela-e-representada-no-2o-encontro-nacional-das-defesas-civis-municipais-e-debate-impactos-do-el-nino-2026-2027/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/itabela-e-representada-no-2o-encontro-nacional-das-defesas-civis-municipais-e-debate-impactos-do-el-nino-2026-2027/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/fake-news-em-prado-vereadora-luciana-da-lookgas-denuncia-audio-falso/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/fake-news-em-prado-vereadora-luciana-da-lookgas-denuncia-audio-falso/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/camara-municipal-de-prado-denuncia-suposta-exploracao-financeira-na-ocupacao-da-area-da-basevi/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/camara-municipal-de-prado-denuncia-suposta-exploracao-financeira-na-ocupacao-da-area-da-basevi/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/devastacao-ambiental-em-prado-relatorio-da-secretaria-de-meio-ambiente-revela-situacao-alarmante/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/devastacao-ambiental-em-prado-relatorio-da-secretaria-de-meio-ambiente-revela-situacao-alarmante/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/audiencia-publica-de-avaliacao-das-metas-fiscais-em-prado-compromisso-com-a-transparencia/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/audiencia-publica-de-avaliacao-das-metas-fiscais-em-prado-compromisso-com-a-transparencia/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/camara-municipal-de-teixeira-de-freitas-importancia-da-cultura-e-alteracoes-administrativas/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/camara-municipal-de-teixeira-de-freitas-importancia-da-cultura-e-alteracoes-administrativas/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/escolha-da-educacao-guarani-vai-receber-uma-das-maiores-e-mais-modernas-escolas-da-regiao/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/escolha-da-educacao-guarani-vai-receber-uma-das-maiores-e-mais-modernas-escolas-da-regiao/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/prefeitura-de-itabela-decreta-luto-oficial-de-tres-dias-pela-morte-de-lourival/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/prefeitura-de-itabela-decreta-luto-oficial-de-tres-dias-pela-morte-de-lourival/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/camara-municipal-de-prado-aprova-criacao-da-secretaria-municipal-de-politicas-de-promocao-da-igualdade-racial/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/camara-municipal-de-prado-aprova-criacao-da-secretaria-municipal-de-politicas-de-promocao-da-igualdade-racial/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/oficiais-da-87a-cipm-concluem-curso-de-aph-tatico-ministrado-pela-forca-nacional-em-teixeira-de-freitas/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/oficiais-da-87a-cipm-concluem-curso-de-aph-tatico-ministrado-pela-forca-nacional-em-teixeira-de-freitas/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/crianca-de-4-anos-morre-apos-cair-em-cisterna-em-teixeira-de-freitas/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/crianca-de-4-anos-morre-apos-cair-em-cisterna-em-teixeira-de-freitas/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/chas-remedios-cuidados-produtos-naturais/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/chas-remedios-cuidados-produtos-naturais/",
+      "noindex": false
+    },
+    {
+      "url": "https://giro73.com.br/streaming-comparar-planos-assinatura-vitalicia/",
+      "status": 200,
+      "final_url": "https://giro73.com.br/streaming-comparar-planos-assinatura-vitalicia/",
+      "noindex": false
+    }
+  ],
+  "sitemaps": [
+    {
+      "path": "sitemap_index.xml",
+      "status": 200,
+      "xml_root": "sitemapindex"
+    },
+    {
+      "path": "post-sitemap.xml",
+      "status": 200,
+      "xml_root": "urlset"
+    },
+    {
+      "path": "page-sitemap.xml",
+      "status": 200,
+      "xml_root": "urlset"
+    },
+    {
+      "path": "category-sitemap.xml",
+      "status": 200,
+      "xml_root": "urlset"
+    }
+  ],
+  "cache_layers": [
+    {
+      "id": "rank-math-sitemap",
+      "label": "Rank Math sitemap cache",
+      "kind": "data",
+      "status": "cleared",
+      "applies": "now",
+      "detail": "Rank Math cleared the index, page, post sitemap cache."
+    },
+    {
+      "id": "elementor",
+      "label": "Elementor",
+      "kind": "asset",
+      "status": "skipped",
+      "reason": "not_selected",
+      "detail": "Not in the `caches` list of this call."
+    },
+    {
+      "id": "litespeed-cache",
+      "label": "LiteSpeed Cache",
+      "kind": "page",
+      "status": "cleared",
+      "applies": "after_response",
+      "detail": "LiteSpeed Cache cleared 15 post(s) with their related pages, and 50 page(s)."
+    }
+  ],
+  "status": "etapa_1_concluida_com_pendencias_editoriais_e_de_consentimento"
+}
