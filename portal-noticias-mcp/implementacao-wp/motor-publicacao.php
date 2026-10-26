@@ -95,7 +95,7 @@ function g73_pub_validate($request) {
 function g73_pub_content_source($content) {
  preg_match_all('~<p\b[^>]*>(?:(?!</p>)[\s\S])*?</p>~i',$content,$paragraphs);
  foreach(array_reverse($paragraphs[0]) as $paragraph){
-  if(!preg_match('~^(?:Fonte|Com informa[çc][õo]es de)\s*:~iu',trim(wp_strip_all_tags($paragraph)))){continue;}
+  if(!preg_match('~^(?:Fonte|Refer[êe]ncia|Com informa[çc][õo]es de)\s*:~iu',trim(wp_strip_all_tags($paragraph)))){continue;}
   if(class_exists('WP_HTML_Tag_Processor')){$tags=new WP_HTML_Tag_Processor($paragraph);if($tags->next_tag('A')){return (string)$tags->get_attribute('href');}}
   if(preg_match('~\bhref\s*=\s*["\x27]([^"\x27]+)["\x27]~i',$paragraph,$link)){return html_entity_decode($link[1],ENT_QUOTES,'UTF-8');}
  }return '';
@@ -119,7 +119,7 @@ function g73_pub_story_tokens($value) {
 }
 function g73_pub_story_lead($content) {
  $content=preg_replace('~<figure\b[^>]*>[\s\S]*?</figure>~i','',$content);preg_match_all('~<p\b[^>]*>([\s\S]*?)</p>~i',$content,$p);
- $lead=array();foreach($p[1] as $paragraph){$text=trim(html_entity_decode(wp_strip_all_tags($paragraph),ENT_QUOTES,'UTF-8'));if(''===$text||preg_match('~^(?:Fonte|Com informa[çc][õo]es de)\s*:~iu',$text)){continue;}$lead[]=$text;if(count($lead)>=2){break;}}return implode(' ',$lead);
+ $lead=array();foreach($p[1] as $paragraph){$text=trim(html_entity_decode(wp_strip_all_tags($paragraph),ENT_QUOTES,'UTF-8'));if(''===$text||preg_match('~^(?:Fonte|Refer[êe]ncia|Com informa[çc][õo]es de)\s*:~iu',$text)){continue;}$lead[]=$text;if(count($lead)>=2){break;}}return implode(' ',$lead);
 }
 function g73_pub_story_dice($a,$b) {return $a&&$b?2*count(array_intersect_key($a,$b))/(count($a)+count($b)):0;}
 function g73_pub_find_duplicate($p) {
@@ -127,7 +127,7 @@ function g73_pub_find_duplicate($p) {
   $same=get_posts(array('post_type'=>'post','post_status'=>array('publish','draft','pending','future'),'posts_per_page'=>1,'fields'=>'ids','no_found_rows'=>true,'meta_key'=>'_g73_source_url','meta_value'=>$p['source_url']));
   if($same){return array('id'=>(int)$same[0],'reason'=>'same_source','review'=>false);}
  }
- $recent=get_posts(array('post_type'=>'post','post_status'=>array('publish','draft','pending','future'),'posts_per_page'=>60,'no_found_rows'=>true,'category__in'=>array($p['category']),'orderby'=>'date','order'=>'DESC','date_query'=>array(array('after'=>gmdate('Y-m-d H:i:s',time()-7*DAY_IN_SECONDS),'column'=>'post_date_gmt'))));
+ $recent=get_posts(array('post_type'=>'post','post_status'=>array('publish','draft','pending','future'),'posts_per_page'=>60,'no_found_rows'=>true,'orderby'=>'date','order'=>'DESC','date_query'=>array(array('after'=>gmdate('Y-m-d H:i:s',time()-7*DAY_IN_SECONDS),'column'=>'post_date_gmt'))));
  $title=g73_pub_story_tokens($p['title']);$lead=g73_pub_story_tokens(g73_pub_story_lead($p['content']));
  foreach($recent as $post){
   $old_source=get_post_meta($post->ID,'_g73_source_url',true)?:g73_pub_source_url(g73_pub_content_source($post->post_content));

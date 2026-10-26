@@ -1,0 +1,34 @@
+id,status,categoria_id,titulo,url,revisao_de_texto,nota_de_correcao
+409,publish,18,"Eleitora vinda da Espanha chega após fechamento das urnas na Bahia, relata portal",https://giro73.com.br/eleitora-da-espanha-chega-tarde-e-perde-chance-de-votar-na-bahia/,True,False
+414,publish,1,Teixeira de Freitas mobiliza equipes após vendaval de 25 de outubro,https://giro73.com.br/prefeito-de-teixeira-de-freitas-mobiliza-equipes-para-recuperacao-apos-vendaval/,True,False
+411,publish,10,Fies: inscrições para vagas remanescentes têm prazo até 3 de novembro,https://giro73.com.br/inscricoes-para-vagas-remanescentes-do-fies-estao-abertas/,True,False
+381,publish,1,Costa das Baleias: anúncio de maio previa missão turística no Ceará,https://giro73.com.br/missao-empresarial-leva-empresarios-da-costa-das-baleias-para-imersao-em-turismo-de-experiencia-no-ceara/,True,True
+377,publish,1,CRAS Vila Vargas recebe ação do Outubro Rosa em Teixeira de Freitas,https://giro73.com.br/prefeitura-de-teixeira-de-freitas-realiza-acao-do-outubro-rosa-no-cras-vila-vargas/,True,False
+372,publish,1,Itabela relata participação em encontro de Defesa Civil realizado em outubro,https://giro73.com.br/itabela-e-representada-no-2o-encontro-nacional-das-defesas-civis-municipais-e-debate-impactos-do-el-nino-2026-2027/,True,True
+370,publish,1,Cumuruxatiba: anúncio de maio relatava reforma da UBS,https://giro73.com.br/saude-fortalecida-ubs-de-cumuruxatiba-e-reinaugurada-com-estrutura-moderna/,True,True
+336,draft,18,Prado: relato sobre áudio atribuído a vereadora aguarda conferência,https://giro73.com.br/fake-news-em-prado-vereadora-luciana-da-lookgas-denuncia-audio-falso/,False,False
+340,publish,1,Ponte sobre o Rio Jucuruçu: anúncio de maio descrevia obras em Prado,https://giro73.com.br/obras-da-nova-ponte-sobre-o-rio-jucurucu-avancam-em-ritmo-acelerado/,True,True
+341,draft,18,"Basevi, em Prado: alegações sobre cobranças aguardam revisão documental",https://giro73.com.br/camara-municipal-de-prado-denuncia-suposta-exploracao-financeira-na-ocupacao-da-area-da-basevi/,False,False
+346,draft,1,Basevi: relato de relatório ambiental de 2025 aguarda revisão,https://giro73.com.br/devastacao-ambiental-em-prado-relatorio-da-secretaria-de-meio-ambiente-revela-situacao-alarmante/,False,False
+335,publish,18,Prado: referência de maio trata das metas fiscais do primeiro quadrimestre,https://giro73.com.br/audiencia-publica-de-avaliacao-das-metas-fiscais-em-prado-compromisso-com-a-transparencia/,True,True
+333,publish,18,Câmara de Teixeira de Freitas: como conferir alterações de expediente,https://giro73.com.br/camara-municipal-de-teixeira-de-freitas-importancia-da-cultura-e-alteracoes-administrativas/,True,True
+345,publish,1,Guarani: anúncio de maio previa escola modelo no distrito de Prado,https://giro73.com.br/escolha-da-educacao-guarani-vai-receber-uma-das-maiores-e-mais-modernas-escolas-da-regiao/,True,True
+351,publish,1,Itabela divulgou luto oficial pela morte de Lourival da Silva Rocha,https://giro73.com.br/prefeitura-de-itabela-decreta-luto-oficial-de-tres-dias-pela-morte-de-lourival/,True,False
+289,publish,18,Prado: divulgação de setembro registra prestação de contas do segundo quadrimestre,https://giro73.com.br/prado-realiza-audiencia-publica-de-prestacao-de-contas-do-2o-quadrimestre-de-2026/,True,False
+290,publish,18,Prado: Câmara relatou aprovação de projeto para secretaria de igualdade racial,https://giro73.com.br/camara-municipal-de-prado-aprova-criacao-da-secretaria-municipal-de-politicas-de-promocao-da-igualdade-racial/,True,True
+306,publish,18,Câmara de Teixeira de Freitas: como confirmar o horário de atendimento,https://giro73.com.br/atencao-horario-de-funcionamento-da-camara-de-teixeira-de-freitas/,True,True
+308,publish,1,Macrodrenagem em Prado: como conferir documentos e andamento das obras,https://giro73.com.br/macrodrenagem-em-prado-avancos-e-impactos-na-comunidade/,True,True
+317,publish,1,Oficiais da 87ª CIPM concluem formação de atendimento pré-hospitalar tático,https://giro73.com.br/oficiais-da-87a-cipm-concluem-curso-de-aph-tatico-ministrado-pela-forca-nacional-em-teixeira-de-freitas/,True,False
+319,publish,1,Criança de 4 anos morre após queda em cisterna em Teixeira de Freitas,https://giro73.com.br/crianca-de-4-anos-morre-apos-cair-em-cisterna-em-teixeira-de-freitas/,True,True
+217,publish,12,Jogos de Bahia e Vitória: onde conferir a tabela antes de planejar a ida ao estádio,https://giro73.com.br/jogos-bahia-vitoria-conferir-tabela-oficial/,False,False
+216,publish,10,Empréstimo no seu CPF: como organizar a consulta ao Registrato e contestar o que não reconhece,https://giro73.com.br/registrato-consultar-emprestimos-cpf/,False,False
+215,publish,1,BR-101 no Extremo Sul: o que conferir antes de sair de Teixeira ou seguir para Porto Seguro,https://giro73.com.br/br-101-extremo-sul-bahia-checar-viagem/,False,False
+214,publish,18,Recursos para os municípios: como acompanhar emendas e transferências no Extremo Sul,https://giro73.com.br/transferencias-emendas-municipios-extremo-sul-bahia/,False,False
+213,publish,1,Chás e remédios: por que “natural” não significa livre de risco,https://giro73.com.br/chas-remedios-cuidados-produtos-naturais/,False,False
+212,publish,13,Streaming no orçamento: o que olhar antes de contratar outro plano,https://giro73.com.br/streaming-comparar-planos-assinatura-vitalicia/,False,False
+211,publish,12,Ba-Vi: a torcida começa antes do jogo — e exige conferir onde comprar,https://giro73.com.br/ba-vi-torcedor-tabela-ingressos-seguranca/,False,False
+210,publish,11,Conta invadida? A ordem dos primeiros passos faz diferença,https://giro73.com.br/conta-invadida-primeiros-passos-seguranca/,False,False
+209,publish,18,Orçamento municipal: cinco documentos para entender as prioridades da prefeitura,https://giro73.com.br/orcamento-municipal-documentos-prioridades-prefeitura/,False,False
+208,publish,10,Renda extra: quanto sobra de verdade depois dos custos?,https://giro73.com.br/renda-extra-calcular-ganho-real/,False,False
+433,publish,1,Itabela: anúncio de setembro previa 322 títulos no bairro Pereirão,https://giro73.com.br/prefeitura-de-itabela-garante-322-titulos-de-propriedade-para-familias-do-bairro-pereirao/,True,True
+435,publish,18,SIC da Câmara de Itabela: como pedir informações públicas,https://giro73.com.br/camara-municipal-de-itabela-transparencia-e-acesso-a-informacao/,True,True

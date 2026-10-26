@@ -70,7 +70,15 @@ Produza redação própria com atribuição; não copie longos trechos nem apena
 Não invente falas, fontes, cargos, números, datas, entrevistas ou impactos locais. Diferencie a
 data da notícia da data de um acontecimento. Só acrescente contexto regional fundamentado
 no material; não transforme uma notícia nacional em ocorrência local. Evite enchimento,
-sensacionalismo e promessas de dinheiro/saúde. Se a fonte for insuficiente para uma nota factual
+sensacionalismo, promessas de dinheiro/saúde, elogios institucionais, superlativos e conclusões
+de impacto sem dados. Não invente histórico
+da cidade para alongar uma nota. Use datas absolutas quando fornecidas; não converta um
+anúncio antigo em novidade por causa da data de captura. A data_referencia_utc serve para
+contextualizar, nunca para completar um ano de evento ausente. Não afirme que um projeto
+aprovado já foi sancionado, que uma obra prevista foi entregue ou que um serviço está disponível
+sem confirmação no material. Retire aspas se a fala literal não estiver no texto recebido.
+Em cobertura de crianças, omita endereço completo e detalhes íntimos desnecessários.
+Se a fonte for insuficiente para uma nota factual
 útil, retorne apto=false e explique em observacao. Não infle uma nota curta para parecer reportagem.
 Se apto=true, entregue título preciso, resumo e blocos de texto simples p/h2/h3, sem HTML,
 URLs novas, Markdown ou instruções internas ao leitor. Sugira até 8 tags. Gere os três campos
@@ -81,7 +89,8 @@ Comece o texto com um parágrafo. Use uma palavra-chave fiel aos fatos e, de mod
 inclua-a no título, título SEO, descrição SEO, primeiro parágrafo e em um subtítulo quando
 apropriado. Não repita artificialmente nem aumente o texto sem informação para obter nota.
 O programa insere a fotografia e seu ALT; não invente imagens, créditos ou URLs.
-O editor humano revisará o rascunho antes de publicar. Responda apenas no JSON solicitado."""
+A política local pode publicar fontes autorizadas; a IA não decide o status. Casos que exigem
+apuração adicional devem retornar apto=false. Responda apenas no JSON solicitado."""
 
 class ConfigError(Exception):
     pass
@@ -506,6 +515,7 @@ class Client:
     def generate(self, source: dict):
         self.check_model()
         material = {key: source[key] for key in ("source_title","source_text","url","publisher","published_at","regional_scope") if key in source}
+        material["data_referencia_utc"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
         body = {"model": self.model,
                 "messages": [{"role": "system", "content": SYSTEM},
                              {"role": "user", "content": json.dumps(material, ensure_ascii=False)}],
@@ -762,10 +772,36 @@ def payload_from(generated: dict, entry: dict, category: str, image=None) -> dic
             "image_url": image_url, "image_credit": image_credit, "image_credit_url": image_credit_url,
             "status": "draft", "meta": seo}
 
-def publication_decision(source, entry, generated, payload):
+def editorial_review_reason(entry, generated):
+    """Sinais objetivos para revisão; não constitui checagem factual ou jurídica."""
+    parsed = urlsplit(entry.get("url", ""))
+    path = unquote(parsed.path).lower()
+    if path in {"", "/", "/noticias", "/noticias/", "/noticias/index.php"} or path.startswith(("/category/", "/categoria/", "/tag/")):
+        return "referencia_generica_requer_revisao"
+    dated = re.search(r"/(20\d{2})/(\d{2})/(\d{2})(?:/|$)", path)
+    if dated:
+        try:
+            stamp = calendar.timegm(time.strptime("-".join(dated.groups()), "%Y-%m-%d"))
+        except ValueError:
+            return "data_da_referencia_invalida"
+        if stamp < time.time() - 7*86400 or stamp > time.time() + 86400:
+            return "referencia_historica_ou_futura_requer_revisao"
+    text = " ".join([str(generated.get("title", ""))] + [str(b.get("text", "")) for b in generated.get("blocks", []) if isinstance(b, dict)])
+    material = str(entry.get("source_title", "")) + " " + str(entry.get("source_text", "")) + " " + text
+    if re.search(r"\b(?:acusa\w*|den[uú]ncia\w*|viol[eê]ncia sexual|abuso sexual|estupro\w*|explora[cç][aã]o financeira|morte (?:de |da |do )?crian[cç]a)\b", material, re.I):
+        return "alegacao_sensivel_requer_revisao"
+    if re.search(r"\b(?:oportunidade [ií]mpar|marco significativo|compromisso da gest[aã]o|futuro mais pr[oó]spero)\b", text, re.I):
+        return "linguagem_promocional_requer_revisao"
+    return None
+
+
+def publication_decision(source, entry, generated, payload, image=None):
     """O status vem da configuração local; a IA não pode liberar uma publicação."""
     if source.get("publication_mode","draft") != "auto":
         return "draft", "revisao_manual_da_fonte"
+    review = editorial_review_reason(entry, generated)
+    if review:
+        return "draft", review
     minimum = source.get("auto_min_chars",600)
     if len(plain(entry.get("source_text",""))) < minimum:
         return "draft", "texto_da_fonte_insuficiente"
@@ -777,6 +813,8 @@ def publication_decision(source, entry, generated, payload):
         return "draft", "data_fora_da_janela_automatica"
     if not payload.get("image_url"):
         return "draft", "capa_pendente"
+    if isinstance(image, dict) and min(image.get("width", 0), image.get("height", 0)) < 400:
+        return "draft", "capa_pequena_requer_revisao"
     return "publish", "fonte_automatica_com_requisitos_atendidos"
 
 def load_sources(path: Path):
@@ -886,7 +924,7 @@ def process(client: Client, store: Store, limit: int, dry_run=False, sources=Non
                 if payload is None:
                     store.finish(key, "skipped", error="fonte_insuficiente_ou_revisao_necessaria")
                     continue
-                payload["status"], reason = publication_decision(source,entry,generated,payload)
+                payload["status"], reason = publication_decision(source,entry,generated,payload,image=image)
                 LOG.info("Item %s | fonte: %s | destino: %s | motivo: %s",key[:12],source.get("name",item["source"]),payload["status"],reason)
                 store.prepare(key, payload)
                 if not payload.get("image_url"):

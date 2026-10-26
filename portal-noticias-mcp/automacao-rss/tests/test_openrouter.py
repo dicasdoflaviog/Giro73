@@ -47,6 +47,8 @@ class OpenRouterTests(unittest.TestCase):
         self.assertEqual([c.args[1] for c in calls],[m.OPENROUTER_BASE_URL+'/key',
                          m.OPENROUTER_BASE_URL+'/models',m.OPENROUTER_BASE_URL+'/chat/completions'])
         body=calls[-1].kwargs['json']
+        material=json.loads(body['messages'][1]['content'])
+        self.assertRegex(material['data_referencia_utc'],r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$')
         self.assertEqual(body['model'],'openai/gpt-4o-mini')
         self.assertFalse(body['stream'])
         self.assertEqual(body['response_format']['type'],'json_schema')

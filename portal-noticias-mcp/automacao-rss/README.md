@@ -18,7 +18,15 @@ Python 3.10+ em Ubuntu 22.04/24.04 ou posterior compatível. Não depende do bot
 - `tests/test_configurar_fontes_rss.py`: 12 testes de descoberta e atualização segura da configuração.
 - `tests/test_imagens_rss.py`: 12 testes de seleção de fotos, validação dos bytes e figura/ALT.
 - `tests/test_openrouter.py`: 12 testes do provedor, JSON estruturado, `.env`, retentativas e confirmação da capa.
-- `tests/test_rodizio_publicacao.py`: 18 testes de rodízio persistente, publicação seletiva e migração.
+- `tests/test_rodizio_publicacao.py`: 24 testes de rodízio persistente, publicação seletiva, revisão editorial e migração.
+
+## Revisão editorial antes da publicação automática
+
+A geração recebe a data de referência UTC e instruções para distinguir anúncio, execução e resultado, usar atribuição e evitar aspas não fornecidas, linguagem promocional e detalhes íntimos de crianças. Não gera contexto local sem evidência nem exige 600 palavras.
+
+Mesmo para fontes autorizadas em modo `auto`, o coletor mantém em **rascunho** referências genéricas, datas completas no caminho da URL com mais de sete dias (ou futuras além de um dia), datas inválidas, sinais de acusações sensíveis, algumas expressões promocionais e imagens verificadas com algum lado menor que 400 px. O motivo aparece no log. A imagem pequena pode continuar anexada ao rascunho: não foi criada uma nova trava de upload no PHP. São sinais de revisão, não um verificador universal de fatos ou direitos; datas fora do padrão, alegações implícitas e fotos inadequadas maiores ainda podem passar. As janelas normais de frescor do feed continuam valendo.
+
+Essas regras só entram na VPS depois de instalar esta versão. Não alteram payloads já preparados, posts enviados, o bot Telegram ou outros publicadores. Veja a [revisão editorial e o procedimento de publicação](../39-revisao-editorial-completa.md).
 
 ## Modelo OpenRouter
 
@@ -287,4 +295,4 @@ python3 -m venv .venv-test
 .venv-test/bin/python -m unittest discover -s tests -v
 ```
 
-Passaram **87 testes locais**: 27 do coletor, 12 do configurador, 12 das imagens, 12 do OpenRouter, 18 de rodízio/publicação e 6 de duplicatas. Incluem RSS → OpenRouter → WordPress com APIs simuladas, 429/503, saldo insuficiente, JSON Schema estrito, `.env`, fallback 422, resposta perdida, migração do banco, deduplicação, fotos em Handler.ashx, figura/ALT, rodízio entre execuções, prioridade para notícias recentes, publicação seletiva e confirmação do status real. Nenhuma chave real foi utilizada nem matéria real criada por esses testes. O agente não acessou a VPS; a validação real deve ser feita com os comandos acima.
+Passaram **93 testes locais**: 27 do coletor, 12 do configurador, 12 das imagens, 12 do OpenRouter, 24 de rodízio/publicação e 6 de duplicatas. Incluem RSS → OpenRouter → WordPress com APIs simuladas, 429/503, saldo insuficiente, JSON Schema estrito, `.env`, fallback 422, resposta perdida, migração do banco, deduplicação, fotos em Handler.ashx, figura/ALT, rodízio entre execuções, prioridade para notícias recentes, publicação seletiva, sinais de revisão editorial e confirmação do status real. Nenhuma chave real foi utilizada nem matéria real criada por esses testes. O agente não acessou a VPS; a validação real deve ser feita com os comandos acima.

@@ -1,0 +1,411 @@
+{
+  "checked_at": "2026-10-26T18:13:37.354824-03:00",
+  "reviewed_posts": 33,
+  "published": 30,
+  "draft_for_review": [
+    336,
+    341,
+    346
+  ],
+  "major_rewrites": 20,
+  "published_permalinks_preserved": true,
+  "draft_slugs_preserved": true,
+  "all_original_publication_dates_preserved": true,
+  "seo_fields_verified": 8,
+  "wrong_cover_removed": 435,
+  "related_links_per_published_post": 2,
+  "checks": [
+    {
+      "id": 409,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 408
+    },
+    {
+      "id": 414,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 413
+    },
+    {
+      "id": 411,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 410
+    },
+    {
+      "id": 381,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 380
+    },
+    {
+      "id": 377,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 376
+    },
+    {
+      "id": 372,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 371
+    },
+    {
+      "id": 370,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 369
+    },
+    {
+      "id": 336,
+      "status": "draft",
+      "public_http": 404
+    },
+    {
+      "id": 340,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 339
+    },
+    {
+      "id": 341,
+      "status": "draft",
+      "public_http": 404
+    },
+    {
+      "id": 346,
+      "status": "draft",
+      "public_http": 404
+    },
+    {
+      "id": 335,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 334
+    },
+    {
+      "id": 333,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 332
+    },
+    {
+      "id": 345,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 344
+    },
+    {
+      "id": 351,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 350
+    },
+    {
+      "id": 289,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 288
+    },
+    {
+      "id": 290,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 328
+    },
+    {
+      "id": 306,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 305
+    },
+    {
+      "id": 308,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 307
+    },
+    {
+      "id": 317,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 316
+    },
+    {
+      "id": 319,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 318
+    },
+    {
+      "id": 217,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 99
+    },
+    {
+      "id": 216,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 96
+    },
+    {
+      "id": 215,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 195
+    },
+    {
+      "id": 214,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 193
+    },
+    {
+      "id": 213,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 194
+    },
+    {
+      "id": 212,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 98
+    },
+    {
+      "id": 211,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 99
+    },
+    {
+      "id": 210,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 97
+    },
+    {
+      "id": 209,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 193
+    },
+    {
+      "id": 208,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 96
+    },
+    {
+      "id": 433,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 432
+    },
+    {
+      "id": 435,
+      "status": "publish",
+      "public_http": 200,
+      "canonical_correct": true,
+      "h1_count": 1,
+      "managed_cover_duplicates": 0,
+      "og_core_present": true,
+      "featured_media": 0
+    }
+  ],
+  "sitemaps": [
+    {
+      "url": "sitemap_index.xml",
+      "http": 200
+    },
+    {
+      "url": "post-sitemap.xml",
+      "http": 200
+    },
+    {
+      "url": "page-sitemap.xml",
+      "http": 200
+    },
+    {
+      "url": "category-sitemap.xml",
+      "http": 200
+    }
+  ],
+  "rss_tests": 93,
+  "vps_deployed": false,
+  "ga4_access": "Google recusou acesso à propriedade; conceder função Leitor à conta de serviço correta.",
+  "independent_external_fact_check": false,
+  "source_access_limit": "Proxy HTTP 403 ao consultar fontes externas. Revisão baseada no conteúdo existente e suas referências, sem alegar nova apuração.",
+  "cache": {
+    "summary": "2 cleared, 1 skipped. See layers[] for each cache.",
+    "changed": true,
+    "dry_run": false,
+    "scope": "site",
+    "urls": [],
+    "layers": [
+      {
+        "id": "rank-math-sitemap",
+        "label": "Rank Math sitemap cache",
+        "kind": "data",
+        "status": "cleared",
+        "applies": "now",
+        "detail": "Rank Math cleared its whole sitemap cache."
+      },
+      {
+        "id": "elementor",
+        "label": "Elementor",
+        "kind": "asset",
+        "status": "skipped",
+        "reason": "not_selected",
+        "detail": "Not in the `caches` list of this call."
+      },
+      {
+        "id": "litespeed-cache",
+        "label": "LiteSpeed Cache",
+        "kind": "page",
+        "status": "cleared",
+        "applies": "after_response",
+        "detail": "LiteSpeed Cache cleared this site's page cache."
+      }
+    ],
+    "not_covered": [],
+    "verify": {
+      "urls": [
+        "https://giro73.com.br/"
+      ],
+      "after_seconds": 5,
+      "how": "Fetch each URL exactly as written, with no added query string (a query string bypasses or changes the cache key), and check that the change is in the HTML."
+    }
+  },
+  "publisher_php_tests": 33,
+  "publisher_live": {
+    "snippet": 12,
+    "active": true,
+    "code_error": null,
+    "sha256": "927155bf34424d55ea06c8906f3f80b0ea3ff5d0cd7217da89e051f5447c3864"
+  },
+  "robots_and_canonical_metadata_preserved": true,
+  "report_preview": {
+    "html": "relatorio-auditoria-giro73.html",
+    "pdf_created": true,
+    "mobile_horizontal_overflow": false
+  }
+}

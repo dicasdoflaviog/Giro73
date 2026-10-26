@@ -8,7 +8,7 @@ import sys
 import tempfile
 import time
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import coletor_rss as m
@@ -109,6 +109,47 @@ class RotationPublicationTests(unittest.TestCase):
         payload=m.payload_from(g,entry(),'noticias-regiao',self.photo)
         self.assertEqual(payload['status'],'draft')
         self.assertEqual(m.publication_decision({},entry(),g,payload)[0],'draft')
+
+    def test_historical_source_url_cannot_be_promoted_by_fresh_feed_date(self):
+        e=entry();e['url']='https://fonte.example/2020/05/07/obra/'
+        g=generated();payload=m.payload_from(g,e,'noticias-regiao',self.photo)
+        self.assertEqual(m.publication_decision(self.source,e,g,payload),
+                         ('draft','referencia_historica_ou_futura_requer_revisao'))
+
+    def test_generic_reference_is_kept_for_manual_review(self):
+        for url in ('https://fonte.example/','https://fonte.example/category/noticias/',
+                    'https://fonte.example/noticias/index.php'):
+            with self.subTest(url=url):
+                e=entry();e['url']=url;g=generated()
+                self.assertEqual(m.publication_decision(self.source,e,g,
+                    m.payload_from(g,e,'noticias-regiao',self.photo)),
+                    ('draft','referencia_generica_requer_revisao'))
+
+    def test_sensitive_allegation_is_not_automatically_published(self):
+        g=generated();g['title']='Vereadores denunciam exploração financeira'
+        self.assertEqual(m.publication_decision(self.source,entry(),g,
+            m.payload_from(g,entry(),'politica',self.photo)),
+            ('draft','alegacao_sensivel_requer_revisao'))
+
+    def test_promotional_padding_requires_review(self):
+        g=generated();g['blocks'].append({'type':'p','text':'A obra é um marco significativo para todos.'})
+        self.assertEqual(m.publication_decision(self.source,entry(),g,
+            m.payload_from(g,entry(),'noticias-regiao',self.photo)),
+            ('draft','linguagem_promocional_requer_revisao'))
+
+    def test_small_image_is_attached_to_draft_without_auto_publishing(self):
+        g=generated();e=entry();payload=m.payload_from(g,e,'noticias-regiao',self.photo)
+        self.assertEqual(m.publication_decision(self.source,e,g,payload,image={'width':200,'height':200}),
+                         ('draft','capa_pequena_requer_revisao'))
+        self.assertEqual(m.publication_decision(self.source,e,g,payload,image=self.photo)[0],'publish')
+
+    def test_source_url_date_is_parsed_as_utc_and_malformed_dates_fail_closed(self):
+        e=entry();g=generated()
+        e['url']='https://fonte.example/2026/02/31/obra/'
+        self.assertEqual(m.editorial_review_reason(e,g),'data_da_referencia_invalida')
+        e['url']='https://fonte.example/2026/10/26/obra/'
+        with patch.object(m.time,'time',return_value=1793016000):
+            self.assertIsNone(m.editorial_review_reason(e,g))
 
     def test_authorized_source_sends_publish_and_records_actual_status(self):
         self.add(1);c=self.client()
