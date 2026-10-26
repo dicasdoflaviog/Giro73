@@ -1,0 +1,111 @@
+{
+  "keyword_api": true,
+  "serp_api": true,
+  "keywords_tested": 3,
+  "main_keyword": {
+    "keyword": "conta digital pj",
+    "spell": null,
+    "location_code": 2076,
+    "language_code": "pt",
+    "search_partners": false,
+    "competition": "HIGH",
+    "competition_index": 79,
+    "search_volume": 720,
+    "low_top_of_page_bid": 5.73,
+    "high_top_of_page_bid": 20.31,
+    "cpc": 18.42,
+    "monthly_searches": [
+      {
+        "year": 2026,
+        "month": 9,
+        "search_volume": 590
+      },
+      {
+        "year": 2026,
+        "month": 8,
+        "search_volume": 720
+      },
+      {
+        "year": 2026,
+        "month": 7,
+        "search_volume": 720
+      },
+      {
+        "year": 2026,
+        "month": 6,
+        "search_volume": 720
+      },
+      {
+        "year": 2026,
+        "month": 5,
+        "search_volume": 720
+      },
+      {
+        "year": 2026,
+        "month": 4,
+        "search_volume": 720
+      },
+      {
+        "year": 2026,
+        "month": 3,
+        "search_volume": 1000
+      },
+      {
+        "year": 2026,
+        "month": 2,
+        "search_volume": 720
+      },
+      {
+        "year": 2026,
+        "month": 1,
+        "search_volume": 880
+      },
+      {
+        "year": 2025,
+        "month": 12,
+        "search_volume": 590
+      },
+      {
+        "year": 2025,
+        "month": 11,
+        "search_volume": 720
+      },
+      {
+        "year": 2025,
+        "month": 10,
+        "search_volume": 880
+      }
+    ]
+  },
+  "top_organic": [
+    {
+      "rank": 1,
+      "title": "Conta digital PJ: saiba como escolher e aprenda a abrir a sua",
+      "url": "https://www.omie.com.br/blog/conta-digital-pj-o-que-e-como-escolher-a-melhor-opcao/",
+      "description": "Com a conta digital PJ, você pode desfrutar de facilidades como emissão e compensação de boletos sem taxas, gestão de boletos emitidos e ..."
+    },
+    {
+      "rank": 2,
+      "title": "Conta PJ Completa: Com Pix, Cartão e Boletos Grátis",
+      "url": "https://www.infinitepay.io/conta/pessoa-juridica",
+      "description": "Conta PJ feita para vender mais, receber rápido e economizar. Pix grátis, cartões, gestão de cobrança e soluções para vender em até 12x – tudo em uma Conta ..."
+    },
+    {
+      "rank": 3,
+      "title": "Conta Digital PJ: uma das oportunidades da vez em serviços ...",
+      "url": "https://dock.tech/fluid/blog/banking/conta-digital-pj/",
+      "description": "A conta digital PJ pode agregar diferentes produtos e ter variados usos para o empreendedor, como receber valores, pagar fornecedores, realizar ..."
+    }
+  ],
+  "keyword_cost_usd": 0.09,
+  "serp_cost_usd": 0.002,
+  "reported_cost_usd": 0.092,
+  "balance_after_usd": 0.908,
+  "balance_before_usd": 1,
+  "balance_delta_usd": 0.092,
+  "post_481_changed": false,
+  "full_competitor_pages_read": false,
+  "date": "2026-10-26",
+  "keyword_metrics_source": "DataForSEO Google Ads",
+  "serp_source": "DataForSEO Google Organic Live — Brasil, português, mobile"
+}
