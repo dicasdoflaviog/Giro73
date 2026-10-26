@@ -1,5 +1,7 @@
 # Provedor oficial do coletor RSS: OpenRouter
 
+Atualização de 26/10/2026: o fluxo híbrido por fonte e o rodízio persistente estão descritos em [34-rodizio-publicacao-seletiva.md](34-rodizio-publicacao-seletiva.md). O contrato abaixo registra a implantação inicial em rascunhos; o modo automático agora é opcional por fonte.
+
 O coletor foi padronizado para a API HTTP OpenAI-compatible do OpenRouter, sem chamada direta a outro provedor. `AI_MODEL` tem padrão `openai/gpt-4o-mini`; a chave é `OPENROUTER_API_KEY`. Ambas vêm de `/opt/giro73-rss/.env` ou de variáveis exportadas. `G73_TOKEN` e o endpoint WordPress permanecem separados da credencial de IA.
 
 ## Arquivos da atualização

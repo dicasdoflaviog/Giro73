@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Giro73: RSS autorizado -> OpenRouter -> fila de RASCUNHOS. Python 3.10+ / Linux.
+"""Giro73: RSS autorizado -> OpenRouter -> publicação por fonte. Python 3.10+ / Linux.
 Segredos apenas no ambiente: OPENROUTER_API_KEY e G73_TOKEN. Não usa o bot Telegram.
 Estado/fila em SQLite, sem servidor adicional. Uma execução por cron, sem daemon.
 """
@@ -270,7 +270,7 @@ class Store:
         CREATE TABLE IF NOT EXISTS items (
           id TEXT PRIMARY KEY, source TEXT NOT NULL, article TEXT NOT NULL,
           category TEXT NOT NULL, input_json TEXT NOT NULL,
-          status TEXT NOT NULL DEFAULT 'queued', payload TEXT, wp_id INTEGER, wp_url TEXT,
+          status TEXT NOT NULL DEFAULT 'queued', payload TEXT, wp_id INTEGER, wp_url TEXT, wp_status TEXT, published_at REAL,
           attempts INTEGER NOT NULL DEFAULT 0, next_try REAL NOT NULL DEFAULT 0,
           last_error TEXT, created_at REAL NOT NULL, updated_at REAL NOT NULL
         );
@@ -278,10 +278,26 @@ class Store:
           alias TEXT PRIMARY KEY, item_id TEXT NOT NULL REFERENCES items(id)
         );
         CREATE INDEX IF NOT EXISTS ready ON items(status,next_try,created_at);
+        CREATE TABLE IF NOT EXISTS source_rotation (
+          source TEXT PRIMARY KEY, last_turn INTEGER NOT NULL
+        );
         """)
         # Migração aditiva: preserva a fila e todos os GUIDs/URLs já vistos.
         if "wp_url" not in {row[1] for row in self.db.execute("PRAGMA table_info(items)")}:
             self.db.execute("ALTER TABLE items ADD COLUMN wp_url TEXT")
+            self.db.commit()
+        if "wp_status" not in {row[1] for row in self.db.execute("PRAGMA table_info(items)")}:
+            self.db.execute("ALTER TABLE items ADD COLUMN wp_status TEXT")
+            self.db.commit()
+        if "published_at" not in {row[1] for row in self.db.execute("PRAGMA table_info(items)")}:
+            self.db.execute("ALTER TABLE items ADD COLUMN published_at REAL")
+            for row in self.db.execute("SELECT id,input_json FROM items WHERE status IN ('queued','prepared')").fetchall():
+                try:
+                    stamp = json.loads(row["input_json"]).get("published_at")
+                except (ValueError,TypeError,AttributeError):
+                    continue
+                if type(stamp) in {int,float}:
+                    self.db.execute("UPDATE items SET published_at=? WHERE id=?",(stamp,row["id"]))
             self.db.commit()
     def discover(self, source: dict, entry: dict) -> bool:
         url = canonical_url(entry["url"])
@@ -296,22 +312,46 @@ class Store:
             item_id = old[0] if old else aliases[0]
             if not old:
                 now = time.time()
-                self.db.execute("INSERT INTO items(id,source,article,category,input_json,created_at,updated_at) VALUES(?,?,?,?,?,?,?)",
-                    (item_id, source["id"], url, source["category"], json.dumps(entry, ensure_ascii=False), now, now))
+                self.db.execute("INSERT INTO items(id,source,article,category,input_json,published_at,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?)",
+                    (item_id, source["id"], url, source["category"], json.dumps(entry, ensure_ascii=False), entry.get("published_at"), now, now))
             for alias in aliases:
                 self.db.execute("INSERT OR IGNORE INTO aliases VALUES(?,?)", (alias, item_id))
         return old is None
-    def ready(self, limit: int):
-        return self.db.execute("SELECT * FROM items WHERE status IN ('queued','prepared') AND next_try<=? ORDER BY created_at,rowid LIMIT ?", (time.time(), limit)).fetchall()
+    def ready(self, limit: int, sources=None):
+        """Rodízio persistente: a fonte menos atendida recebe a próxima vez."""
+        visited = []
+        for _ in range(limit):
+            clauses = ["i.status IN ('queued','prepared')", "i.next_try<=?"]
+            params = [time.time()]
+            if sources is not None:
+                if not sources:
+                    return
+                clauses.append("i.source IN ("+",".join("?" for _ in sources)+")")
+                params.extend(sources)
+            if visited:
+                clauses.append("i.id NOT IN ("+",".join("?" for _ in visited)+")")
+                params.extend(visited)
+            with self.db:
+                item = self.db.execute(
+                    "SELECT i.* FROM items i LEFT JOIN source_rotation r ON r.source=i.source WHERE "
+                    +" AND ".join(clauses)+" ORDER BY COALESCE(r.last_turn,0),CASE WHEN i.status='prepared' THEN 0 ELSE 1 END,"
+                    "i.published_at DESC,i.created_at,i.rowid LIMIT 1",params).fetchone()
+                if item is None:
+                    return
+                turn = self.db.execute("SELECT COALESCE(MAX(last_turn),0)+1 FROM source_rotation").fetchone()[0]
+                self.db.execute("INSERT INTO source_rotation(source,last_turn) VALUES(?,?) "
+                                "ON CONFLICT(source) DO UPDATE SET last_turn=excluded.last_turn",(item["source"],turn))
+            visited.append(item["id"])
+            yield item
     def prepare(self, key: str, payload: dict):
         # COMMIT antes de qualquer POST: uma resposta perdida nunca exige gerar outro texto.
         with self.db:
             self.db.execute("UPDATE items SET payload=?,status='prepared',last_error=NULL,updated_at=? WHERE id=?",
                 (json.dumps(payload, ensure_ascii=False, sort_keys=True), time.time(), key))
-    def finish(self, key: str, status: str, wp_id=None, error=None, delay=0, wp_url=None):
+    def finish(self, key: str, status: str, wp_id=None, error=None, delay=0, wp_url=None, wp_status=None):
         with self.db:
-            self.db.execute("UPDATE items SET status=?,wp_id=COALESCE(?,wp_id),wp_url=COALESCE(?,wp_url),last_error=?,next_try=?,updated_at=? WHERE id=?",
-                            (status, wp_id, wp_url, error, time.time()+delay, time.time(), key))
+            self.db.execute("UPDATE items SET status=?,wp_id=COALESCE(?,wp_id),wp_url=COALESCE(?,wp_url),wp_status=COALESCE(?,wp_status),last_error=?,next_try=?,updated_at=? WHERE id=?",
+                            (status, wp_id, wp_url, wp_status, error, time.time()+delay, time.time(), key))
             if status == "sent":
                 # Depois da confirmação, preservar identidade/ID basta; não acumular textos completos.
                 self.db.execute("UPDATE items SET input_json='{}',payload=NULL WHERE id=?", (key,))
@@ -360,6 +400,7 @@ class Client:
         self.model_checked = False
         self.last_permalink = None
         self.last_featured_media = None
+        self.last_status = None
         self.image_cache = {}
     def remaining(self):
         remaining = self.deadline - time.monotonic()
@@ -484,11 +525,13 @@ class Client:
             return json.loads(raw)
         except ValueError as exc:
             raise ItemError("Resposta OpenRouter não contém o JSON editorial esperado.") from exc
-    def submit(self, key: str, payload: dict):
+    def submit(self, key: str, payload: dict, allow_publish=False):
         self.last_permalink = None
         self.last_featured_media = None
-        if payload.get("status") != "draft":
-            raise StopRun("Proteção local: tentativa de enviar status diferente de draft.")
+        self.last_status = None
+        requested = payload.get("status")
+        if requested not in {"draft","publish"} or (requested == "publish" and not allow_publish):
+            raise StopRun("Proteção local: publicação não autorizada pela configuração desta fonte.")
         r = self.request("POST", self.endpoint, "wordpress",
                          headers={"X-G73-Token": self.wp_token, "Idempotency-Key": "rss-"+key}, json=payload)
         try:
@@ -506,8 +549,11 @@ class Client:
                 raise ItemError(f"WordPress HTTP {r.status_code}: {code}")
             if not isinstance(result, dict) or type(result.get("id")) is not int or result["id"] <= 0:
                 raise Deferred("WordPress não confirmou um ID válido; repetir com a mesma chave.")
-            if result.get("status") != "draft":
+            if result.get("status") not in ({"draft","publish"} if requested == "publish" else {"draft"}):
                 raise StopRun(f"WordPress retornou status inesperado para post {result['id']}; verificar antes de continuar.")
+            self.last_status = result["status"]
+            if requested == "publish" and self.last_status == "draft":
+                LOG.warning("WordPress manteve o item %s em rascunho; revise a capa e os avisos no painel.",result["id"])
             self.last_featured_media = result.get("featured_media")
             if payload.get("image_url") and result.get("featured_media") == 0:
                 LOG.warning("WordPress confirmou o rascunho %s sem capa; consulte os avisos da matéria.", result["id"])
@@ -699,6 +745,23 @@ def payload_from(generated: dict, entry: dict, category: str, image=None) -> dic
             "image_url": image_url, "image_credit": image_credit, "image_credit_url": image_credit_url,
             "status": "draft", "meta": seo}
 
+def publication_decision(source, entry, generated, payload):
+    """O status vem da configuração local; a IA não pode liberar uma publicação."""
+    if source.get("publication_mode","draft") != "auto":
+        return "draft", "revisao_manual_da_fonte"
+    minimum = source.get("auto_min_chars",600)
+    if len(plain(entry.get("source_text",""))) < minimum:
+        return "draft", "texto_da_fonte_insuficiente"
+    body = " ".join(plain(b.get("text","")) for b in generated.get("blocks",[]) if b.get("type")=="p")
+    if len(body) < minimum:
+        return "draft", "texto_gerado_insuficiente"
+    stamp = entry.get("published_at")
+    if not isinstance(stamp,(int,float)) or not time.time()-source.get("auto_max_age_hours",24)*3600 <= stamp <= time.time()+300:
+        return "draft", "data_fora_da_janela_automatica"
+    if not payload.get("image_url"):
+        return "draft", "capa_pendente"
+    return "publish", "fonte_automatica_com_requisitos_atendidos"
+
 def load_sources(path: Path):
     data = json.loads(path.read_text(encoding="utf-8"))
     feeds = data.get("feeds") if isinstance(data, dict) else None
@@ -721,6 +784,13 @@ def load_sources(path: Path):
             if type(f.get(flag, False)) is not bool:
                 raise ConfigError(f"{flag} deve ser booleano JSON.")
         f = dict(f)
+        f["publication_mode"] = f.get("publication_mode","draft")
+        if f["publication_mode"] not in {"draft","auto"}:
+            raise ConfigError("publication_mode deve ser draft ou auto.")
+        for field, default, low, high in (("auto_min_chars",600,600,20000),("auto_max_age_hours",24,1,72)):
+            f[field] = f.get(field,default)
+            if type(f[field]) is not int or not low <= f[field] <= high:
+                raise ConfigError(f"{field} deve ser inteiro entre {low} e {high}.")
         f["name"] = plain(f.get("name") or f["id"])
         for field in ("image_credit", "image_credit_url"):
             if field in f and (not isinstance(f[field],str) or len(f[field])>500):
@@ -778,10 +848,12 @@ def discover(client: Client, store: Store, sources: list):
             LOG.warning("Fonte %s indisponível/inválida nesta execução; demais fontes continuam.", source["id"])
     return total, errors
 
-def process(client: Client, store: Store, limit: int, dry_run=False):
+def process(client: Client, store: Store, limit: int, dry_run=False, sources=None):
     processed, issues = 0, False
-    for item in store.ready(limit):
+    policies = {source["id"]:source for source in sources} if sources is not None else None
+    for item in store.ready(limit,list(policies) if policies is not None else None):
         key = item["id"]
+        source = policies[item["source"]] if policies is not None else {}
         try:
             client.remaining()
             entry = json.loads(item["input_json"])
@@ -797,6 +869,8 @@ def process(client: Client, store: Store, limit: int, dry_run=False):
                 if payload is None:
                     store.finish(key, "skipped", error="fonte_insuficiente_ou_revisao_necessaria")
                     continue
+                payload["status"], reason = publication_decision(source,entry,generated,payload)
+                LOG.info("Item %s | fonte: %s | destino: %s | motivo: %s",key[:12],source.get("name",item["source"]),payload["status"],reason)
                 store.prepare(key, payload)
                 if not payload.get("image_url"):
                     LOG.warning("Item %s: fotografia não encontrada; rascunho ficará com capa pendente.",key[:12])
@@ -805,7 +879,12 @@ def process(client: Client, store: Store, limit: int, dry_run=False):
                 continue
             store.attempt(key)
             try:
-                post_id = client.submit(key, payload)
+                if payload.get("status") == "publish":
+                    if source.get("publication_mode") != "auto":
+                        raise ItemError("Publicação preparada sem autorização atual da fonte; revisar antes de retomar.")
+                    post_id = client.submit(key,payload,allow_publish=True)
+                else:
+                    post_id = client.submit(key, payload)
             except ImageFallback as exc:
                 LOG.warning("Item %s: %s; reenviando como rascunho sem imagem.", key[:12], exc)
                 payload["image_url"] = ""
@@ -815,10 +894,13 @@ def process(client: Client, store: Store, limit: int, dry_run=False):
                 store.prepare(key, payload)
                 store.attempt(key)
                 post_id = client.submit(key, payload)
-            store.finish(key, "sent", wp_id=post_id, wp_url=getattr(client, "last_permalink", None))
+            actual_status = getattr(client,"last_status",None)
+            if actual_status not in {"draft","publish"}:
+                actual_status = payload["status"]
+            store.finish(key, "sent", wp_id=post_id, wp_url=getattr(client, "last_permalink", None),wp_status=actual_status)
             processed += 1
-            LOG.info("Item %s confirmado como rascunho WordPress %s | capa: %s | link: %s",
-                     key[:12], post_id, getattr(client,"last_featured_media",None), getattr(client,"last_permalink",None))
+            LOG.info("Item %s confirmado no WordPress %s | fonte: %s | status: %s | capa: %s | link: %s",
+                     key[:12], post_id, source.get("name",item["source"]),actual_status, getattr(client,"last_featured_media",None), getattr(client,"last_permalink",None))
         except ItemError as exc:
             issues = True
             store.finish(key, "blocked", error=str(exc))
@@ -899,8 +981,8 @@ def main(argv=None):
             LOG.info("Checagem concluída: nenhum artigo criado, nenhuma geração de texto solicitada.")
             return 0
         _, errors = discover(client, store, sources)
-        count, deferred = process(client, store, args.limit, args.dry_run)
-        LOG.info("Fim: %s rascunhos confirmados. Estado: %s", count, json.dumps(store.counts(), ensure_ascii=False))
+        count, deferred = process(client, store, args.limit, args.dry_run,sources=sources)
+        LOG.info("Fim: %s itens confirmados. Estado: %s", count, json.dumps(store.counts(), ensure_ascii=False))
         return 1 if errors or deferred else 0
     except (ConfigError, StopRun, Deferred, ItemError, ValueError, OSError, sqlite3.DatabaseError) as exc:
         # Não imprimir exceções HTTP com URLs/credenciais ou respostas brutas dos provedores.

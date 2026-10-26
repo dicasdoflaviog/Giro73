@@ -1,11 +1,12 @@
 # Coletor RSS independente — Giro73
 
-Python 3.10+ em Ubuntu 22.04/24.04 ou posterior compatível. Não depende do bot Telegram nem instala plugins no WordPress. Cria somente matérias em rascunho pelo endpoint existente.
+Python 3.10+ em Ubuntu 22.04/24.04 ou posterior compatível. Não depende do bot Telegram nem instala plugins no WordPress. O padrão é rascunho; fontes explicitamente configuradas para modo automático podem publicar pelo endpoint existente. Política e implantação: [rodízio e publicação seletiva](../34-rodizio-publicacao-seletiva.md).
 
 ## Arquivos
 
 - `coletor_rss.py`: programa completo.
 - `configurar_fontes_rss.py`: inclusão em lote das fontes selecionadas e descoberta de RSS de Portal TX/Vem Vê TX Bahia, executada na VPS.
+- `configurar_publicacao_rss.py`: aplica a seleção aprovada de fontes automáticas, sem buscar feeds nem criar matérias.
 - `requirements-rss.txt`: requests, feedparser, BeautifulSoup, Pillow e python-dotenv; SQLite já faz parte do Python.
 - `rss_fontes.example.json`: configuração por fonte, sem inventar feeds autorizados.
 - `giro73-rss.env.example`: exemplo sem credenciais reais.
@@ -17,6 +18,7 @@ Python 3.10+ em Ubuntu 22.04/24.04 ou posterior compatível. Não depende do bot
 - `tests/test_configurar_fontes_rss.py`: 12 testes de descoberta e atualização segura da configuração.
 - `tests/test_imagens_rss.py`: 12 testes de seleção de fotos, validação dos bytes e figura/ALT.
 - `tests/test_openrouter.py`: 12 testes do provedor, JSON estruturado, `.env`, retentativas e confirmação da capa.
+- `tests/test_rodizio_publicacao.py`: 18 testes de rodízio persistente, publicação seletiva e migração.
 
 ## Modelo OpenRouter
 
@@ -32,9 +34,9 @@ O arquivo oficial é `/opt/giro73-rss/.env`, carregado pelo Python com `python-d
 2. Aceitar RSS/Atom de até 2 MB, sem DTD/entidades XML; até 50 entradas por fonte em cada coleta.
 3. Registrar GUID e URL, removendo parâmetros de rastreamento conhecidos. Fontes distintas com a mesma URL compartilham o registro.
 4. Preparar uma nota factual com OpenRouter; ignorar itens insuficientes ou recusados pelo modelo.
-5. Montar o payload localmente, sempre com `status: draft` e os três campos do Rank Math em `meta`. O modelo não controla categoria, status, credenciais ou destino.
+5. Montar o payload localmente com os três campos do Rank Math em `meta`. O padrão é `status: draft`; a política local pode liberar `publish` nas fontes automáticas aptas. O modelo não controla categoria, status, credenciais ou destino.
 6. Persistir o payload em SQLite **antes** do POST e enviar `Idempotency-Key: rss-[hash]`.
-7. Registrar como `sent` somente após receber ID válido e status `draft` do WordPress. Depois da confirmação, textos completos locais são descartados; identidade, URL e ID permanecem no histórico.
+7. Registrar como `sent` somente após receber ID válido e status compatível do WordPress. Pedidos de publicação podem ser preservados como rascunho pelo servidor quando a capa falhar; o status efetivo fica em `wp_status`. Depois da confirmação, textos completos locais são descartados; identidade, URL e ID permanecem no histórico.
 
 Retentativas de rede/503 podem repetir a chamada HTTP, mas usam o mesmo texto e chave; o endpoint WordPress existente é quem impede que isso crie outro post após uma resposta perdida. Um 422 confirmado de imagem permite persistir uma variante `draft` sem foto e reenviar com a mesma chave. Não existe promessa de transporte HTTP exatamente uma vez. O bloqueio de processo impede dois cron jobs locais simultâneos.
 
@@ -42,7 +44,7 @@ O banco `vistos_rss.sqlite3` guarda fila e histórico de itens. Estados: `queued
 
 ## Conteúdo e imagens
 
-O modelo recebe somente título, texto fornecido no RSS, URL, identificação da fonte e data. Não navega no artigo completo. `use_full_content: true` permite aproveitar `content:encoded` quando fornecido no próprio feed e autorizado para uso; não contorna paywall ou busca páginas externas.
+O modelo recebe somente título, texto fornecido no RSS, URL, identificação da fonte e data. Não navega no artigo completo. `use_full_content: true` permite aproveitar `content:encoded` quando fornecido no próprio feed e autorizado para uso; não contorna paywall ou busca páginas externas. Uma fonte grande que forneça só resumo curto pode continuar gerando rascunhos.
 
 Entradas com menos de 180 caracteres de material textual são ignoradas. Material insuficiente também pode ser recusado pelo OpenRouter. Não se inventam falas, dados ou acontecimentos locais para alongar notícias. Os rascunhos precisam de revisão factual/editorial; esses controles não eliminam alucinações de um modelo.
 
@@ -148,7 +150,7 @@ sudo -u giro73-rss /opt/giro73-rss/run --check
 sudo -u giro73-rss /opt/giro73-rss/run --dry-run
 sudo -u giro73-rss /opt/giro73-rss/run --status
 
-# Envia os payloads preparados como rascunhos.
+# Envia os payloads preparados, respeitando os modos por fonte.
 sudo -u giro73-rss /opt/giro73-rss/run
 ```
 
@@ -160,15 +162,18 @@ Baixe `atualizar-vps.sh` deste mesmo diretório no GitHub, de preferência fixan
 
 ```bash
 bash /root/atualizar-giro73-rss.sh COMMIT_OU_MAIN
+
+# Para aplicar também a seleção de fontes automáticas aprovada:
+bash /root/atualizar-giro73-rss.sh COMMIT_OU_MAIN --apply-publication-policy
 ```
 
-O atualizador baixa coletor, dependências e launcher da referência informada, confere a sintaxe, aguarda até 30 segundos pelo lock da coleta, cria backup privado dos arquivos/configurações e um backup SQLite consistente em `/root/giro73-rss-backup.*`. Depois instala as dependências, substitui os arquivos e corrige permissões. Mantém o `.env`, as fontes, o banco de vistos e o cron existentes. Também atualiza `/opt/giro73-rss/run`, evitando continuar usando o launcher antigo.
+O atualizador baixa coletor, dependências, launcher e configurador de publicação da referência informada, confere a sintaxe, aguarda até 30 segundos pelo lock da coleta e cria backup privado dos arquivos/configurações e um backup SQLite consistente em `/root/giro73-rss-backup.*`. Depois instala as dependências, substitui os arquivos e corrige permissões. Mantém o `.env`, o banco de vistos e o cron; só altera a política por fonte quando recebe `--apply-publication-policy`. Também atualiza `/opt/giro73-rss/run`.
 
 A instalação das bibliotecas usa `umask 022`, isolado em um subshell; backup, `.env` e SQLite continuam restritos. O atualizador testa os imports como `giro73-rss` antes de substituir o coletor. Se `python-dotenv` não puder ser importado, reinstala somente esse pacote com as permissões corretas, inclusive quando o pip o considera já instalado.
 
-Se houver coleta ativa além desse prazo, interrompe antes de substituir os arquivos: aguarde terminar e rode novamente. Ao concluir, executa `--check-ai` e `--limit 1`. Este último processa até um candidato; pode não criar matéria se não houver item novo apto. A confirmação informa ID, ID da capa e link. `capa: 0` significa rascunho com imagem pendente, não sucesso na importação da foto.
+Se houver coleta ativa além desse prazo, interrompe antes de substituir os arquivos: aguarde terminar e rode novamente. Ao concluir, executa `--check-ai` e `--limit 1`. Este último processa até um candidato e pode publicar se a política automática estiver habilitada e os requisitos forem atendidos. Também pode não criar matéria se não houver item apto. A confirmação informa ID, status real, ID da capa e link. `capa: 0` significa imagem pendente.
 
-Payloads já preparados continuam com o mesmo conteúdo e chave de idempotência; não são regenerados na migração. Apenas novas gerações passam pelo OpenRouter. O atualizador não altera o Snippet 12 nem o bot Telegram.
+Payloads já preparados continuam com o mesmo conteúdo e chave de idempotência; não são regenerados na migração. Rascunhos preparados não são promovidos automaticamente. `--dry-run` pode preparar payloads `publish` que serão enviados pelo cron depois; não equivale a pausar publicações. O atualizador não altera o Snippet 12 nem o bot Telegram.
 
 ### Erro `cannot import name 'dotenv_values' from 'dotenv' (unknown location)`
 
@@ -271,4 +276,4 @@ python3 -m venv .venv-test
 .venv-test/bin/python -m unittest discover -s tests -v
 ```
 
-Passaram **63 testes locais**: 27 do coletor, 12 do configurador, 12 das imagens e 12 do OpenRouter. Incluem RSS → OpenRouter → WordPress com APIs simuladas, 429/503, saldo insuficiente, JSON Schema estrito, leitura/prioridade do `.env`, fallback 422, retomada após resposta perdida, migração do banco, deduplicação, pré-filtro editorial, fotos em Handler.ashx, rejeição de facebook.jpg, bytes/dimensões, figura e ALT. Nenhuma chave real foi utilizada nem rascunho real criado por esses testes. O agente não acessou a VPS; a validação real do OpenRouter e da importação deve ser feita com os comandos acima.
+Passaram **81 testes locais**: 27 do coletor, 12 do configurador, 12 das imagens, 12 do OpenRouter e 18 de rodízio/publicação. Incluem RSS → OpenRouter → WordPress com APIs simuladas, 429/503, saldo insuficiente, JSON Schema estrito, `.env`, fallback 422, resposta perdida, migração do banco, deduplicação, fotos em Handler.ashx, figura/ALT, rodízio entre execuções, prioridade para notícias recentes, publicação seletiva e confirmação do status real. Nenhuma chave real foi utilizada nem matéria real criada por esses testes. O agente não acessou a VPS; a validação real deve ser feita com os comandos acima.

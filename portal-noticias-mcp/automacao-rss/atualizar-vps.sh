@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Atualização do coletor existente. Uso: sudo bash atualizar-vps.sh COMMIT_OU_MAIN
+# Uso: sudo bash atualizar-vps.sh COMMIT_OU_MAIN [--apply-publication-policy]
 set -euo pipefail
 umask 077
 
@@ -8,6 +8,11 @@ if [[ "$(id -u)" -ne 0 ]]; then
   exit 1
 fi
 RSS_REF="${1:-main}"
+RSS_POLICY="${2:-}"
+if [[ -n "$RSS_POLICY" && "$RSS_POLICY" != '--apply-publication-policy' ]]; then
+  echo 'Opção inválida. Use --apply-publication-policy para aplicar a seleção aprovada de fontes.' >&2
+  exit 1
+fi
 if [[ ! "$RSS_REF" =~ ^[A-Za-z0-9._-]{1,80}$ ]]; then
   echo 'Referência Git inválida.' >&2
   exit 1
@@ -26,12 +31,12 @@ fi
 
 RSS_STAGE=$(mktemp -d "$RSS_ROOT/.update.XXXXXX")
 trap 'rm -rf -- "$RSS_STAGE"' EXIT
-for RSS_FILE in coletor_rss.py requirements-rss.txt run-coletor-rss.sh; do
+for RSS_FILE in coletor_rss.py requirements-rss.txt run-coletor-rss.sh configurar_publicacao_rss.py; do
   curl --fail --silent --show-error --location --retry 3 --max-time 60 \
     "$RSS_BASE/$RSS_FILE" --output "$RSS_STAGE/$RSS_FILE"
 done
 sh -n "$RSS_STAGE/run-coletor-rss.sh"
-"$RSS_ROOT/.venv/bin/python" -m py_compile "$RSS_STAGE/coletor_rss.py"
+"$RSS_ROOT/.venv/bin/python" -m py_compile "$RSS_STAGE/coletor_rss.py" "$RSS_STAGE/configurar_publicacao_rss.py"
 
 install -d -o giro73-rss -g giro73-rss -m 0700 /var/lib/giro73-rss
 # Mesmo inode e lock do coletor; não remover nem substituir o arquivo .lock.
@@ -45,7 +50,7 @@ if ! flock -w 30 9; then
 fi
 
 RSS_BACKUP=$(mktemp -d /root/giro73-rss-backup.XXXXXX)
-for RSS_FILE in coletor_rss.py requirements-rss.txt run .env; do
+for RSS_FILE in coletor_rss.py requirements-rss.txt run .env configurar_publicacao_rss.py; do
   if [[ -f "$RSS_ROOT/$RSS_FILE" ]]; then cp -a "$RSS_ROOT/$RSS_FILE" "$RSS_BACKUP/"; fi
 done
 if [[ -f /etc/giro73-rss.env ]]; then cp -a /etc/giro73-rss.env "$RSS_BACKUP/legacy.env"; fi
@@ -86,6 +91,7 @@ fi
 install -o root -g giro73-rss -m 0640 "$RSS_STAGE/coletor_rss.py" "$RSS_ROOT/coletor_rss.py.new"
 install -o root -g giro73-rss -m 0640 "$RSS_STAGE/requirements-rss.txt" "$RSS_ROOT/requirements-rss.txt.new"
 install -o root -g giro73-rss -m 0750 "$RSS_STAGE/run-coletor-rss.sh" "$RSS_ROOT/run.new"
+install -o root -g giro73-rss -m 0640 "$RSS_STAGE/configurar_publicacao_rss.py" "$RSS_ROOT/configurar_publicacao_rss.py.new"
 chown root:giro73-rss "$RSS_ROOT/.env"
 chmod 0640 "$RSS_ROOT/.env"
 for RSS_DB in "$RSS_STATE" "$RSS_STATE-wal" "$RSS_STATE-shm" "$RSS_STATE-journal"; do
@@ -94,6 +100,10 @@ done
 mv -f "$RSS_ROOT/coletor_rss.py.new" "$RSS_ROOT/coletor_rss.py"
 mv -f "$RSS_ROOT/requirements-rss.txt.new" "$RSS_ROOT/requirements-rss.txt"
 mv -f "$RSS_ROOT/run.new" "$RSS_ROOT/run"
+mv -f "$RSS_ROOT/configurar_publicacao_rss.py.new" "$RSS_ROOT/configurar_publicacao_rss.py"
+if [[ "$RSS_POLICY" == '--apply-publication-policy' ]]; then
+  "$RSS_ROOT/.venv/bin/python" "$RSS_ROOT/configurar_publicacao_rss.py" --apply
+fi
 flock -u 9
 exec 9>&-
 
