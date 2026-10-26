@@ -90,6 +90,11 @@ class ItemError(Exception):
 class ImageFallback(ItemError):
     """422 de imagem confirmado: permite persistir a variante sem foto antes de reenviar."""
     pass
+class DuplicateArticle(ItemError):
+    def __init__(self, code, existing_id=None, existing_url=None):
+        super().__init__(code)
+        self.existing_id = existing_id
+        self.existing_url = existing_url
 class Deferred(Exception):
     pass
 class StopRun(Exception):
@@ -543,6 +548,18 @@ class Client:
                 raise StopRun("WordPress negou autenticação/permissão. Confira G73_TOKEN e configuração.")
             if r.status_code not in {200, 201}:
                 code = result.get("code", "erro_sem_codigo") if isinstance(result, dict) else "erro_sem_codigo"
+                if r.status_code == 409 and code in {"g73_duplicate_article","g73_duplicate_review"}:
+                    detail = result.get("data",{})
+                    detail = detail if isinstance(detail,dict) else {}
+                    existing_id = detail.get("existing_id")
+                    existing_url = detail.get("existing_url")
+                    try:
+                        checked_url(existing_url,https_only=True)
+                        if urlsplit(existing_url).hostname != urlsplit(self.endpoint).hostname:
+                            existing_url = None
+                    except (ConfigError,ValueError,TypeError):
+                        existing_url = None
+                    raise DuplicateArticle(code,existing_id if type(existing_id) is int and existing_id>0 else None,existing_url)
                 if (r.status_code == 422 and isinstance(code, str)
                         and code.removeprefix("g73_") in IMAGE_ERRORS and payload.get("image_url")):
                     raise ImageFallback(f"WordPress HTTP 422: {code}")
@@ -740,7 +757,7 @@ def payload_from(generated: dict, entry: dict, category: str, image=None) -> dic
     tags = generated.get("tags", [])
     if not isinstance(tags, list) or len(tags) > 8:
         raise ItemError("Tags inválidas.")
-    return {"title": title, "content": "\n".join(content), "excerpt": excerpt,
+    return {"title": title, "content": "\n".join(content), "excerpt": excerpt,"source_url":entry["url"],
             "category": category, "tags": list(dict.fromkeys(text(x, 60) for x in tags)),
             "image_url": image_url, "image_credit": image_credit, "image_credit_url": image_credit_url,
             "status": "draft", "meta": seo}
@@ -901,6 +918,11 @@ def process(client: Client, store: Store, limit: int, dry_run=False, sources=Non
             processed += 1
             LOG.info("Item %s confirmado no WordPress %s | fonte: %s | status: %s | capa: %s | link: %s",
                      key[:12], post_id, source.get("name",item["source"]),actual_status, getattr(client,"last_featured_media",None), getattr(client,"last_permalink",None))
+        except DuplicateArticle as exc:
+            confirmed = str(exc) == "g73_duplicate_article"
+            issues = issues or not confirmed
+            store.finish(key,"skipped" if confirmed else "blocked",wp_id=exc.existing_id,wp_url=exc.existing_url,error=str(exc))
+            LOG.warning("Item %s: %s | matéria existente: %s | nenhuma nova matéria criada.",key[:12],str(exc),exc.existing_id)
         except ItemError as exc:
             issues = True
             store.finish(key, "blocked", error=str(exc))

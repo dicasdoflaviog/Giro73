@@ -1,0 +1,128 @@
+{
+  "date": "2026-10-26",
+  "trashed_ids": [
+    416,
+    24,
+    23,
+    22,
+    21,
+    20
+  ],
+  "preserved_initial_expansion_ids": [
+    208,
+    209,
+    210,
+    211,
+    212,
+    213,
+    214,
+    215,
+    216,
+    217
+  ],
+  "published_count_after": 31,
+  "links_repaired_in": [
+    208,
+    210,
+    211,
+    212,
+    215
+  ],
+  "public_checks": [
+    {
+      "path": "/",
+      "http": 200,
+      "demo_cards": 0,
+      "disabled_whatsapp": 0,
+      "main_heroes": 0,
+      "official_whatsapp_link_matches": true
+    },
+    {
+      "path": "/inscricoes-para-vagas-remanescentes-do-fies-estao-abertas/",
+      "http": 200,
+      "demo_cards": 0,
+      "disabled_whatsapp": 0,
+      "main_heroes": 1,
+      "official_whatsapp_link_matches": true
+    },
+    {
+      "path": "/prefeito-de-teixeira-de-freitas-mobiliza-equipes-para-recuperacao-apos-vendaval/",
+      "http": 200,
+      "demo_cards": 0,
+      "disabled_whatsapp": 0,
+      "main_heroes": 1,
+      "official_whatsapp_link_matches": true
+    },
+    {
+      "path": "/post-sitemap.xml",
+      "http": 200,
+      "xml_valid": true,
+      "url_count": 83
+    },
+    {
+      "path": "/page-sitemap.xml",
+      "http": 200,
+      "xml_valid": true,
+      "url_count": 7
+    },
+    {
+      "path": "/category-sitemap.xml",
+      "http": 200,
+      "xml_valid": true,
+      "url_count": 6
+    },
+    {
+      "path": "duplicata-416",
+      "http": 301,
+      "location": "https://giro73.com.br/prefeito-de-teixeira-de-freitas-mobiliza-equipes-para-recuperacao-apos-vendaval/"
+    }
+  ],
+  "snippets": [
+    {
+      "id": 8,
+      "active": true,
+      "priority": 12,
+      "sha256": "c1eb8e3cef077cec393e74e6da4ac9d26e158cb7f9060267be11f8c267ac652b",
+      "code_error": null
+    },
+    {
+      "id": 9,
+      "active": true,
+      "priority": 13,
+      "sha256": "d7208fb1a7e9d76b6990d8e0162d572b0e2a95b6c2d54fc4d8bcd3d66fa318ec",
+      "code_error": null
+    },
+    {
+      "id": 11,
+      "active": true,
+      "priority": 15,
+      "sha256": "da96694fe9eb35f226a05122b7f1e5dcb02bdae795f8cc0cb6e9d34f1d9aacab",
+      "code_error": null
+    },
+    {
+      "id": 12,
+      "active": true,
+      "priority": 16,
+      "sha256": "c369ae66c9c575987c1fc50348258278ad78c0339d70532f0e373c680577f1d3",
+      "code_error": null
+    }
+  ],
+  "tests": {
+    "rss_python": 87,
+    "publisher_php": 32,
+    "components_php": 9,
+    "live_duplicate_sample": {
+      "candidate_id": 416,
+      "existing_id": 414,
+      "decision": "hold_for_review",
+      "title_dice": 0.6666666667,
+      "lead_dice": 0.3617021277
+    }
+  },
+  "notes": [
+    "Proteção central instalada no WordPress.",
+    "Python atualizado no repositório; a VPS não foi acessada por SSH.",
+    "Nenhuma matéria de teste foi publicada.",
+    "Convite WhatsApp conferido no HTML; não houve ingresso no grupo."
+  ]
+}

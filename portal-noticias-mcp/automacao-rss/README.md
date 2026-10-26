@@ -42,6 +42,17 @@ Retentativas de rede/503 podem repetir a chamada HTTP, mas usam o mesmo texto e 
 
 O banco `vistos_rss.sqlite3` guarda fila e histórico de itens. Estados: `queued`, `prepared`, `sent`, `skipped` e `blocked`. Itens bloqueados exigem diagnóstico; não são apagados nem repetidos cegamente. Preserve e faça backup desse banco — mudar/apagar o arquivo remove a memória local do coletor. A deduplicação por identidade não reconhece automaticamente a mesma pauta publicada com URLs/GUIDs diferentes nem compartilha o histórico do bot Telegram.
 
+## Proteção contra duplicatas no WordPress
+
+O payload informa `source_url` a partir da URL real do feed, nunca de uma URL inventada pelo modelo. O Snippet 12 normaliza essa origem e registra `_g73_source_url`. Também reconhece a atribuição final de bots antigos. Homepages, índices e categorias genéricas não são tratados como uma matéria única.
+
+- `409 g73_duplicate_article`: a origem já foi recebida. O coletor registra `skipped` e a referência da matéria existente, sem novo post nem repetição do POST.
+- `409 g73_duplicate_review`: título e abertura são semelhantes a uma pauta recente da mesma editoria. O coletor registra `blocked`, preserva o material para comparação editorial e não cria uma segunda página. Uma atualização real pode ser consolidada no artigo existente após revisão.
+- A verificação ocorre no servidor antes de baixar a foto e criar o post, sob o lock do motor. Protege tanto RSS quanto Telegram. A identidade de requisições antigas foi preservada.
+- O exame de similaridade considera até 60 matérias da mesma categoria nos últimos sete dias. É uma heurística; não promete reconhecer todas as reformulações de um acontecimento. Não exclui automaticamente notícias diferentes por compartilharem cidade ou assunto.
+
+A proteção do WordPress foi instalada em 26/10/2026. Atualizar o coletor da VPS acrescenta o tratamento dos dois códigos; versões anteriores também têm a criação recusada pelo servidor, mas podem registrar esses casos como erros genéricos para revisão. O atualizador preserva modos por fonte e banco de vistos quando executado sem `--apply-publication-policy`.
+
 ## Conteúdo e imagens
 
 O modelo recebe somente título, texto fornecido no RSS, URL, identificação da fonte e data. Não navega no artigo completo. `use_full_content: true` permite aproveitar `content:encoded` quando fornecido no próprio feed e autorizado para uso; não contorna paywall ou busca páginas externas. Uma fonte grande que forneça só resumo curto pode continuar gerando rascunhos.
@@ -276,4 +287,4 @@ python3 -m venv .venv-test
 .venv-test/bin/python -m unittest discover -s tests -v
 ```
 
-Passaram **81 testes locais**: 27 do coletor, 12 do configurador, 12 das imagens, 12 do OpenRouter e 18 de rodízio/publicação. Incluem RSS → OpenRouter → WordPress com APIs simuladas, 429/503, saldo insuficiente, JSON Schema estrito, `.env`, fallback 422, resposta perdida, migração do banco, deduplicação, fotos em Handler.ashx, figura/ALT, rodízio entre execuções, prioridade para notícias recentes, publicação seletiva e confirmação do status real. Nenhuma chave real foi utilizada nem matéria real criada por esses testes. O agente não acessou a VPS; a validação real deve ser feita com os comandos acima.
+Passaram **87 testes locais**: 27 do coletor, 12 do configurador, 12 das imagens, 12 do OpenRouter, 18 de rodízio/publicação e 6 de duplicatas. Incluem RSS → OpenRouter → WordPress com APIs simuladas, 429/503, saldo insuficiente, JSON Schema estrito, `.env`, fallback 422, resposta perdida, migração do banco, deduplicação, fotos em Handler.ashx, figura/ALT, rodízio entre execuções, prioridade para notícias recentes, publicação seletiva e confirmação do status real. Nenhuma chave real foi utilizada nem matéria real criada por esses testes. O agente não acessou a VPS; a validação real deve ser feita com os comandos acima.

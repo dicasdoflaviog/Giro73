@@ -14,15 +14,17 @@ class WP_REST_Response {
 }
 class FakeRequest {
  public $data;
+ public $key='unit-case';
  function __construct($overrides=array()){$this->data=array_merge(array('title'=>'Notícia regional','content'=>'<p>Informação factual da fonte.</p>','excerpt'=>'Resumo factual.','category'=>'noticias-regiao','status'=>'draft','image_url'=>'https://prado.ba.gov.br/foto.jpeg','tags'=>array(),'meta'=>array('rank_math_title'=>'Título SEO','rank_math_description'=>'Descrição SEO','rank_math_focus_keyword'=>'notícia regional')),$overrides);}
  function get_body(){return json_encode($this->data);}
  function is_json_content_type(){return true;}
  function get_json_params(){return $this->data;}
- function get_header($name){return 'idempotency-key'===$name?'unit-case': '';}
+ function get_header($name){return 'idempotency-key'===$name?$this->key: '';}
 }
 $root=sys_get_temp_dir().'/g73-php-test-'.bin2hex(random_bytes(5));mkdir($root.'/wp-admin/includes',0777,true);mkdir($root.'/uploads');
 file_put_contents($root.'/wp-admin/includes/file.php','<?php');file_put_contents($root.'/wp-admin/includes/image.php','<?php');
 define('ABSPATH',$root.'/');
+define('DAY_IN_SECONDS',86400);
 function fixture_png($width=200,$height=200){
  $chunk=function($type,$data){return pack('N',strlen($data)).$type.$data.pack('N',crc32($type.$data));};
  $pixels=str_repeat("\x00".str_repeat("\xff\xff\xff",$width),$height);
@@ -108,6 +110,7 @@ function sanitize_text_field($text){return trim(strip_tags($text));}
 function wp_kses($text,$allowed,$protocols){return $text;}
 function wpautop($text){return $text;}
 function wp_strip_all_tags($text){return strip_tags($text);}
+function remove_accents($value){return strtr($value,array('á'=>'a','ã'=>'a','â'=>'a','à'=>'a','é'=>'e','ê'=>'e','í'=>'i','ó'=>'o','ô'=>'o','õ'=>'o','ú'=>'u','ç'=>'c'));}
 function wp_trim_words($text,$count,$more=''){return $text;}
 function wp_html_excerpt($text,$count,$more=''){return substr($text,0,$count);}
 function sanitize_title($text){return strtolower($text);}
@@ -116,7 +119,11 @@ function get_term($id,$taxonomy){return (object)array('term_id'=>$id);}
 function get_user_by($field,$id){return (object)array('ID'=>1);}
 function user_can($user,$capability){return true;}
 function wp_json_encode($value){return json_encode($value);}
-function get_posts($args){$found=array();foreach($GLOBALS['posts'] as $id=>$post){if(get_post_meta($id,$args['meta_key'],true)===$args['meta_value']){$found[]=$id;}}return $found;}
+function get_posts($args){$found=array();foreach($GLOBALS['posts'] as $id=>$post){
+ if(isset($args['meta_key'])&&get_post_meta($id,$args['meta_key'],true)!==$args['meta_value']){continue;}
+ if(!isset($args['meta_key'])&&isset($args['category__in'])&&!array_intersect($args['category__in'],$post['post_category'])){continue;}
+ $found[]=isset($args['fields'])&&'ids'===$args['fields']?$id:(object)array_merge($post,array('ID'=>$id));
+ }return $found;}
 function get_transient($key){return false;}
 function set_transient($key,$value,$duration){return true;}
 function wp_cache_delete(...$args){}function wp_cache_set(...$args){}
@@ -174,6 +181,14 @@ $tests=array(
  'Publish com foto válida mantém publicação'=>function(){reset_case();$data=received(new FakeRequest(array('status'=>'publish')));expect($data['status']==='publish'&&$data['featured_media']>0,'Foto válida não permitiu publicar.');expect($GLOBALS['inserted_statuses']===array('draft'),'Houve publicação antes da associação da capa.');},
  'ALT de mídia compartilhada não é alterado em outras matérias'=>function(){reset_case(array('local_id'=>500));$file=ABSPATH.'uploads/original.png';file_put_contents($file,$GLOBALS['png']);$GLOBALS['media'][500]=array('data'=>array('post_mime_type'=>'image/png'),'file'=>$file);update_post_meta(500,'_wp_attachment_metadata',array('width'=>200,'height'=>200));update_post_meta(500,'_wp_attachment_image_alt','ALT da matéria anterior');$data=received(new FakeRequest(array('image_url'=>'https://giro73.com.br/uploads/original.png')));expect($data['featured_media']!==500,'Mídia compartilhada foi reutilizada com ALT diferente.');expect(get_post_meta(500,'_wp_attachment_image_alt',true)==='ALT da matéria anterior','ALT antigo foi alterado.');expect(get_post_meta($data['featured_media'],'_wp_attachment_image_alt',true)==='notícia regional','Nova capa não recebeu a palavra-chave.');},
  'Publish com download indisponível preserva draft e retira figura remota'=>function(){reset_case(array('download'=>'error'));$data=received(new FakeRequest(array('status'=>'publish','content'=>'<p>Notícia.</p><figure class="g73-imported-image"><img src="https://origem.example/foto.jpg" /></figure>')));expect($data['status']==='draft'&&$data['featured_media']===0,'Publicou sem capa.');expect(!str_contains($GLOBALS['posts'][$data['id']]['post_content'],'<figure'),'Figura remota inválida permaneceu no texto.');},
+ 'Abertura ignora wrappers vazios e crédito da foto'=>function(){expect(g73_pub_story_lead('<p>Primeiro fato.</p><p></p><figure><img src="foto.jpg"><figcaption>Crédito.</figcaption></figure><p>Segundo fato.</p><p>Fonte: Origem.</p>')==='Primeiro fato. Segundo fato.','Wrappers da figura alteraram a comparação editorial.');},
+ 'URL de fonte normalizada ignora rastreamento'=>function(){expect(g73_pub_source_url('http://fonte.example/noticia/?utm_source=rss&id=42#foto')==='https://fonte.example/noticia?id=42','Fonte não foi normalizada.');},
+ 'Homepage e índice não identificam uma matéria'=>function(){foreach(array('https://camara.example/','https://camara.example/noticias/index.php','https://prefeitura.example/category/noticias/') as $u){expect(g73_pub_source_url($u)==='','Índice genérico foi tratado como artigo.');}},
+ 'Origem é recuperada da atribuição de bots antigos'=>function(){expect(g73_pub_content_source('<p>Texto.</p><p><strong>Fonte:</strong> <a href="https://fonte.example/noticia">Fonte</a>.</p>')==='https://fonte.example/noticia','Fonte legada não reconhecida.');},
+ 'Mesma fonte com outra chave não cria novo artigo nem mídia'=>function(){reset_case();$a=new FakeRequest(array('source_url'=>'https://fonte.example/noticia'));$one=received($a);$downloads=count($GLOBALS['http']);$b=new FakeRequest(array('source_url'=>'https://fonte.example/noticia?utm_source=outro','title'=>'Título reescrito para a mesma matéria'));$b->key='outra-chave';$two=g73_pub_publish($b);expect(is_wp_error($two)&&$two->get_error_code()==='g73_duplicate_article','Fonte repetida não foi bloqueada.');expect($two->data['existing_id']===$one['id']&&count($GLOBALS['posts'])===1&&count($GLOBALS['http'])===$downloads,'Houve nova criação ou download.');},
+ 'Similaridade entre fontes retém pauta para revisão'=>function(){reset_case();$body='<p>O prefeito Marcelo Belitardo acompanha a recuperação de Teixeira de Freitas após o vendaval. Equipes municipais atendem as áreas afetadas e avaliam os danos.</p>';$a=new FakeRequest(array('title'=>'Prefeito de Teixeira de Freitas mobiliza equipes para recuperação após vendaval','content'=>$body,'source_url'=>'https://fonte-a.example/vendaval'));received($a);$b=new FakeRequest(array('title'=>'Prefeito Marcelo Belitardo acompanha recuperação após vendaval em Teixeira de Freitas','content'=>$body,'source_url'=>'https://fonte-b.example/vendaval'));$b->key='segunda-fonte';$response=g73_pub_publish($b);expect(is_wp_error($response)&&$response->get_error_code()==='g73_duplicate_review'&&count($GLOBALS['posts'])===1,'Pauta semelhante gerou cópia pública.');},
+ 'Assunto diferente na mesma cidade não é excluído'=>function(){reset_case();received(new FakeRequest(array('title'=>'Equipes municipais removem árvores após vendaval em Teixeira de Freitas','source_url'=>'https://fonte.example/vendaval')));$b=new FakeRequest(array('title'=>'Inscrições abertas para cursos de programação em Teixeira de Freitas','source_url'=>'https://fonte.example/cursos'));$b->key='outra-pauta';$response=g73_pub_publish($b);expect($response instanceof WP_REST_Response&&count($GLOBALS['posts'])===2,'Pauta diferente foi bloqueada.');},
+ 'Fingerprint preserva compatibilidade com payload antigo'=>function(){reset_case();$r=new FakeRequest();$p=g73_pub_validate($r);unset($p['key'],$p['status'],$p['source_url']);$expected=hash('sha256',wp_json_encode($p));$one=received($r);expect(get_post_meta($one['id'],'_g73_ingest_fingerprint',true)===$expected,'Migração mudou a identidade antiga.');},
 );
 foreach($tests as $name=>$test){try{$test();echo 'OK '.$name.PHP_EOL;}catch(Throwable $error){fwrite(STDERR,'FAIL '.$name.': '.$error->getMessage().PHP_EOL);exit(1);}}
 echo 'PASS '.count($tests).' verificações PHP offline'.PHP_EOL;

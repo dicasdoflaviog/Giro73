@@ -94,11 +94,12 @@ function g73_agenda_render($atts=array()) {
  $category=$directory&&isset($_GET['g73_categoria'])&&is_string($_GET['g73_categoria'])?sanitize_key(wp_unslash($_GET['g73_categoria'])):'';if(!isset($cats[$category])){$category='';}
  $page=$directory&&isset($_GET['g73_agenda_page'])?max(1,absint($_GET['g73_agenda_page'])):1;$limit=$directory?24:4;
  $q=new WP_Query(g73_agenda_query_args($limit,$page,$category));$ids=wp_list_pluck($q->posts,'ID');$total=(int)$q->found_posts;$pages=(int)$q->max_num_pages;$models=false;
- // Modelos somente quando não há eventos confirmados, e apenas os rascunhos expressamente selecionados.
- if(!$total){$confirmed=$category?get_posts(g73_agenda_query_args(1)):array();if(!$confirmed){
+ // Modelos são exclusivos da prévia autenticada; a vitrine pública usa eventos confirmados.
+ if(!$total&&is_preview()&&current_user_can('manage_options')){$confirmed=$category?get_posts(g73_agenda_query_args(1)):array();if(!$confirmed){
   $demo_ids=array();foreach((array)get_option('g73_agenda_demo_ids',array()) as $id){if('g73_event'===get_post_type($id)&&'draft'===get_post_status($id)&&get_post_meta($id,'g73_event_demo',true)&&(!$category||$category===get_post_meta($id,'g73_event_category',true))){$demo_ids[]=absint($id);}}
   $total=count($demo_ids);$pages=(int)ceil($total/$limit);$ids=array_slice($demo_ids,($page-1)*$limit,$limit);$models=(bool)$ids;
  }}
+ if(!$directory&&!$ids){return '';}
  $uid=wp_unique_id('g73-agenda-');$GLOBALS['g73_agenda_runtime']=true;$complete=''===$category&&$total<=$limit;
  $html='<section class="g73-agenda-showcase" data-g73-agenda data-g73-agenda-complete="'.($complete?'1':'0').'" aria-labelledby="'.esc_attr($uid).'"><h2 id="'.esc_attr($uid).'">Agenda 73 • Festas, Shows &amp; Eventos no Extremo Sul</h2><nav class="g73-agenda-filters" aria-label="Categorias de eventos">';
  foreach(array_merge(array(''=>'Todos'),$cats) as $slug=>$name){$href=$slug?add_query_arg('g73_categoria',$slug,$base):$base;$html.='<a href="'.esc_url($href).'" data-g73-agenda-filter="'.esc_attr($slug).'"'.($category===$slug?' aria-current="true"':'').'>'.esc_html($name).'</a>';}

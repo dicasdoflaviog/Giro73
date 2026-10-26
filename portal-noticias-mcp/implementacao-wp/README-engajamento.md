@@ -1,3 +1,5 @@
+> Atualização de 26/10/2026: o card WhatsApp aparece somente com convite oficial válido; o endereço é gerido na opção existente. Modelos de eventos são exclusivos de prévia autenticada e não aparecem na Home pública. Ver `37-limpeza-editorial-e-duplicatas.md`.
+
 # Engajamento e autoridade regional Giro73
 
 Fonte: **engajamento-regional.php**, snippet global **9**, prioridade 13 no Code Snippets já instalado. Não instalar outro plugin nem carregar uma segunda cópia no tema. CSS e templates nesta pasta são as versões publicadas.

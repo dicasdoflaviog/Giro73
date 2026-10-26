@@ -38,25 +38,25 @@ with sync_playwright() as p:
     if position=='sidebar_base':assert [m['image']['w'],m['image']['h']]==[300,600],m
     result[name+'_'+str(width)+'_'+position]=m
    if name=='home':
-    cards=page.locator('.g73-opinion-card');expect(cards).to_have_count(6);expect(page.locator('.g73-event-poster')).to_have_count(4);expect(page.locator('.g73-event-demo')).to_have_count(4)
+    cards=page.locator('.g73-opinion-card');expect(cards).to_have_count(6);expect(page.locator('.g73-event-demo')).to_have_count(0)
     for image in page.locator('.g73-opinion-avatar,.g73-event-cover').all():
      image.scroll_into_view_if_needed();expect(image).to_be_visible();page.wait_for_function('(e)=>e.complete&&e.naturalWidth>0',arg=image.element_handle())
     avatar=cards.first.locator('img').bounding_box();assert avatar['width']==64 and avatar['height']==64,avatar
     gap=cards.first.evaluate('e=>e.querySelector(".g73-opinion-copy").getBoundingClientRect().top-e.querySelector(".g73-opinion-portrait").getBoundingClientRect().bottom');assert abs(gap-14)<.1,gap
     assert page.locator('.g73-opinions').bounding_box()['width']>300
     expect(cards.nth(5).locator('h3')).to_have_text('Redação Giro73');expect(cards.nth(5).locator('.g73-opinion-pill')).to_have_text('Raiz & Vitalidade')
-    page.locator('.g73-event-program summary').first.click();assert page.locator('.g73-event-program').first.get_attribute('open') is not None
-    result['new_home_'+str(width)]={'columnists':6,'avatars_px':[64,64],'models':4,'program_disclosure':True,'body_width':page.evaluate('document.documentElement.scrollWidth')}
-    page.add_style_tag(content='.g73-portal .g73-header {position:static!important}');page.locator('.g73-opinions').screenshot(path=f'/tmp/g73-autoridade-validation/colunistas-{width}.png');page.locator('.g73-agenda-showcase').screenshot(path=f'/tmp/g73-autoridade-validation/agenda-{width}.png')
+    result['new_home_'+str(width)]={'columnists':6,'avatars_px':[64,64],'models':0,'events':page.locator('.g73-event-poster').count(),'body_width':page.evaluate('document.documentElement.scrollWidth')}
+    page.add_style_tag(content='.g73-portal .g73-header {position:static!important}');page.locator('.g73-opinions').screenshot(path=f'/tmp/g73-autoridade-validation/colunistas-{width}.png')
+    if page.locator('.g73-agenda-showcase').count():page.locator('.g73-agenda-showcase').screenshot(path=f'/tmp/g73-autoridade-validation/agenda-{width}.png')
     assert page.locator('#g73-voice-runtime').count()==0
    else:
     expect(page.locator('.g73-audio-player')).to_have_count(1);assert page.locator('.g73-audio-player').evaluate('e=>e.previousElementSibling.classList.contains("g73-single-signature")');assert page.locator('.g73-sidebar').count()==0
-    assert page.locator('.g73-reaction-buttons button').count()==3;expect(page.locator('.g73-whatsapp-join')).to_be_disabled();assert page.locator('.g73-author').count()==1;assert page.locator('.g73-columnist-badge').count()==0
+    assert page.locator('.g73-reaction-buttons button').count()==3;assert page.locator('.g73-whatsapp-join[disabled]').count()==0;assert page.locator('.g73-author').count()==1;assert page.locator('.g73-columnist-badge').count()==0
     page.locator('.g73-single-signature').scroll_into_view_if_needed();page.screenshot(path=f'/tmp/g73-autoridade-validation/single-reading-{width}.png')
     if width==1440:
      page.emulate_media(media='print');assert page.locator('.g73-audio-player').is_hidden() and page.locator('.g73-partner-unit').first.is_hidden() and page.locator('.g73-reactions').is_hidden();expect(page.locator('.g73-print-header')).to_be_visible();expect(page.locator('.entry-content')).to_be_visible();page.pdf(path='/tmp/g73-autoridade-validation/artigo.pdf',format='A4',print_background=True,display_header_footer=False);page.emulate_media(media='screen')
    assert page.evaluate('document.documentElement.scrollWidth===innerWidth'),(width,name)
    page.evaluate('scrollTo(0,0)');page.screenshot(path=f'/tmp/g73-autoridade-validation/{name}-{width}.png',full_page=True)
- nojs=b.new_context(java_script_enabled=False,viewport={'width':1440,'height':1000});nojs.route('**/*',route);q=nojs.new_page();q.goto('https://giro73.com.br/',wait_until='networkidle');assert q.locator('.g73-opinion-card').count()==6 and q.locator('.g73-event-poster').count()==4 and q.locator('[data-g73-position] img').count()==4;nojs.close()
+ nojs=b.new_context(java_script_enabled=False,viewport={'width':1440,'height':1000});nojs.route('**/*',route);q=nojs.new_page();q.goto('https://giro73.com.br/',wait_until='networkidle');assert q.locator('.g73-opinion-card').count()==6 and q.locator('.g73-event-demo').count()==0 and q.locator('[data-g73-position] img').count()==4;nojs.close()
  assert not [e for e in errors if 'javascript'in e],errors;b.close()
-Path('/tmp/g73-autoridade-validation/live-result.json').write_text(json.dumps({'checks':result,'errors':errors},ensure_ascii=False,indent=2));print(json.dumps({'desktop_mobile':True,'six_personas':True,'four_event_models':True,'native_voice_controls':True,'clean_banners':True,'print_pdf':True,'nojs':True,'errors':errors},ensure_ascii=False))
+Path('/tmp/g73-autoridade-validation/live-result.json').write_text(json.dumps({'checks':result,'errors':errors},ensure_ascii=False,indent=2));print(json.dumps({'desktop_mobile':True,'six_columns':True,'no_public_event_models':True,'native_voice_controls':True,'clean_banners':True,'print_pdf':True,'nojs':True,'errors':errors},ensure_ascii=False))

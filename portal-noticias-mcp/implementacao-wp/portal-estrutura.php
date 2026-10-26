@@ -1,6 +1,16 @@
 <?php
 /** Giro73: cabeçalhos de arquivo, Schema e ads.txt nativos, sem assets externos. */
 if (!defined('ABSPATH')) { return; }
+// URL de cópia removida: encaminhar para a cobertura preservada do mesmo acontecimento.
+add_action('template_redirect', function () {
+    if (!is_404() || !in_array(isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET', array('GET', 'HEAD'), true)) { return; }
+    $path = wp_parse_url(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '', PHP_URL_PATH);
+    $redirects = array(
+        '/prefeito-marcelo-belitardo-acompanha-recuperacao-apos-vendaval-em-teixeira-de-freitas' => '/prefeito-de-teixeira-de-freitas-mobiliza-equipes-para-recuperacao-apos-vendaval/'
+    );
+    $path = is_string($path) ? rtrim($path, '/') : '';
+    if (isset($redirects[$path])) { wp_safe_redirect(home_url($redirects[$path]), 301, 'Giro73'); exit; }
+}, 1);
 if (!function_exists('g73_portal_archive_heading')) {
 function g73_portal_editorial_bio() {
     return 'Equipe de jornalismo do Giro73 focada na cobertura diária de Teixeira de Freitas, Extremo Sul da Bahia e notícias nacionais com impacto no bolso do cidadão.';
