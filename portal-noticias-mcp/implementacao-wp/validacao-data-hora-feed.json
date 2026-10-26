@@ -1,12 +1,12 @@
 {
-  "checked_at": "2026-10-26T18:34:26.836367-03:00",
+  "checked_at": "2026-10-26T18:39:21.812025-03:00",
   "snippet": 8,
   "active": true,
   "code_error": null,
-  "code_sha256": "dbaba112d0c35abf64c02c41786e70e487f4dbaa93a367e0dadf27f609c53697",
+  "code_sha256": "b7aefe2b624cf6462c3003e8ea34225beb7fd9a727e37d3ac81f288cb0d70d6f",
   "timezone": "America/Bahia",
   "date_source": "original publication, not modified",
-  "php_checks": 9,
+  "php_checks": 10,
   "javascript_checks": [
     "cached age",
     "invalid epoch",
@@ -20,13 +20,13 @@
       "date_rows": 10,
       "examples": [
         {
-          "text": "Há 35 minutos · 26/10/2026 às 17h58 — Em Política",
+          "text": "Há 40 minutos • 26/10/2026 — Em Política",
           "datetime": "2026-10-26T17:58:51-03:00",
           "epoch": 1793048331,
           "category_url": "https://giro73.com.br/category/politica/"
         },
         {
-          "text": "Há 5 horas · 26/10/2026 às 12h41 — Em Política",
+          "text": "Há 5 horas • 26/10/2026 — Em Política",
           "datetime": "2026-10-26T12:41:26-03:00",
           "epoch": 1793029286,
           "category_url": "https://giro73.com.br/category/politica/"
@@ -40,13 +40,13 @@
       "date_rows": 9,
       "examples": [
         {
-          "text": "Há 35 minutos · 26/10/2026 às 17h58 — Em Política",
+          "text": "Há 40 minutos • 26/10/2026 — Em Política",
           "datetime": "2026-10-26T17:58:51-03:00",
           "epoch": 1793048331,
           "category_url": "https://giro73.com.br/category/politica/"
         },
         {
-          "text": "Há 5 horas · 26/10/2026 às 12h41 — Em Política",
+          "text": "Há 5 horas • 26/10/2026 — Em Política",
           "datetime": "2026-10-26T12:41:26-03:00",
           "epoch": 1793029286,
           "category_url": "https://giro73.com.br/category/politica/"
@@ -60,13 +60,13 @@
       "date_rows": 10,
       "examples": [
         {
-          "text": "Há 22 minutos · 26/10/2026 às 18h11 — Em Notícias & Região",
+          "text": "Há 27 minutos • 26/10/2026 — Em Notícias & Região",
           "datetime": "2026-10-26T18:11:16-03:00",
           "epoch": 1793049076,
           "category_url": "https://giro73.com.br/category/noticias-regiao/"
         },
         {
-          "text": "Há 5 horas · 26/10/2026 às 12h40 — Em Notícias & Região",
+          "text": "Há 5 horas • 26/10/2026 — Em Notícias & Região",
           "datetime": "2026-10-26T12:40:34-03:00",
           "epoch": 1793029234,
           "category_url": "https://giro73.com.br/category/noticias-regiao/"
@@ -78,14 +78,14 @@
   "component_browser_checks": [
     {
       "viewport": 1180,
-      "text": "Há 5 horas\n· 26/10/2026 às 12h41\n— Em Política",
+      "text": "Há 5 horas\n• 26/10/2026\n— Em Política",
       "overflow": false,
       "timeTitle": "26/10/2026 às 12h41 — horário da Bahia",
       "ageWidth": 89.21875
     },
     {
       "viewport": 390,
-      "text": "Há 5 horas\n26/10/2026 às 12h41\n— Em Política",
+      "text": "Há 5 horas\n• 26/10/2026\n— Em Política",
       "overflow": false,
       "timeTitle": "26/10/2026 às 12h41 — horário da Bahia",
       "ageWidth": 89.21875
@@ -95,8 +95,37 @@
     "summary": "1 cleared, 2 skipped. See layers[] for each cache.",
     "changed": true,
     "dry_run": false,
-    "scope": "site",
-    "urls": [],
+    "scope": "urls",
+    "urls": [
+      {
+        "url": "https://giro73.com.br/",
+        "source": "url"
+      },
+      {
+        "url": "https://giro73.com.br/category/politica/",
+        "source": "url"
+      },
+      {
+        "url": "https://giro73.com.br/category/noticias-regiao/",
+        "source": "url"
+      },
+      {
+        "url": "https://giro73.com.br/category/dinheiro-renda-extra/",
+        "source": "url"
+      },
+      {
+        "url": "https://giro73.com.br/category/tecnologia-inovacao/",
+        "source": "url"
+      },
+      {
+        "url": "https://giro73.com.br/category/esportes/",
+        "source": "url"
+      },
+      {
+        "url": "https://giro73.com.br/category/famosos-entretenimento/",
+        "source": "url"
+      }
+    ],
     "layers": [
       {
         "id": "rank-math-sitemap",
@@ -120,18 +149,24 @@
         "kind": "page",
         "status": "cleared",
         "applies": "after_response",
-        "detail": "LiteSpeed Cache cleared this site's page cache."
+        "detail": "LiteSpeed Cache cleared 7 page(s)."
       }
     ],
     "not_covered": [],
     "verify": {
       "urls": [
-        "https://giro73.com.br/"
+        "https://giro73.com.br/",
+        "https://giro73.com.br/category/politica/",
+        "https://giro73.com.br/category/noticias-regiao/",
+        "https://giro73.com.br/category/dinheiro-renda-extra/",
+        "https://giro73.com.br/category/tecnologia-inovacao/"
       ],
       "after_seconds": 5,
       "how": "Fetch each URL exactly as written, with no added query string (a query string bypasses or changes the cache key), and check that the change is in the HTML."
     }
   },
   "post_dates_changed": false,
-  "live_templates_replaced": false
+  "live_templates_replaced": false,
+  "visible_format": "Há 1 hora • 26/10/2026 — Em Política",
+  "exact_time_in_title": true
 }

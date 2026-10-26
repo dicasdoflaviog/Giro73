@@ -27,6 +27,7 @@ $parsed = array('attrs' => array('className' => 'extra g73-news-date'));
 $instance = (object) array('context' => array('postId' => 409));
 $html = g73_portal_feed_date('original', $parsed, $instance);
 check(str_contains($html, '26/10/2026 às 12h41') && str_contains($html, '2026-10-26T12:41:00-03:00'), 'Horário exato da Bahia, com offset');
+check(str_contains($html, 'aria-hidden="true">• </span>26/10/2026</span>'), 'Data compacta visível e hora exata no título');
 check($GLOBALS['time_request'] === array('U', true, 409), 'Publicação do post no Query Loop, sem usar atualização ou outro post global');
 check(str_contains($html, '— Em <a href="https://giro73.com.br/category/18/">Política</a>'), 'Editoria principal atribuída');
 check(g73_portal_feed_date('original', array('attrs' => array('className' => 'g73-news-date-extra')), $instance) === 'original', 'Outros blocos preservados');

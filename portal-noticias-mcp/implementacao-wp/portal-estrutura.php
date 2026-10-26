@@ -187,7 +187,7 @@ function g73_portal_feed_date($html, $parsed, $instance = null) {
     $GLOBALS['g73_feed_date_needed'] = true;
     $out = '<div class="wp-block-post-date g73-news-date"><time class="g73-relative-time" datetime="' . esc_attr($iso)
         . '" data-g73-published="' . $published . '" title="' . esc_attr($absolute . ' — horário da Bahia') . '">'
-        . esc_html(g73_portal_feed_age($published, time())) . '</time><span class="g73-absolute-date"><span class="g73-date-divider" aria-hidden="true">· </span>' . esc_html($absolute) . '</span>';
+        . esc_html(g73_portal_feed_age($published, time())) . '</time><span class="g73-absolute-date"><span class="g73-date-divider" aria-hidden="true">• </span>' . esc_html(wp_date('d/m/Y', $published, $zone)) . '</span>';
     if ($term) {
         $url = get_category_link($term->term_id);
         if (!is_wp_error($url)) { $out .= '<span class="g73-feed-section">— Em <a href="' . esc_url($url) . '">' . esc_html(wp_specialchars_decode($term->name, ENT_QUOTES)) . '</a></span>'; }
@@ -196,7 +196,7 @@ function g73_portal_feed_date($html, $parsed, $instance = null) {
 }
 add_filter('render_block_core/post-date', 'g73_portal_feed_date', 20, 3);
 add_action('wp_head', function () {
-    echo '<style id="g73-feed-date-style">.g73-portal .g73-news-date{color:#666;display:flex;flex-wrap:wrap;align-items:baseline;column-gap:6px}.g73-news-date .g73-relative-time{display:inline-block;flex:0 0 13ch;width:13ch;white-space:nowrap}.g73-news-date .g73-absolute-date{white-space:nowrap}.g73-portal .g73-news-date a{color:inherit;text-decoration:none}.g73-news-date a:hover{text-decoration:underline}@media(max-width:48rem){.g73-news-date .g73-feed-section{order:1;flex:1;min-width:0}.g73-news-date .g73-absolute-date{order:2;flex-basis:100%}.g73-news-date .g73-date-divider{display:none}}</style>';
+    echo '<style id="g73-feed-date-style">.g73-portal .g73-news-date{color:#666;display:flex;flex-wrap:wrap;align-items:baseline;column-gap:6px}.g73-news-date .g73-relative-time{display:inline-block;flex:0 0 13ch;width:13ch;white-space:nowrap}.g73-news-date .g73-absolute-date{white-space:nowrap}.g73-portal .g73-news-date a{color:inherit;text-decoration:none}.g73-news-date a:hover{text-decoration:underline}.g73-news-date .g73-feed-section{font-weight:600}</style>';
 }, 100);
 add_action('wp_footer', function () {
     if (empty($GLOBALS['g73_feed_date_needed'])) { return; }
