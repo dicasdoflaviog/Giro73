@@ -339,6 +339,16 @@ bash /root/expandir-fontes-oficiais.sh "$RSS_REF" \
 
 As fontes já existentes serão preservadas. Se a rotina anterior ainda estiver em execução, aguarde sua conclusão antes de atualizar: o lock impede a substituição durante a coleta ou descoberta.
 
+O retorno posterior da VPS confirmou que o tratamento de redirecionamento passou a alcançar os caminhos de Itapebi em HTTPS, que responderam 404/403 ou foram rejeitados por DTD. A configuração terminou com 17 fontes, uma adicionada naquele lote (Câmara de Belmonte, RSS vazio). Não há RSS confirmado para as três fontes pendentes: Prefeitura de Belmonte, Prefeitura de Itapebi e Câmara de Itapebi. O erro DTD isoladamente não prova HTML nem inexistência de feed: pode ser HTML de fallback ou XML com declaração de tipo rejeitada pela política do leitor.
+
+Para identificar o canal de notícias dessas três fontes, `diagnosticar_fontes_html.py` consulta a página inicial e, quando encontrado, no máximo um link de notícias da mesma origem por site. Registra título, gerador, RSS declarado, datas e pequenas amostras em JSON. Não executa JavaScript, não carrega `.env`, não chama IA/WordPress e não altera configuração, fila ou cron. A inspeção ainda não implementa um adaptador HTML de notícias nem cadastra automaticamente as URLs encontradas. Rodar na VPS com o Python existente após baixar o script para `/root`:
+
+```bash
+/opt/giro73-rss/.venv/bin/python /root/diagnosticar_fontes_html.py
+```
+
+O resultado é impresso e salvo com permissão 0600 em `/root/g73-diagnostico-fontes-html.json`. É possível restringir com `--site prefeitura-itapebi`. As fontes já cadastradas continuam usando o fluxo existente; não relaxar a validação XML para fazer um site HTML parecer um RSS.
+
 A consulta de `/feed/` aos 38 endereços neste ambiente foi impedida pelo proxy (`Tunnel connection failed: 403 Forbidden`), não por um status HTTP verificado dos servidores municipais. A confirmação final precisa ser feita na VPS; nenhuma dessas 38 URLs foi declarada como RSS confirmado na entrega.
 
 Se o cron estiver instalado exatamente como no exemplo, roda de hora em hora com o limite padrão de **cinco candidatos totais**, em rodízio persistente entre fontes. `--limit 10` permite até dez candidatos totais por execução, sem alterar a coleta das 50 entradas iniciais de cada feed. Um candidato pode ser antigo, duplicado, insuficiente, bloqueado ou adiado; o número real de posts pode ser menor. A instalação do cron e a versão efetivamente em uso na VPS não foram inspecionadas por SSH nesta etapa.
