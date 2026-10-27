@@ -1,0 +1,145 @@
+{
+  "checked_at_utc": "2026-10-27T14:07:50.127975+00:00",
+  "period": {
+    "start_date": "2026-09-29",
+    "end_date": "2026-10-26"
+  },
+  "site_url": "https://giro73.com.br/",
+  "performance": {
+    "gsc-google-news": {
+      "rows": [
+        {
+          "clicks": 0,
+          "impressions": 0,
+          "ctr": 0
+        }
+      ],
+      "responseAggregationType": "byPage",
+      "row_count": 1
+    },
+    "gsc-search-news": {
+      "rows": [
+        {
+          "clicks": 0,
+          "impressions": 0,
+          "ctr": 0,
+          "position": 0
+        }
+      ],
+      "responseAggregationType": "byProperty",
+      "row_count": 1
+    },
+    "gsc-discover": {
+      "rows": [
+        {
+          "clicks": 0,
+          "impressions": 0,
+          "ctr": 0
+        }
+      ],
+      "responseAggregationType": "byPage",
+      "row_count": 1
+    }
+  },
+  "rank_math_news_sitemap_enabled": false,
+  "public_checks": [
+    {
+      "url": "https://giro73.com.br/feed/",
+      "http": 200,
+      "content_type": "application/rss+xml; charset=UTF-8",
+      "x_robots_tag": null,
+      "rss_items": 10
+    },
+    {
+      "url": "https://giro73.com.br/news-sitemap.xml",
+      "http": 404,
+      "content_type": "text/html; charset=UTF-8",
+      "x_robots_tag": null
+    },
+    {
+      "url": "https://giro73.com.br/prefeitura-de-itabela-decreta-luto-oficial-de-tres-dias-pela-morte-de-dona-didi/",
+      "http": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "x_robots_tag": null,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "canonical": [
+        "https://giro73.com.br/prefeitura-de-itabela-decreta-luto-oficial-de-tres-dias-pela-morte-de-dona-didi/"
+      ],
+      "article_schema": [
+        {
+          "@type": "NewsArticle",
+          "headline": "Prefeitura de Itabela decreta luto oficial de três dias pela morte de Dona Didi",
+          "datePublished": "2026-10-27T13:07:23+00:00",
+          "dateModified": "2026-10-27T13:07:24+00:00",
+          "author": {
+            "@type": "Person",
+            "@id": "https://giro73.com.br/author/elder-mendonca-jr/",
+            "name": "Elder Mendonça Jr.",
+            "url": "https://giro73.com.br/author/elder-mendonca-jr/"
+          },
+          "publisher": {
+            "@id": "https://giro73.com.br/#organization"
+          },
+          "image": {
+            "@type": "ImageObject",
+            "url": "https://giro73.com.br/wp-content/uploads/2026/10/g73-feed-eccfb1b8-65a8-4c87-8c03-dc54dc3a1e64.jpg",
+            "width": "800",
+            "height": "533"
+          }
+        }
+      ]
+    }
+  ],
+  "publisher_center_account_status_accessible": false,
+  "registration_service_and_status_pending_user_reply": true,
+  "no_rejection_inferred_from_zero_traffic": true,
+  "sitemap_submission": [
+    {
+      "path": "https://giro73.com.br/sitemap_index.xml",
+      "lastSubmitted": "2026-10-21T23:59:24.226Z",
+      "lastDownloaded": "2026-10-27T09:56:50.018Z",
+      "errors": "0",
+      "warnings": "0"
+    }
+  ],
+  "editorial_review_examples": [
+    {
+      "id": 497,
+      "reference_url": "https://itabela.ba.gov.br/noticias/105/prefeitura-de-itabela-decreta-luto-oficial-de-tres-dias-pelo-falecimento-de-dona-didi-23-08-2026",
+      "body_mentions_event_date": "2026-08-22",
+      "original_source_page_read": false
+    },
+    {
+      "id": 489,
+      "reference_url": "https://itabela.ba.gov.br/noticias/107/prefeitura-de-itabela-realiza-4-etapa-da-copa-brasil-de-supercross-com-r-35-mil-em-premiacao-01-09-2026",
+      "body_announces_september_12_13_in_future": true,
+      "original_source_page_read": false
+    }
+  ],
+  "official_documentation_fetches": [
+    {
+      "name": "publisher-changes",
+      "url": "https://support.google.com/news/publisher-center/answer/14859160?hl=en",
+      "error": "URLError",
+      "reason": "Tunnel connection failed: 403 Forbidden"
+    },
+    {
+      "name": "news-sitemap",
+      "url": "https://developers.google.com/search/docs/crawling-indexing/sitemaps/news-sitemap?hl=pt-br",
+      "error": "URLError",
+      "reason": "Tunnel connection failed: 403 Forbidden"
+    },
+    {
+      "name": "news-policies",
+      "url": "https://support.google.com/news/publisher-center/answer/6204050?hl=en",
+      "error": "URLError",
+      "reason": "Tunnel connection failed: 403 Forbidden"
+    }
+  ],
+  "paid_search_queries": 0,
+  "wordpress_changed": false,
+  "publisher_center_changed": false,
+  "content_changed": false
+}
