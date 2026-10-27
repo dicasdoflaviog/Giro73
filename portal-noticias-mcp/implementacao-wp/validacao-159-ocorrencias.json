@@ -211,5 +211,201 @@
   "wordpress_changed": false,
   "firewall_changed": false,
   "paid_keyword_queries": 0,
-  "latest_crawl_error_urls_pending": true
+  "latest_crawl_error_urls_pending": false,
+  "latest_crawl_individual_codes_pending": true,
+  "provided_urls_checked": [
+    "https://giro73.com.br/copa-brasil-de-supercross-em-itabela-velocidade-e-emocao-na-4a-etapa-com-r-35-mil-em-premiacao/",
+    "https://giro73.com.br/itabela-brilha-na-estreia-da-copa-condesc-e-vence-itagimirim-por-3-a-2-no-manzolao/",
+    "https://giro73.com.br/sobre-nos/"
+  ],
+  "provided_url_http_checks": [
+    {
+      "url": "https://giro73.com.br/itabela-brilha-na-estreia-da-copa-condesc-e-vence-itagimirim-por-3-a-2-no-manzolao/",
+      "method": "GET",
+      "ua": "browser",
+      "http": 200,
+      "final_url": "https://giro73.com.br/itabela-brilha-na-estreia-da-copa-condesc-e-vence-itagimirim-por-3-a-2-no-manzolao/",
+      "x_robots_tag": null,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ]
+    },
+    {
+      "url": "https://giro73.com.br/itabela-brilha-na-estreia-da-copa-condesc-e-vence-itagimirim-por-3-a-2-no-manzolao/",
+      "method": "GET",
+      "ua": "sebot",
+      "http": 200,
+      "final_url": "https://giro73.com.br/itabela-brilha-na-estreia-da-copa-condesc-e-vence-itagimirim-por-3-a-2-no-manzolao/",
+      "x_robots_tag": null,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ]
+    },
+    {
+      "url": "https://giro73.com.br/itabela-brilha-na-estreia-da-copa-condesc-e-vence-itagimirim-por-3-a-2-no-manzolao/",
+      "method": "GET",
+      "ua": "googlebot_ua",
+      "http": 200,
+      "final_url": "https://giro73.com.br/itabela-brilha-na-estreia-da-copa-condesc-e-vence-itagimirim-por-3-a-2-no-manzolao/",
+      "x_robots_tag": null,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ]
+    },
+    {
+      "url": "https://giro73.com.br/itabela-brilha-na-estreia-da-copa-condesc-e-vence-itagimirim-por-3-a-2-no-manzolao/",
+      "method": "HEAD",
+      "ua": "browser",
+      "http": 200,
+      "final_url": "https://giro73.com.br/itabela-brilha-na-estreia-da-copa-condesc-e-vence-itagimirim-por-3-a-2-no-manzolao/",
+      "x_robots_tag": null
+    },
+    {
+      "url": "https://giro73.com.br/itabela-brilha-na-estreia-da-copa-condesc-e-vence-itagimirim-por-3-a-2-no-manzolao/",
+      "method": "HEAD",
+      "ua": "sebot",
+      "http": 200,
+      "final_url": "https://giro73.com.br/itabela-brilha-na-estreia-da-copa-condesc-e-vence-itagimirim-por-3-a-2-no-manzolao/",
+      "x_robots_tag": null
+    },
+    {
+      "url": "https://giro73.com.br/itabela-brilha-na-estreia-da-copa-condesc-e-vence-itagimirim-por-3-a-2-no-manzolao/",
+      "method": "HEAD",
+      "ua": "googlebot_ua",
+      "http": 200,
+      "final_url": "https://giro73.com.br/itabela-brilha-na-estreia-da-copa-condesc-e-vence-itagimirim-por-3-a-2-no-manzolao/",
+      "x_robots_tag": null
+    },
+    {
+      "url": "https://giro73.com.br/copa-brasil-de-supercross-em-itabela-velocidade-e-emocao-na-4a-etapa-com-r-35-mil-em-premiacao/",
+      "method": "GET",
+      "ua": "browser",
+      "http": 200,
+      "final_url": "https://giro73.com.br/copa-brasil-de-supercross-em-itabela-velocidade-e-emocao-na-4a-etapa-com-r-35-mil-em-premiacao/",
+      "x_robots_tag": null,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ]
+    },
+    {
+      "url": "https://giro73.com.br/copa-brasil-de-supercross-em-itabela-velocidade-e-emocao-na-4a-etapa-com-r-35-mil-em-premiacao/",
+      "method": "GET",
+      "ua": "sebot",
+      "http": 200,
+      "final_url": "https://giro73.com.br/copa-brasil-de-supercross-em-itabela-velocidade-e-emocao-na-4a-etapa-com-r-35-mil-em-premiacao/",
+      "x_robots_tag": null,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ]
+    },
+    {
+      "url": "https://giro73.com.br/copa-brasil-de-supercross-em-itabela-velocidade-e-emocao-na-4a-etapa-com-r-35-mil-em-premiacao/",
+      "method": "GET",
+      "ua": "googlebot_ua",
+      "http": 200,
+      "final_url": "https://giro73.com.br/copa-brasil-de-supercross-em-itabela-velocidade-e-emocao-na-4a-etapa-com-r-35-mil-em-premiacao/",
+      "x_robots_tag": null,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ]
+    },
+    {
+      "url": "https://giro73.com.br/copa-brasil-de-supercross-em-itabela-velocidade-e-emocao-na-4a-etapa-com-r-35-mil-em-premiacao/",
+      "method": "HEAD",
+      "ua": "browser",
+      "http": 200,
+      "final_url": "https://giro73.com.br/copa-brasil-de-supercross-em-itabela-velocidade-e-emocao-na-4a-etapa-com-r-35-mil-em-premiacao/",
+      "x_robots_tag": null
+    },
+    {
+      "url": "https://giro73.com.br/copa-brasil-de-supercross-em-itabela-velocidade-e-emocao-na-4a-etapa-com-r-35-mil-em-premiacao/",
+      "method": "HEAD",
+      "ua": "sebot",
+      "http": 200,
+      "final_url": "https://giro73.com.br/copa-brasil-de-supercross-em-itabela-velocidade-e-emocao-na-4a-etapa-com-r-35-mil-em-premiacao/",
+      "x_robots_tag": null
+    },
+    {
+      "url": "https://giro73.com.br/copa-brasil-de-supercross-em-itabela-velocidade-e-emocao-na-4a-etapa-com-r-35-mil-em-premiacao/",
+      "method": "HEAD",
+      "ua": "googlebot_ua",
+      "http": 200,
+      "final_url": "https://giro73.com.br/copa-brasil-de-supercross-em-itabela-velocidade-e-emocao-na-4a-etapa-com-r-35-mil-em-premiacao/",
+      "x_robots_tag": null
+    },
+    {
+      "url": "https://giro73.com.br/sobre-nos/",
+      "method": "GET",
+      "ua": "browser",
+      "http": 200,
+      "final_url": "https://giro73.com.br/sobre-nos/",
+      "x_robots_tag": null,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ]
+    },
+    {
+      "url": "https://giro73.com.br/sobre-nos/",
+      "method": "GET",
+      "ua": "sebot",
+      "http": 200,
+      "final_url": "https://giro73.com.br/sobre-nos/",
+      "x_robots_tag": null,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ]
+    },
+    {
+      "url": "https://giro73.com.br/sobre-nos/",
+      "method": "GET",
+      "ua": "googlebot_ua",
+      "http": 200,
+      "final_url": "https://giro73.com.br/sobre-nos/",
+      "x_robots_tag": null,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ]
+    },
+    {
+      "url": "https://giro73.com.br/sobre-nos/",
+      "method": "HEAD",
+      "ua": "browser",
+      "http": 200,
+      "final_url": "https://giro73.com.br/sobre-nos/",
+      "x_robots_tag": null
+    },
+    {
+      "url": "https://giro73.com.br/sobre-nos/",
+      "method": "HEAD",
+      "ua": "sebot",
+      "http": 200,
+      "final_url": "https://giro73.com.br/sobre-nos/",
+      "x_robots_tag": null
+    },
+    {
+      "url": "https://giro73.com.br/sobre-nos/",
+      "method": "HEAD",
+      "ua": "googlebot_ua",
+      "http": 200,
+      "final_url": "https://giro73.com.br/sobre-nos/",
+      "x_robots_tag": null
+    }
+  ],
+  "gsc_sobre": {
+    "verdict": "PASS",
+    "coverageState": "Enviada e indexada",
+    "robotsTxtState": "ALLOWED",
+    "indexingState": "INDEXING_ALLOWED",
+    "lastCrawlTime": "2026-10-23T05:23:43Z",
+    "pageFetchState": "SUCCESSFUL",
+    "googleCanonical": "https://giro73.com.br/sobre-nos/"
+  },
+  "gsc_condesc": {
+    "verdict": "NEUTRAL",
+    "coverageState": "O Google não reconhece o URL",
+    "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+    "indexingState": "INDEXING_STATE_UNSPECIFIED",
+    "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED"
+  },
+  "support_request_sent": false
 }

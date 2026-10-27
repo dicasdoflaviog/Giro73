@@ -35,7 +35,17 @@ Logo, não há base para declarar que todo o portal esteja fora do Google, mas t
 
 ## Próximo diagnóstico necessário
 
-Foi solicitado ao responsável que forneça duas URLs e códigos da aba **Crawled Pages** da execução nova de 13:45. O resumo só mostra 4xx; não se presumiu que todos os códigos desta coleta sejam 403 como na captura anterior.
+O responsável forneceu três URLs da execução nova: a matéria Itabela/Itagimirim (Copa CONDESC), a matéria de Supercross e Sobre Nós. Os códigos individuais exibidos nessa nova coleta não foram copiados; o resumo só mostra 4xx, portanto não se presumiu que todos sejam 403 como na captura anterior.
+
+As três URLs foram testadas por GET/HEAD e pelas três identificações de User-Agent, com **18 respostas HTTP 200**, separadas das primeiras 18 verificações. No Search Console, Sobre Nós aparece como “Enviada e indexada”, com último crawl de 23/10/2026 às 05:23 UTC; a matéria da Copa CONDESC aparece como URL desconhecida, sem crawl ou causa informada. Não foi inspecionada a indexação do Supercross no Google. Esses dados não confirmam acesso dos IPs reais dos robôs no instante da auditoria.
+
+Com essa evidência e o retorno da Hostinger relatando acessos SEBot-WA bem-sucedidos, o próximo diagnóstico útil é solicitar ao SE Ranking os dados das requisições que originaram os erros. Não repetir indefinidamente purgas ou exclusões de conteúdo sem uma causa reproduzida. Texto de solicitação para o responsável encaminhar, não enviado por este agente:
+
+> A auditoria de giro73.com.br em 27/10/2026 às 13:45:26 (fuso a confirmar) aponta 52 respostas HTTP 4xx. As URLs abaixo respondem 200 em testes externos por GET e HEAD, inclusive com User-Agent SEBot-WA. A Hostinger relata acessos do rastreador bem-sucedidos e não localizou 403 correspondente. Precisamos do código exato, horário/fuso, IP de saída, URL final e resposta recebida (cabeçalhos e conteúdo ou identificação de requisição) para correlacionar com os logs e localizar a camada da divergência.
+
+- `https://giro73.com.br/itabela-brilha-na-estreia-da-copa-condesc-e-vence-itagimirim-por-3-a-2-no-manzolao/`
+- `https://giro73.com.br/copa-brasil-de-supercross-em-itabela-velocidade-e-emocao-na-4a-etapa-com-r-35-mil-em-premiacao/`
+- `https://giro73.com.br/sobre-nos/`
 
 Se forem 403, obter do SE Ranking URL, horário/fuso, IP de saída e resposta recebida (cabeçalhos/conteúdo ou identificação da requisição) e cruzar com a hospedagem. A verificação trazida pelo responsável informa acessos SEBot-WA bem-sucedidos e nenhum 403 identificado no WAF/origem da Hostinger; a divergência precisa ser localizada, não resolvida por novas liberações indiscriminadas ou exclusão de páginas legítimas.
 
