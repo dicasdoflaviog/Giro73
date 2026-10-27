@@ -1,0 +1,215 @@
+{
+  "checked_at_utc": "2026-10-27T13:51:52.077279+00:00",
+  "report_screenshot": {
+    "displayed_time": "2026-10-27 13:45:26",
+    "timezone_unknown": true,
+    "health_score": 83,
+    "pages": 53,
+    "http4xx_pages": 52,
+    "errors": 159,
+    "warnings": 1,
+    "rule_counts": {
+      "http4xx": 52,
+      "sitemap_http4xx": 52,
+      "sitemap_noindex": 52,
+      "js_http_error": 1,
+      "css_http_error": 1,
+      "no_inbound_links": 1
+    },
+    "overlap_of_52_url_sets_not_individually_verified": true
+  },
+  "direct_http_checks": [
+    {
+      "url": "https://giro73.com.br/",
+      "method": "GET",
+      "ua": "browser",
+      "http": 200,
+      "final_url": "https://giro73.com.br/",
+      "x_robots_tag": null,
+      "robots": [
+        "index, follow"
+      ]
+    },
+    {
+      "url": "https://giro73.com.br/",
+      "method": "GET",
+      "ua": "sebot",
+      "http": 200,
+      "final_url": "https://giro73.com.br/",
+      "x_robots_tag": null,
+      "robots": [
+        "index, follow"
+      ]
+    },
+    {
+      "url": "https://giro73.com.br/",
+      "method": "GET",
+      "ua": "googlebot_ua",
+      "http": 200,
+      "final_url": "https://giro73.com.br/",
+      "x_robots_tag": null,
+      "robots": [
+        "index, follow"
+      ]
+    },
+    {
+      "url": "https://giro73.com.br/",
+      "method": "HEAD",
+      "ua": "browser",
+      "http": 200,
+      "final_url": "https://giro73.com.br/",
+      "x_robots_tag": null
+    },
+    {
+      "url": "https://giro73.com.br/",
+      "method": "HEAD",
+      "ua": "sebot",
+      "http": 200,
+      "final_url": "https://giro73.com.br/",
+      "x_robots_tag": null
+    },
+    {
+      "url": "https://giro73.com.br/",
+      "method": "HEAD",
+      "ua": "googlebot_ua",
+      "http": 200,
+      "final_url": "https://giro73.com.br/",
+      "x_robots_tag": null
+    },
+    {
+      "url": "https://giro73.com.br/category/noticias-regiao/",
+      "method": "GET",
+      "ua": "browser",
+      "http": 200,
+      "final_url": "https://giro73.com.br/category/noticias-regiao/",
+      "x_robots_tag": null,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ]
+    },
+    {
+      "url": "https://giro73.com.br/category/noticias-regiao/",
+      "method": "GET",
+      "ua": "sebot",
+      "http": 200,
+      "final_url": "https://giro73.com.br/category/noticias-regiao/",
+      "x_robots_tag": null,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ]
+    },
+    {
+      "url": "https://giro73.com.br/category/noticias-regiao/",
+      "method": "GET",
+      "ua": "googlebot_ua",
+      "http": 200,
+      "final_url": "https://giro73.com.br/category/noticias-regiao/",
+      "x_robots_tag": null,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ]
+    },
+    {
+      "url": "https://giro73.com.br/category/noticias-regiao/",
+      "method": "HEAD",
+      "ua": "browser",
+      "http": 200,
+      "final_url": "https://giro73.com.br/category/noticias-regiao/",
+      "x_robots_tag": null
+    },
+    {
+      "url": "https://giro73.com.br/category/noticias-regiao/",
+      "method": "HEAD",
+      "ua": "sebot",
+      "http": 200,
+      "final_url": "https://giro73.com.br/category/noticias-regiao/",
+      "x_robots_tag": null
+    },
+    {
+      "url": "https://giro73.com.br/category/noticias-regiao/",
+      "method": "HEAD",
+      "ua": "googlebot_ua",
+      "http": 200,
+      "final_url": "https://giro73.com.br/category/noticias-regiao/",
+      "x_robots_tag": null
+    },
+    {
+      "url": "https://giro73.com.br/politica-editorial/",
+      "method": "GET",
+      "ua": "browser",
+      "http": 200,
+      "final_url": "https://giro73.com.br/politica-editorial/",
+      "x_robots_tag": null,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ]
+    },
+    {
+      "url": "https://giro73.com.br/politica-editorial/",
+      "method": "GET",
+      "ua": "sebot",
+      "http": 200,
+      "final_url": "https://giro73.com.br/politica-editorial/",
+      "x_robots_tag": null,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ]
+    },
+    {
+      "url": "https://giro73.com.br/politica-editorial/",
+      "method": "GET",
+      "ua": "googlebot_ua",
+      "http": 200,
+      "final_url": "https://giro73.com.br/politica-editorial/",
+      "x_robots_tag": null,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ]
+    },
+    {
+      "url": "https://giro73.com.br/politica-editorial/",
+      "method": "HEAD",
+      "ua": "browser",
+      "http": 200,
+      "final_url": "https://giro73.com.br/politica-editorial/",
+      "x_robots_tag": null
+    },
+    {
+      "url": "https://giro73.com.br/politica-editorial/",
+      "method": "HEAD",
+      "ua": "sebot",
+      "http": 200,
+      "final_url": "https://giro73.com.br/politica-editorial/",
+      "x_robots_tag": null
+    },
+    {
+      "url": "https://giro73.com.br/politica-editorial/",
+      "method": "HEAD",
+      "ua": "googlebot_ua",
+      "http": 200,
+      "final_url": "https://giro73.com.br/politica-editorial/",
+      "x_robots_tag": null
+    }
+  ],
+  "real_crawler_source_ips_tested": false,
+  "gsc_category_regiao": {
+    "verdict": "PASS",
+    "coverageState": "Enviada e indexada",
+    "robotsTxtState": "ALLOWED",
+    "indexingState": "INDEXING_ALLOWED",
+    "lastCrawlTime": "2026-10-23T00:35:22Z",
+    "pageFetchState": "SUCCESSFUL",
+    "googleCanonical": "https://giro73.com.br/category/noticias-regiao/"
+  },
+  "gsc_fies": {
+    "verdict": "NEUTRAL",
+    "coverageState": "O Google não reconhece o URL",
+    "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+    "indexingState": "INDEXING_STATE_UNSPECIFIED",
+    "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED"
+  },
+  "wordpress_changed": false,
+  "firewall_changed": false,
+  "paid_keyword_queries": 0,
+  "latest_crawl_error_urls_pending": true
+}
