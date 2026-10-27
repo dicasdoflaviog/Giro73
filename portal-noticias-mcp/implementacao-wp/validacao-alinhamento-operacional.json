@@ -1,0 +1,1239 @@
+{
+  "checked_at_utc": "2026-10-27T11:47:51.606207+00:00",
+  "site_changed": false,
+  "paid_seo_queries": 0,
+  "wordpress": {
+    "status_counts": {
+      "publish": 38,
+      "draft": 4
+    },
+    "category_counts": [
+      {
+        "id": 10,
+        "name": "Dinheiro &amp; Renda Extra",
+        "count": 4
+      },
+      {
+        "id": 12,
+        "name": "Esportes",
+        "count": 5
+      },
+      {
+        "id": 13,
+        "name": "Famosos &amp; Entretenimento",
+        "count": 1
+      },
+      {
+        "id": 1,
+        "name": "Notícias &amp; Região",
+        "count": 18
+      },
+      {
+        "id": 18,
+        "name": "Política",
+        "count": 9
+      },
+      {
+        "id": 11,
+        "name": "Tecnologia &amp; Inovação",
+        "count": 1
+      }
+    ],
+    "published_pages": [
+      {
+        "id": 234,
+        "slug": "agenda-73"
+      },
+      {
+        "id": 3,
+        "slug": "politica-de-privacidade"
+      },
+      {
+        "id": 11,
+        "slug": "contato"
+      },
+      {
+        "id": 10,
+        "slug": "termos-de-uso"
+      },
+      {
+        "id": 8,
+        "slug": "politica-editorial"
+      },
+      {
+        "id": 7,
+        "slug": "sobre-nos"
+      }
+    ],
+    "seo_fields_filled": {
+      "rank_math_focus_keyword": 38,
+      "rank_math_title": 38,
+      "rank_math_description": 38
+    },
+    "missing_featured_media": [
+      435
+    ]
+  },
+  "public_posts": [
+    {
+      "id": 489,
+      "url": "https://giro73.com.br/copa-brasil-de-supercross-em-itabela-velocidade-e-emocao-na-4a-etapa-com-r-35-mil-em-premiacao/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 488
+    },
+    {
+      "id": 491,
+      "url": "https://giro73.com.br/nota-de-esclarecimento-sobre-pregao-eletronico-no-007-2026-em-itabela/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 490
+    },
+    {
+      "id": 487,
+      "url": "https://giro73.com.br/defesa-civil-de-itabela-participa-de-capacitacao-sobre-mapeamento-de-areas-de-risco-geologico/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 486
+    },
+    {
+      "id": 485,
+      "url": "https://giro73.com.br/prefeitura-de-itabela-avanca-na-regularizacao-de-325-imoveis-no-bairro-pereirao/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 484
+    },
+    {
+      "id": 481,
+      "url": "https://giro73.com.br/conta-digital-pj-como-escolher/",
+      "http": 200,
+      "robots": [
+        "follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 96
+    },
+    {
+      "id": 479,
+      "url": "https://giro73.com.br/lamine-yamal-e-vicky-lopez-vencem-trofeu-kopa-2026/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 478
+    },
+    {
+      "id": 441,
+      "url": "https://giro73.com.br/itabela-brilha-na-estreia-da-copa-condesc-e-vence-itagimirim-por-3-a-2-no-manzolao/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 440
+    },
+    {
+      "id": 439,
+      "url": "https://giro73.com.br/pauta-da-reuniao-ordinaria-de-27-de-outubro-de-2026-em-teixeira-de-freitas/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 438
+    },
+    {
+      "id": 433,
+      "url": "https://giro73.com.br/prefeitura-de-itabela-garante-322-titulos-de-propriedade-para-familias-do-bairro-pereirao/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 432
+    },
+    {
+      "id": 435,
+      "url": "https://giro73.com.br/camara-municipal-de-itabela-transparencia-e-acesso-a-informacao/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 0,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 0
+    },
+    {
+      "id": 409,
+      "url": "https://giro73.com.br/eleitora-da-espanha-chega-tarde-e-perde-chance-de-votar-na-bahia/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 408
+    },
+    {
+      "id": 414,
+      "url": "https://giro73.com.br/prefeito-de-teixeira-de-freitas-mobiliza-equipes-para-recuperacao-apos-vendaval/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 413
+    },
+    {
+      "id": 411,
+      "url": "https://giro73.com.br/inscricoes-para-vagas-remanescentes-do-fies-estao-abertas/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 410
+    },
+    {
+      "id": 381,
+      "url": "https://giro73.com.br/missao-empresarial-leva-empresarios-da-costa-das-baleias-para-imersao-em-turismo-de-experiencia-no-ceara/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 380
+    },
+    {
+      "id": 377,
+      "url": "https://giro73.com.br/prefeitura-de-teixeira-de-freitas-realiza-acao-do-outubro-rosa-no-cras-vila-vargas/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 376
+    },
+    {
+      "id": 372,
+      "url": "https://giro73.com.br/itabela-e-representada-no-2o-encontro-nacional-das-defesas-civis-municipais-e-debate-impactos-do-el-nino-2026-2027/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 371
+    },
+    {
+      "id": 370,
+      "url": "https://giro73.com.br/saude-fortalecida-ubs-de-cumuruxatiba-e-reinaugurada-com-estrutura-moderna/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 369
+    },
+    {
+      "id": 340,
+      "url": "https://giro73.com.br/obras-da-nova-ponte-sobre-o-rio-jucurucu-avancam-em-ritmo-acelerado/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 339
+    },
+    {
+      "id": 335,
+      "url": "https://giro73.com.br/audiencia-publica-de-avaliacao-das-metas-fiscais-em-prado-compromisso-com-a-transparencia/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 334
+    },
+    {
+      "id": 333,
+      "url": "https://giro73.com.br/camara-municipal-de-teixeira-de-freitas-importancia-da-cultura-e-alteracoes-administrativas/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 332
+    },
+    {
+      "id": 345,
+      "url": "https://giro73.com.br/escolha-da-educacao-guarani-vai-receber-uma-das-maiores-e-mais-modernas-escolas-da-regiao/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 344
+    },
+    {
+      "id": 351,
+      "url": "https://giro73.com.br/prefeitura-de-itabela-decreta-luto-oficial-de-tres-dias-pela-morte-de-lourival/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 350
+    },
+    {
+      "id": 289,
+      "url": "https://giro73.com.br/prado-realiza-audiencia-publica-de-prestacao-de-contas-do-2o-quadrimestre-de-2026/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 288
+    },
+    {
+      "id": 290,
+      "url": "https://giro73.com.br/camara-municipal-de-prado-aprova-criacao-da-secretaria-municipal-de-politicas-de-promocao-da-igualdade-racial/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 328
+    },
+    {
+      "id": 306,
+      "url": "https://giro73.com.br/atencao-horario-de-funcionamento-da-camara-de-teixeira-de-freitas/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 305
+    },
+    {
+      "id": 308,
+      "url": "https://giro73.com.br/macrodrenagem-em-prado-avancos-e-impactos-na-comunidade/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 307
+    },
+    {
+      "id": 317,
+      "url": "https://giro73.com.br/oficiais-da-87a-cipm-concluem-curso-de-aph-tatico-ministrado-pela-forca-nacional-em-teixeira-de-freitas/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 316
+    },
+    {
+      "id": 319,
+      "url": "https://giro73.com.br/crianca-de-4-anos-morre-apos-cair-em-cisterna-em-teixeira-de-freitas/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 318
+    },
+    {
+      "id": 217,
+      "url": "https://giro73.com.br/jogos-bahia-vitoria-conferir-tabela-oficial/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 99
+    },
+    {
+      "id": 216,
+      "url": "https://giro73.com.br/registrato-consultar-emprestimos-cpf/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 96
+    },
+    {
+      "id": 215,
+      "url": "https://giro73.com.br/br-101-extremo-sul-bahia-checar-viagem/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 195
+    },
+    {
+      "id": 214,
+      "url": "https://giro73.com.br/transferencias-emendas-municipios-extremo-sul-bahia/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "NewsArticle"
+      ],
+      "featured_media": 193
+    },
+    {
+      "id": 213,
+      "url": "https://giro73.com.br/chas-remedios-cuidados-produtos-naturais/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "OpinionNewsArticle"
+      ],
+      "featured_media": 194
+    },
+    {
+      "id": 212,
+      "url": "https://giro73.com.br/streaming-comparar-planos-assinatura-vitalicia/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "OpinionNewsArticle"
+      ],
+      "featured_media": 98
+    },
+    {
+      "id": 211,
+      "url": "https://giro73.com.br/ba-vi-torcedor-tabela-ingressos-seguranca/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "OpinionNewsArticle"
+      ],
+      "featured_media": 99
+    },
+    {
+      "id": 210,
+      "url": "https://giro73.com.br/conta-invadida-primeiros-passos-seguranca/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "OpinionNewsArticle"
+      ],
+      "featured_media": 97
+    },
+    {
+      "id": 209,
+      "url": "https://giro73.com.br/orcamento-municipal-documentos-prioridades-prefeitura/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "OpinionNewsArticle"
+      ],
+      "featured_media": 193
+    },
+    {
+      "id": 208,
+      "url": "https://giro73.com.br/renda-extra-calcular-ganho-real/",
+      "http": 200,
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": "",
+      "noindex": false,
+      "canonical_ok": true,
+      "h1": 1,
+      "og": {
+        "og:title": 1,
+        "og:description": 1,
+        "og:image": 1,
+        "og:url": 1
+      },
+      "schema_types": [
+        "Organization",
+        "WebSite",
+        "ImageObject",
+        "WebPage",
+        "Person",
+        "OpinionNewsArticle"
+      ],
+      "featured_media": 96
+    }
+  ],
+  "sitemaps_and_robots": {
+    "http_statuses": {
+      "sitemap_index.xml": 200,
+      "post-sitemap.xml": 200,
+      "page-sitemap.xml": 200,
+      "category-sitemap.xml": 200,
+      "robots.txt": 200
+    },
+    "published_posts_in_post_sitemap": 38,
+    "missing_posts": [],
+    "robots": "User-agent: *\nDisallow: /wp-admin/\nAllow: /wp-admin/admin-ajax.php\n\nSitemap: https://giro73.com.br/sitemap_index.xml\n"
+  },
+  "publisher": {
+    "enabled": true,
+    "default_status": "publish",
+    "token_configured": true,
+    "image_policy": "public_urls_no_allowlist"
+  },
+  "publisher_log_sample": {
+    "rows": 100,
+    "http_counts": {
+      "201": 56,
+      "422": 38,
+      "400": 5,
+      "200": 1
+    },
+    "result_counts": {
+      "created": 56,
+      "g73_image_dimensions": 3,
+      "g73_image_editor": 3,
+      "g73_image_download": 2,
+      "g73_image_host": 30,
+      "g73_invalid_title": 1,
+      "g73_category_invalid": 4,
+      "replayed": 1
+    },
+    "last_error_utc": "2026-10-25T19:12:59+00:00",
+    "latest_four": [
+      {
+        "time": "2026-10-27T09:00:43+00:00",
+        "post_id": 491,
+        "http": 201,
+        "result": "created",
+        "duration_ms": 3347
+      },
+      {
+        "time": "2026-10-27T06:01:05+00:00",
+        "post_id": 489,
+        "http": 201,
+        "result": "created",
+        "duration_ms": 4313
+      },
+      {
+        "time": "2026-10-27T03:00:54+00:00",
+        "post_id": 487,
+        "http": 201,
+        "result": "created",
+        "duration_ms": 4417
+      },
+      {
+        "time": "2026-10-27T00:00:54+00:00",
+        "post_id": 485,
+        "http": 201,
+        "result": "created",
+        "duration_ms": 3408
+      }
+    ],
+    "limitations": "Creation log does not identify RSS/Telegram sender or publication status; bounded 100-row history is not uptime."
+  },
+  "gsc": {
+    "period": {
+      "start": "2026-09-29",
+      "end": "2026-10-26"
+    },
+    "web_totals": {
+      "clicks": 0,
+      "impressions": 4,
+      "ctr": 0,
+      "position": 19.25
+    },
+    "home": {
+      "verdict": "PASS",
+      "coverageState": "Enviada e indexada",
+      "robotsTxtState": "ALLOWED",
+      "indexingState": "INDEXING_ALLOWED",
+      "lastCrawlTime": "2026-10-22T13:09:31Z",
+      "pageFetchState": "SUCCESSFUL",
+      "googleCanonical": "https://giro73.com.br/",
+      "userCanonical": "https://giro73.com.br/"
+    },
+    "conta_pj": {
+      "verdict": "NEUTRAL",
+      "coverageState": "O Google não reconhece o URL",
+      "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+      "indexingState": "INDEXING_STATE_UNSPECIFIED",
+      "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED"
+    },
+    "sitemaps": [
+      {
+        "path": "https://giro73.com.br/sitemap_index.xml",
+        "lastDownloaded": "2026-10-27T09:56:50.018Z",
+        "warnings": "0",
+        "errors": "0"
+      }
+    ]
+  },
+  "ga4": {
+    "property_id": "560739453",
+    "hostname": "giro73.com.br",
+    "period": {
+      "start": "2026-09-29",
+      "end": "2026-10-26"
+    },
+    "totals": {
+      "sessions": 7,
+      "activeUsers": 4,
+      "screenPageViews": 11
+    },
+    "timezone": "America/Bahia"
+  },
+  "vps": {
+    "actual_cron_confirmed": false,
+    "actual_source_policies_confirmed": false,
+    "daily_rss_average_confirmed": false,
+    "repository_cron": "0 * * * *",
+    "repository_default_limit": 5,
+    "inferred_creation_cadence_hours": 3,
+    "inference_is_not_scheduler_proof": true
+  },
+  "editorial_note": {
+    "post_id": 485,
+    "source_url": "https://itabela.ba.gov.br/noticias/109/prefeitura-de-itabela-avanca-na-regularizacao-de-325-imoveis-no-bairro-pereirao-09-09-2026",
+    "url_date_is_not_independent_fact_verification": true,
+    "review_required": true
+  }
+}
