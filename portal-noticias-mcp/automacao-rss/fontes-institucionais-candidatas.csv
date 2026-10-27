@@ -31,9 +31,9 @@ Jucuruçu;jucurucu;Prefeitura;https://jucurucu.ba.gov.br/;noticias-regiao;draft;
 Jucuruçu;jucurucu;Câmara;https://camarajucurucu.ba.gov.br/;politica;draft;Pendente de validação na VPS
 Santa Cruz Cabrália;santa-cruz-cabralia;Prefeitura;https://pmscc.ba.gov.br/;noticias-regiao;draft;Pendente de validação na VPS
 Santa Cruz Cabrália;santa-cruz-cabralia;Câmara;https://cmcabralia.ba.gov.br/;politica;draft;Pendente de validação na VPS
-Belmonte;belmonte;Prefeitura;https://belmonte.ba.gov.br/;noticias-regiao;draft;Pendente de validação na VPS
-Belmonte;belmonte;Câmara;https://camarabelmonte.ba.gov.br/;politica;draft;Pendente de validação na VPS
-Itapebi;itapebi;Prefeitura;https://itapebi.ba.gov.br/;noticias-regiao;draft;Pendente de validação na VPS
-Itapebi;itapebi;Câmara;https://camaraitapebi.ba.gov.br/;politica;draft;Pendente de validação na VPS
+Belmonte;belmonte;Prefeitura;https://belmonte.ba.gov.br/;noticias-regiao;draft;"RSS não validado; HTML com links de junho/2026 e anteriores na amostra de 27/10/2026"
+Belmonte;belmonte;Câmara;https://camarabelmonte.ba.gov.br/;politica;draft;"RSS validado na VPS em 27/10/2026; zero entradas no teste"
+Itapebi;itapebi;Prefeitura;https://itapebi.ba.gov.br/;noticias-regiao;draft;"RSS não validado; listagem HTML sem notícias no diagnóstico de 27/10/2026"
+Itapebi;itapebi;Câmara;https://camaraitapebi.ba.gov.br/;politica;draft;"RSS não validado; amostra HTML com links de 2020/2018 em 27/10/2026"
 Guaratinga;guaratinga;Prefeitura;https://guaratinga.ba.gov.br/;noticias-regiao;draft;Pendente de validação na VPS
 Guaratinga;guaratinga;Câmara;https://camaraguaratinga.ba.gov.br/;politica;draft;Pendente de validação na VPS
