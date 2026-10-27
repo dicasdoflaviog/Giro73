@@ -7,6 +7,7 @@ Python 3.10+ em Ubuntu 22.04/24.04 ou posterior compatível. Não depende do bot
 - `coletor_rss.py`: programa completo.
 - `configurar_fontes_rss.py`: inclusão em lote das fontes selecionadas e descoberta de RSS de Portal TX/Vem Vê TX Bahia, executada na VPS.
 - `configurar_publicacao_rss.py`: aplica a seleção aprovada de fontes automáticas, sem buscar feeds nem criar matérias.
+- `expandir-fontes-oficiais.sh`: instala a expansão de fontes municipais e verifica RSS, com backup e sem gerar textos ou criar posts.
 - `requirements-rss.txt`: requests, feedparser, BeautifulSoup, Pillow e python-dotenv; SQLite já faz parte do Python.
 - `rss_fontes.example.json`: configuração por fonte, sem inventar feeds autorizados.
 - `giro73-rss.env.example`: exemplo sem credenciais reais.
@@ -283,6 +284,51 @@ As consultas a esses três XMLs foram bloqueadas pela rede deste ambiente com t�
 - Payload gerado é imutável até confirmação, exceto pela retirada da imagem após 422 de imagem confirmado. Itens preparados podem ser enviados mesmo se a API OpenRouter estiver temporariamente indisponível.
 - Credenciais somente no ambiente; logs não incluem corpo da notícia, resposta bruta, URLs de provedores ou chaves. O banco e o ambiente têm permissões restritas.
 - `--limit 1` a `--limit 10` controla candidatos processados; padrão 5. Nem todo candidato vira rascunho, pois fontes insuficientes são ignoradas/bloqueadas.
+
+### Expansão de prefeituras e câmaras — 27/10/2026
+
+A lista de hosts do PHP não cadastra RSS. O motor WordPress atual informa `image_policy: public_urls_no_allowlist`: imagens públicas não dependem dessa whitelist. Não substituir o Snippet 12 por uma lista de domínios para cadastrar fontes.
+
+O configurador passou a incluir **38 endereços candidatos de 19 municípios**, conforme indicação do administrador, por meio de `--only-government`. O limite da configuração subiu de 20 para **100 fontes**; os tetos de cinco candidatos por execução e dez com `--limit 10` foram preservados. A descoberta examina até 50 entradas de cada feed, sujeitas a data, conteúdo mínimo e deduplicação; isso não significa 50 artigos publicados por fonte.
+
+As novas Prefeituras entram em `noticias-regiao` e as novas Câmaras em `politica`, com `publication_mode: draft`. Não há classificação automática do assunto de cada release: o editor pode ajustar a categoria na revisão. As regras e IDs das fontes já cadastradas são preservados. As novas fontes incluem `city`, `city_slug`, `site_url` e `source_type` para identificação na configuração; isso ainda não cria uma taxonomia de cidades nem um filtro novo no WordPress.
+
+Atualização e descoberta na VPS, como root, substituindo `REF` pelo commit informado na entrega:
+
+```bash
+RSS_REF='REF'
+curl --fail --location --retry 3 --max-time 60 \
+  "https://raw.githubusercontent.com/dicasdoflaviog/Giro73/${RSS_REF}/portal-noticias-mcp/automacao-rss/expandir-fontes-oficiais.sh" \
+  --output /root/expandir-fontes-oficiais.sh && \
+bash -n /root/expandir-fontes-oficiais.sh && \
+bash /root/expandir-fontes-oficiais.sh "$RSS_REF"
+```
+
+O instalador baixa somente `coletor_rss.py` e `configurar_fontes_rss.py`, valida sintaxe/importações, usa o lock da coleta e salva os arquivos antigos/configuração em `/root/giro73-fontes-backup.*`. Não modifica `.env`, cron, banco de vistos ou política das fontes existentes. Enquanto verifica, impede que uma coleta leia uma configuração em transição. Não chama OpenRouter nem o endpoint WordPress. O cron existente poderá usar os novos feeds válidos na execução seguinte.
+
+Para fazer lotes menores, acrescente os municípios ao comando do instalador:
+
+```bash
+bash /root/expandir-fontes-oficiais.sh "$RSS_REF" \
+  --city porto-seguro --city eunapolis --city itamaraju
+```
+
+Para novos lotes ou repetir a descoberta depois de instalar, sem baixar arquivos novamente:
+
+```bash
+/opt/giro73-rss/.venv/bin/python -B /opt/giro73-rss/configurar_fontes_rss.py \
+  --only-government --city alcobaca --city caravelas --city nova-vicosa --timeout 20
+```
+
+`--city` pode ser repetido; sem ele são verificadas todas as 19 cidades. O timeout é **por site**, padrão de 20 segundos no instalador. Uma verificação completa com sites indisponíveis pode levar vários minutos; isso ocorre no terminal da VPS, não em uma requisição PHP. A ajuda do configurador lista todos os slugs aceitos.
+
+`RSS VALIDADO` confirma o XML lido, não a elegibilidade de seus itens, os direitos de textos/fotos ou a apuração do release. `JÁ CADASTRADA` preserva o registro existente, sem revalidar seu RSS nem mudar sua política. `EXIGEM REVISÃO` identifica sites sem RSS validado nessa tentativa; não são cadastrados como se fossem feeds funcionais. Se um site não oferecer RSS, será necessário localizar outro canal oficial ou criar um adaptador próprio de HTML, fora desta expansão.
+
+Códigos de saída: 0 para verificação sem pendências, 1 para resultado parcial (fontes válidas salvas, outras pendentes), 2 para falha de configuração/instalação. Não desabilitar TLS nem aceitar HTML como se fosse XML para contornar esses resultados.
+
+A consulta de `/feed/` aos 38 endereços neste ambiente foi impedida pelo proxy (`Tunnel connection failed: 403 Forbidden`), não por um status HTTP verificado dos servidores municipais. A confirmação final precisa ser feita na VPS; nenhuma dessas 38 URLs foi declarada como RSS confirmado na entrega.
+
+Se o cron estiver instalado exatamente como no exemplo, roda de hora em hora com o limite padrão de **cinco candidatos totais**, em rodízio persistente entre fontes. `--limit 10` permite até dez candidatos totais por execução, sem alterar a coleta das 50 entradas iniciais de cada feed. Um candidato pode ser antigo, duplicado, insuficiente, bloqueado ou adiado; o número real de posts pode ser menor. A instalação do cron e a versão efetivamente em uso na VPS não foram inspecionadas por SSH nesta etapa.
 - O código prepara matérias; não cadastra eventos no CPT da Agenda.
 
 Códigos de saída: 0 para execução concluída/sem novidades/lock já ocupado; 1 para indisponibilidade parcial ou itens bloqueados/adiados; 2 para configuração ou interrupção que exige atenção. Código 124 é do `timeout` externo; a fila já persistida será reutilizada depois.

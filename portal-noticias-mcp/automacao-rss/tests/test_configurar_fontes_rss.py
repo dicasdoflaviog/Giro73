@@ -129,6 +129,54 @@ class ConfigureTests(unittest.TestCase):
         self.assertEqual(self.run_config(client, config.FONTES), 0)
         self.assertEqual(len(json.loads(self.path.read_text())["feeds"]), 15)
 
+    def test_government_registry_contains_requested_cities_and_roles(self):
+        definitions = config.government_definitions()
+        self.assertEqual(len(config.MUNICIPIOS), 19)
+        self.assertEqual(len(definitions), 38)
+        self.assertEqual(len({x[2] for x in definitions}), 38)
+        selected = config.government_definitions(["porto-seguro", "eunapolis"])
+        self.assertEqual(len(selected), 4)
+        self.assertEqual([x[1] for x in selected],
+                         ["noticias-regiao", "politica", "noticias-regiao", "politica"])
+
+    def test_adds_more_than_twenty_valid_feeds_in_draft_and_preserves_old_policy(self):
+        self.original["feeds"][0]["publication_mode"] = "auto"
+        self.path.write_text(json.dumps(self.original))
+        definitions = config.government_definitions()
+        client = Client(feeds={address+"feed/": [1] for _, _, address, _ in definitions})
+        self.assertEqual(self.run_config(client, definitions), 0)
+        result = json.loads(self.path.read_text())["feeds"]
+        self.assertEqual(len(result), 39)
+        self.assertEqual(result[0], self.original["feeds"][0])
+        for source in result[1:]:
+            self.assertEqual(source["publication_mode"], "draft")
+            self.assertTrue(source["city"])
+            self.assertEqual(source["category"],
+                             "politica" if source["source_type"] == "camara" else "noticias-regiao")
+
+    def test_redirected_government_feed_is_not_added_again(self):
+        definitions = config.government_definitions(["prado"])[:1]
+        client = Client(feeds={"https://noticias.prado.ba.gov.br/feed/": [1]},
+                        pages={"https://prado.ba.gov.br/": Response(
+                            '<link type="application/rss+xml" href="https://noticias.prado.ba.gov.br/feed/">')})
+        self.assertEqual(self.run_config(client, definitions), 0)
+        client.calls.clear()
+        self.assertEqual(self.run_config(client, definitions), 0)
+        self.assertEqual(client.calls, [])
+        self.assertEqual(len(json.loads(self.path.read_text())["feeds"]), 2)
+
+    def test_capacity_does_not_silently_drop_an_existing_source(self):
+        sources=[]
+        for i in range(config.MAX_SOURCES-1):
+            sources.append(dict(self.original["feeds"][0],id=f"existing_{i}",url=f"https://example.org/feed/{i}"))
+        self.path.write_text(json.dumps({"feeds":sources}))
+        definitions=config.government_definitions(["porto-seguro"])
+        client=Client(feeds={address+"feed/": [1] for _,_,address,_ in definitions})
+        self.assertEqual(self.run_config(client,definitions),1)
+        result=json.loads(self.path.read_text())["feeds"]
+        self.assertEqual(len(result),config.MAX_SOURCES)
+        self.assertEqual(result[:config.MAX_SOURCES-1],sources)
+
     def test_declared_comment_feed_is_ignored(self):
         parser = config.FeedLinks()
         parser.feed('<link type="application/rss+xml" href="/comments/feed/">'

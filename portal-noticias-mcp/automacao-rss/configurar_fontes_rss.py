@@ -24,7 +24,7 @@ from datetime import datetime
 from urllib.parse import urljoin, urlsplit
 
 sys.path.insert(0, "/opt/giro73-rss")
-from coletor_rss import Client, ConfigError, canonical_url, load_sources, plain, public_feed_host
+from coletor_rss import Client, ConfigError, MAX_SOURCES, canonical_url, load_sources, plain, public_feed_host
 
 # Nome, categoria, endereço informado, procurar feed no site.
 FONTES = [
@@ -50,6 +50,53 @@ CONVERTIDAS = [
     ("Regional via PolitePaul 2", "noticias-regiao", "https://politepaul.com/fd/Fqe4CqOn1xIz.xml", False),
     ("Regional via PolitePaul 3", "noticias-regiao", "https://politepaul.com/fd/PjntToq6bO88.xml", False),
 ]
+
+# Endereços indicados pelo administrador: candidatos, não RSS confirmados.
+# Cidade, slug estável, Prefeitura, Câmara.
+MUNICIPIOS = [
+    ("Teixeira de Freitas", "teixeira-de-freitas", "teixeiradefreitas.ba.gov.br", "camaratf.ba.gov.br"),
+    ("Prado", "prado", "prado.ba.gov.br", "camaraprado.ba.gov.br"),
+    ("Itabela", "itabela", "itabela.ba.gov.br", "camaraitabela.ba.gov.br"),
+    ("Porto Seguro", "porto-seguro", "portoseguro.ba.gov.br", "cmportoseguro.ba.gov.br"),
+    ("Eunápolis", "eunapolis", "eunapolis.ba.gov.br", "cmeunapolis.ba.gov.br"),
+    ("Itamaraju", "itamaraju", "itamaraju.ba.gov.br", "camaraitamaraju.ba.gov.br"),
+    ("Alcobaça", "alcobaca", "alcobaca.ba.gov.br", "camaraalcobaca.ba.gov.br"),
+    ("Caravelas", "caravelas", "caravelas.ba.gov.br", "camaracaravelas.ba.gov.br"),
+    ("Nova Viçosa", "nova-vicosa", "novavicosa.ba.gov.br", "camaranovavicosa.ba.gov.br"),
+    ("Mucuri", "mucuri", "mucuri.ba.gov.br", "camaramucuri.ba.gov.br"),
+    ("Medeiros Neto", "medeiros-neto", "medeirosneto.ba.gov.br", "camaramedeirosneto.ba.gov.br"),
+    ("Ibirapuã", "ibirapua", "ibirapua.ba.gov.br", "camaraibirapua.ba.gov.br"),
+    ("Lajedão", "lajedao", "lajedao.ba.gov.br", "camaralajedao.ba.gov.br"),
+    ("Vereda", "vereda", "vereda.ba.gov.br", "camaravereda.ba.gov.br"),
+    ("Jucuruçu", "jucurucu", "jucurucu.ba.gov.br", "camarajucurucu.ba.gov.br"),
+    ("Santa Cruz Cabrália", "santa-cruz-cabralia", "pmscc.ba.gov.br", "cmcabralia.ba.gov.br"),
+    ("Belmonte", "belmonte", "belmonte.ba.gov.br", "camarabelmonte.ba.gov.br"),
+    ("Itapebi", "itapebi", "itapebi.ba.gov.br", "camaraitapebi.ba.gov.br"),
+    ("Guaratinga", "guaratinga", "guaratinga.ba.gov.br", "camaraguaratinga.ba.gov.br"),
+]
+
+
+def government_definitions(cities=None):
+    """Preserva editorias: prefeitura em Região, câmara em Política, revisão manual."""
+    selected = set(cities or [])
+    definitions = []
+    for city, slug, prefeitura, camara in MUNICIPIOS:
+        if selected and slug not in selected:
+            continue
+        definitions.extend([
+            ("Prefeitura de "+city, "noticias-regiao", "https://"+prefeitura+"/", True),
+            ("Câmara de "+city, "politica", "https://"+camara+"/", True),
+        ])
+    return definitions
+
+
+def government_metadata(address):
+    for city, slug, prefeitura, camara in MUNICIPIOS:
+        host = host_key(address)
+        if host in {prefeitura, camara}:
+            return {"city": city, "city_slug": slug, "site_url": address,
+                    "source_type": "prefeitura" if host == prefeitura else "camara"}
+    return {}
 
 
 def announce(*parts):
@@ -133,7 +180,7 @@ def discover_candidates(client, site):
         announce("  Descoberta no HTML indisponível:", type(error).__name__)
     for base in dict.fromkeys([site, current]):
         candidates.extend(urljoin(base, path) for path in (
-            "rss.php", "rss", "feed", "feed.xml", "rss2.xml",
+            "feed/", "?feed=rss2", "rss.php", "rss", "feed", "feed.xml", "rss2.xml",
             "index.php?format=feed&type=rss",
             "feed/", "?feed=rss2", "rss/", "rss.xml", "?format=feed&type=rss"
         ))
@@ -171,13 +218,14 @@ def configure(path, client, definitions=FONTES, seconds=60):
     for name, category, address, discover in definitions:
         existing = next((feed for feed in feeds if
             url_key(feed.get("url", "")) == url_key(address) or
-            (discover and host_key(feed.get("url", "")) == host_key(address))), None)
+            (discover and (host_key(feed.get("url", "")) == host_key(address) or
+                           host_key(feed.get("site_url", "")) == host_key(address)))), None)
         if existing is not None:
             announce("JÁ CADASTRADA:", name, "|", existing["url"],
                      "| habilitada:", existing.get("authorized") is True)
             continue
-        if len(feeds) >= 20:
-            announce("NÃO ADICIONADA:", name, "| limite de 20 fontes.")
+        if len(feeds) >= MAX_SOURCES:
+            announce("NÃO ADICIONADA:", name, "| limite de", MAX_SOURCES, "fontes.")
             failures.append(name)
             continue
         announce("VERIFICANDO:", name)
@@ -212,12 +260,15 @@ def configure(path, client, definitions=FONTES, seconds=60):
             if any(feed.get("id") == source_id for feed in feeds):
                 announce("  ID já utilizado; exige revisão manual.")
                 break
-            feeds.append({
+            source = {
                 "id": source_id, "name": publisher, "url": candidate,
                 "category": category, "authorized": True,
                 "use_full_content": False, "allow_undated": False,
                 "max_age_hours": 72,
-            })
+                "publication_mode": "draft",
+            }
+            source.update(government_metadata(address))
+            feeds.append(source)
             added += 1
             found = True
             announce("  RSS VALIDADO:", candidate, "| entradas:", len(entries))
@@ -246,12 +297,19 @@ def main():
                            help="Verifica apenas Portal TX e Vem Vê TX Bahia.")
     selection.add_argument("--only-converted", action="store_true",
                            help="Verifica apenas os três XMLs informados via PolitePaul.")
+    selection.add_argument("--only-government", action="store_true",
+                           help="Descobre RSS das prefeituras e câmaras indicadas; novas fontes ficam em draft.")
+    parser.add_argument("--city", action="append", choices=[x[1] for x in MUNICIPIOS],
+                        help="Com --only-government, verifica somente esta cidade; pode repetir.")
     args = parser.parse_args()
+    if args.city and not args.only_government:
+        parser.error("--city exige --only-government.")
     os.umask(0o077)
     client = Client("", "", "rss-check", "https://giro73.com.br/wp-json/g73/v1/publish",
                     time.monotonic()+args.timeout, attempts=1)
     try:
-        definitions = (CONVERTIDAS if args.only_converted else
+        definitions = (government_definitions(args.city) if args.only_government else
+                       CONVERTIDAS if args.only_converted else
                        [source for source in FONTES if source[3]] if args.only_local else FONTES+CONVERTIDAS)
         return configure(args.config, client, definitions=definitions, seconds=args.timeout)
     except json.JSONDecodeError as error:

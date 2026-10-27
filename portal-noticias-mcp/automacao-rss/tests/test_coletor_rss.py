@@ -209,6 +209,17 @@ class CollectorTest(unittest.TestCase):
         f = Path(self.temp.name)/'feeds.json';f.write_text(json.dumps({'feeds': [{'authorized': False}]}))
         with self.assertRaises(m.ConfigError):m.load_sources(f)
 
+    def test_config_aceita_cem_fontes_e_rejeita_excesso(self):
+        f = Path(self.temp.name)/'many-feeds.json'
+        def source(i):
+            return {'id':f'fonte_{i}', 'url':f'https://example.org/feed/{i}',
+                    'category':'noticias-regiao', 'authorized':True}
+        feeds=[source(i) for i in range(m.MAX_SOURCES)]
+        f.write_text(json.dumps({'feeds':feeds}))
+        self.assertEqual(len(m.load_sources(f)),m.MAX_SOURCES)
+        f.write_text(json.dumps({'feeds':feeds+[source(m.MAX_SOURCES)]}))
+        with self.assertRaisesRegex(m.ConfigError,'100 fontes'):m.load_sources(f)
+
     def prepare_image_item(self, url='https://fonte.example/noticia', guid='imagem-1'):
         self.store.discover(self.source, entry(url, guid))
         key = self.store.db.execute('SELECT id FROM items WHERE article=?', (url,)).fetchone()[0]

@@ -34,6 +34,7 @@ import requests
 LOG = logging.getLogger("giro73.rss")
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 DEFAULT_AI_MODEL = "openai/gpt-4o-mini"
+MAX_SOURCES = 100
 DEFAULT_ENV_FILE = Path("/opt/giro73-rss/.env")
 LEGACY_ENV_FILE = Path("/etc/giro73-rss.env")
 CATEGORIES = {"noticias-regiao", "politica", "dinheiro-renda-extra",
@@ -820,8 +821,8 @@ def publication_decision(source, entry, generated, payload, image=None):
 def load_sources(path: Path):
     data = json.loads(path.read_text(encoding="utf-8"))
     feeds = data.get("feeds") if isinstance(data, dict) else None
-    if not isinstance(feeds, list) or not 1 <= len(feeds) <= 20:
-        raise ConfigError("Configure de 1 a 20 fontes em feeds.")
+    if not isinstance(feeds, list) or not 1 <= len(feeds) <= MAX_SOURCES:
+        raise ConfigError(f"Configure de 1 a {MAX_SOURCES} fontes em feeds.")
     approved, ids = [], set()
     for f in feeds:
         if not isinstance(f, dict):
