@@ -1,0 +1,373 @@
+{
+  "checked_at_utc": "2026-10-27T11:59:41.289456+00:00",
+  "wordpress_changed": false,
+  "se_ranking_project_changed": false,
+  "crawl_report_time_as_screenshot": "2026-10-26 17:04:04",
+  "crawl_timezone_not_confirmed": true,
+  "host_and_ua_checks": [
+    {
+      "url": "https://giro73.com.br/",
+      "ua": "browser",
+      "status": 200,
+      "final": "https://giro73.com.br/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://giro73.com.br/",
+      "ua": "audit_ua",
+      "status": 200,
+      "final": "https://giro73.com.br/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://giro73.com.br/sitemap_index.xml",
+      "ua": "browser",
+      "status": 200,
+      "final": "https://giro73.com.br/sitemap_index.xml",
+      "chain": [],
+      "canonical": [],
+      "robots": [],
+      "x_robots_tag": "noindex",
+      "server": "envoy",
+      "cache": null
+    },
+    {
+      "url": "https://giro73.com.br/sitemap_index.xml",
+      "ua": "audit_ua",
+      "status": 200,
+      "final": "https://giro73.com.br/sitemap_index.xml",
+      "chain": [],
+      "canonical": [],
+      "robots": [],
+      "x_robots_tag": "noindex",
+      "server": "envoy",
+      "cache": null
+    },
+    {
+      "url": "https://giro73.com.br/conta-digital-pj-como-escolher/",
+      "ua": "browser",
+      "status": 200,
+      "final": "https://giro73.com.br/conta-digital-pj-como-escolher/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/conta-digital-pj-como-escolher/"
+      ],
+      "robots": [
+        "follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://giro73.com.br/conta-digital-pj-como-escolher/",
+      "ua": "audit_ua",
+      "status": 200,
+      "final": "https://giro73.com.br/conta-digital-pj-como-escolher/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/conta-digital-pj-como-escolher/"
+      ],
+      "robots": [
+        "follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://www.giro73.com.br/",
+      "ua": "browser",
+      "status": 200,
+      "final": "https://giro73.com.br/",
+      "chain": [
+        {
+          "status": 301,
+          "from": "https://www.giro73.com.br/",
+          "to": "https://giro73.com.br/"
+        }
+      ],
+      "canonical": [
+        "https://giro73.com.br/"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://www.giro73.com.br/",
+      "ua": "audit_ua",
+      "status": 200,
+      "final": "https://giro73.com.br/",
+      "chain": [
+        {
+          "status": 301,
+          "from": "https://www.giro73.com.br/",
+          "to": "https://giro73.com.br/"
+        }
+      ],
+      "canonical": [
+        "https://giro73.com.br/"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "hit"
+    },
+    {
+      "url": "https://www.giro73.com.br/sitemap_index.xml",
+      "ua": "browser",
+      "status": 200,
+      "final": "https://www.giro73.com.br/sitemap_index.xml",
+      "chain": [],
+      "canonical": [],
+      "robots": [],
+      "x_robots_tag": "noindex",
+      "server": "envoy",
+      "cache": null
+    },
+    {
+      "url": "https://www.giro73.com.br/sitemap_index.xml",
+      "ua": "audit_ua",
+      "status": 200,
+      "final": "https://www.giro73.com.br/sitemap_index.xml",
+      "chain": [],
+      "canonical": [],
+      "robots": [],
+      "x_robots_tag": "noindex",
+      "server": "envoy",
+      "cache": null
+    },
+    {
+      "url": "https://www.giro73.com.br/conta-digital-pj-como-escolher/",
+      "ua": "browser",
+      "status": 200,
+      "final": "https://giro73.com.br/conta-digital-pj-como-escolher/",
+      "chain": [
+        {
+          "status": 301,
+          "from": "https://www.giro73.com.br/conta-digital-pj-como-escolher/",
+          "to": "https://giro73.com.br/conta-digital-pj-como-escolher/"
+        }
+      ],
+      "canonical": [
+        "https://giro73.com.br/conta-digital-pj-como-escolher/"
+      ],
+      "robots": [
+        "follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "hit"
+    },
+    {
+      "url": "https://www.giro73.com.br/conta-digital-pj-como-escolher/",
+      "ua": "audit_ua",
+      "status": 200,
+      "final": "https://giro73.com.br/conta-digital-pj-como-escolher/",
+      "chain": [
+        {
+          "status": 301,
+          "from": "https://www.giro73.com.br/conta-digital-pj-como-escolher/",
+          "to": "https://giro73.com.br/conta-digital-pj-como-escolher/"
+        }
+      ],
+      "canonical": [
+        "https://giro73.com.br/conta-digital-pj-como-escolher/"
+      ],
+      "robots": [
+        "follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "hit"
+    }
+  ],
+  "assets": {
+    "pages": [
+      {
+        "url": "https://giro73.com.br/",
+        "assets_referenced": 11
+      },
+      {
+        "url": "https://giro73.com.br/conta-digital-pj-como-escolher/",
+        "assets_referenced": 11
+      }
+    ],
+    "owned_asset_urls": 9,
+    "checks": [
+      {
+        "url": "https://giro73.com.br/wp-content/themes/hostinger-ai-theme/assets/css/style.min.css?ver=2.1.14",
+        "type": "css",
+        "ua": "browser",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-content/themes/hostinger-ai-theme/assets/css/style.min.css?ver=2.1.14",
+        "content_type": "text/css"
+      },
+      {
+        "url": "https://giro73.com.br/wp-content/themes/hostinger-ai-theme/assets/css/style.min.css?ver=2.1.14",
+        "type": "css",
+        "ua": "audit_ua",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-content/themes/hostinger-ai-theme/assets/css/style.min.css?ver=2.1.14",
+        "content_type": "text/css"
+      },
+      {
+        "url": "https://giro73.com.br/wp-includes/js/jquery/jquery.min.js?ver=3.7.1",
+        "type": "js",
+        "ua": "browser",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-includes/js/jquery/jquery.min.js?ver=3.7.1",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-includes/js/jquery/jquery.min.js?ver=3.7.1",
+        "type": "js",
+        "ua": "audit_ua",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-includes/js/jquery/jquery.min.js?ver=3.7.1",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1",
+        "type": "js",
+        "ua": "browser",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1",
+        "type": "js",
+        "ua": "audit_ua",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-content/plugins/google-site-kit/dist/assets/js/sign-in-with-google-5a9e012872c712a23a12.js",
+        "type": "js",
+        "ua": "browser",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-content/plugins/google-site-kit/dist/assets/js/sign-in-with-google-5a9e012872c712a23a12.js",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-content/plugins/google-site-kit/dist/assets/js/sign-in-with-google-5a9e012872c712a23a12.js",
+        "type": "js",
+        "ua": "audit_ua",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-content/plugins/google-site-kit/dist/assets/js/sign-in-with-google-5a9e012872c712a23a12.js",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-includes/js/dist/hooks.min.js?ver=f0f188028580e8dc1255",
+        "type": "js",
+        "ua": "browser",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-includes/js/dist/hooks.min.js?ver=f0f188028580e8dc1255",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-includes/js/dist/hooks.min.js?ver=f0f188028580e8dc1255",
+        "type": "js",
+        "ua": "audit_ua",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-includes/js/dist/hooks.min.js?ver=f0f188028580e8dc1255",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216",
+        "type": "js",
+        "ua": "browser",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216",
+        "type": "js",
+        "ua": "audit_ua",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-content/themes/hostinger-ai-theme/assets/js/front-scripts.min.js?ver=2.1.14",
+        "type": "js",
+        "ua": "browser",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-content/themes/hostinger-ai-theme/assets/js/front-scripts.min.js?ver=2.1.14",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-content/themes/hostinger-ai-theme/assets/js/front-scripts.min.js?ver=2.1.14",
+        "type": "js",
+        "ua": "audit_ua",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-content/themes/hostinger-ai-theme/assets/js/front-scripts.min.js?ver=2.1.14",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-content/plugins/google-site-kit/dist/assets/js/googlesitekit-events-provider-content-events-90bacb156ab34fa090db.js",
+        "type": "js",
+        "ua": "browser",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-content/plugins/google-site-kit/dist/assets/js/googlesitekit-events-provider-content-events-90bacb156ab34fa090db.js",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-content/plugins/google-site-kit/dist/assets/js/googlesitekit-events-provider-content-events-90bacb156ab34fa090db.js",
+        "type": "js",
+        "ua": "audit_ua",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-content/plugins/google-site-kit/dist/assets/js/googlesitekit-events-provider-content-events-90bacb156ab34fa090db.js",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-content/plugins/google-site-kit/dist/assets/js/googlesitekit-events-provider-wpforms-7c53eae50325da8a6935.js",
+        "type": "js",
+        "ua": "browser",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-content/plugins/google-site-kit/dist/assets/js/googlesitekit-events-provider-wpforms-7c53eae50325da8a6935.js",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-content/plugins/google-site-kit/dist/assets/js/googlesitekit-events-provider-wpforms-7c53eae50325da8a6935.js",
+        "type": "js",
+        "ua": "audit_ua",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-content/plugins/google-site-kit/dist/assets/js/googlesitekit-events-provider-wpforms-7c53eae50325da8a6935.js",
+        "content_type": "application/x-javascript"
+      }
+    ],
+    "third_party_assets_not_tested": true
+  },
+  "real_se_ranking_ips_not_tested": true,
+  "issues_detail_locked_as_screenshot": true,
+  "original_problem_urls_not_provided": true,
+  "paid_queries": 0
+}
