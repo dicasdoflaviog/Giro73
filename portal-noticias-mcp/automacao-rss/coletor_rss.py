@@ -174,6 +174,24 @@ def canonical_url(value: str) -> str:
         host += f":{p.port}"
     return urlunsplit((p.scheme.lower(), host, p.path or "/", urlencode(query), ""))
 
+def https_feed_url(value: str, base="") -> str:
+    """Normaliza links RSS públicos para HTTPS, sem requisitar a versão HTTP."""
+    value = urljoin(base, value) if base else value
+    checked_url(value)
+    parsed = urlsplit(value)
+    if parsed.scheme == "http":
+        netloc = parsed.netloc.rsplit(":", 1)[0] if parsed.port == 80 else parsed.netloc
+        value = urlunsplit(("https", netloc, parsed.path, parsed.query, ""))
+    return value
+
+def feed_redirect_url(current: str, location: str) -> str:
+    if not location:
+        raise ItemError("Redirecionamento da fonte sem cabeçalho Location.")
+    target = https_feed_url(location, current)
+    if target == current:
+        raise ItemError("Redirecionamento retorna à mesma URL HTTPS; confirme o endereço canônico da fonte.")
+    return target
+
 def public_feed_host(url: str):
     public_asset_host(url, https_only=True)
 
@@ -692,12 +710,13 @@ class Client:
         return result
 
     def feed(self, url):
+        url = https_feed_url(url)
         for _ in range(4):
             public_feed_host(url)
             r = self.request("GET", url, "rss", stream=True)
             try:
                 if r.status_code in {301, 302, 303, 307, 308}:
-                    url = urljoin(url, r.headers.get("Location", ""))
+                    url = feed_redirect_url(url, r.headers.get("Location", ""))
                     continue
                 if r.status_code != 200:
                     raise ItemError(f"Feed HTTP {r.status_code}")

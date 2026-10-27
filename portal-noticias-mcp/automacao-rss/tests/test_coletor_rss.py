@@ -108,6 +108,38 @@ class CollectorTest(unittest.TestCase):
         c = self.client();c.session.request = Mock(side_effect=[response(307, headers={'Location': c.endpoint}), response(201, {'id': 3, 'status': 'draft'})])
         self.assertEqual(c.submit('a'*64, {'status': 'draft'}), 3)
         self.assertEqual(c.session.request.call_args_list[0].kwargs['json'], c.session.request.call_args_list[1].kwargs['json'])
+
+    def test_feed_itapebi_redirect_http_is_upgraded_without_sending_http(self):
+        c=self.client()
+        first=response(301,headers={'Location':'http://www.itapebi.ba.gov.br/feed/'})
+        second=response(200)
+        second.iter_content.return_value=[b'<rss version="2.0"><channel><title>Itapebi</title><link>https://www.itapebi.ba.gov.br/</link><description>Noticias</description></channel></rss>']
+        c.session.request=Mock(side_effect=[first,second])
+        with patch.object(m,'public_feed_host') as check:
+            self.assertEqual(c.feed('https://itapebi.ba.gov.br/feed/'),[])
+        urls=[x.args[1] for x in c.session.request.call_args_list]
+        self.assertEqual(urls,['https://itapebi.ba.gov.br/feed/','https://www.itapebi.ba.gov.br/feed/'])
+        self.assertEqual([x.args[0] for x in check.call_args_list],urls)
+        for request in c.session.request.call_args_list:
+            self.assertFalse(request.kwargs['allow_redirects'])
+            self.assertNotEqual(request.kwargs.get('verify'),False)
+
+    def test_feed_redirect_without_location_and_https_loop_are_explicit(self):
+        for location in ['', 'http://fonte.example/feed']:
+            with self.subTest(location=location):
+                c=self.client();c.session.request=Mock(return_value=response(301,headers={'Location':location}))
+                with patch.object(m,'public_feed_host'),self.assertRaises(m.ItemError):c.feed('https://fonte.example/feed')
+                self.assertEqual(c.session.request.call_count,1)
+
+    def test_feed_upgrade_does_not_allow_credentials_or_private_hosts(self):
+        with self.assertRaises(m.ConfigError):m.https_feed_url('http://user:password@fonte.example/feed')
+        c=self.client();c.session.request=Mock(return_value=response(301,headers={'Location':'http://127.0.0.1/feed'}))
+        def resolve(host,*a,**k):
+            ip='127.0.0.1' if host=='127.0.0.1' else '8.8.8.8'
+            return [(m.socket.AF_INET,m.socket.SOCK_STREAM,6,'',(ip,443))]
+        with patch.object(m.socket,'getaddrinfo',side_effect=resolve),self.assertRaises(m.ConfigError):
+            c.feed('https://fonte.example/feed')
+        self.assertEqual(c.session.request.call_count,1)
     def test_resposta_perdida_preserva_payload_entre_execucoes(self):
         self.store.discover(self.source, entry())
         server = {}

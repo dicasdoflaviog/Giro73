@@ -92,6 +92,47 @@ class ConfigureTests(unittest.TestCase):
         self.assertEqual(json.loads(self.path.read_text())["feeds"][-1]["url"],
                          "https://vemvetxbahia.com.br/?feed=rss2")
 
+    def test_itapebi_http_redirect_tries_https_www_and_keeps_https_in_config(self):
+        site="https://itapebi.ba.gov.br/"
+        secure="https://www.itapebi.ba.gov.br/"
+        client=Client(feeds={secure+"feed/":[]},pages={
+            site:Response(status=301,headers={"Location":"http://www.itapebi.ba.gov.br/"}),
+            secure:Response('<link type="application/rss+xml" href="http://www.itapebi.ba.gov.br/feed/">')})
+        self.assertEqual(self.run_config(client,[("Prefeitura de Itapebi","noticias-regiao",site,True)]),0)
+        self.assertEqual(json.loads(self.path.read_text())["feeds"][-1]["url"],secure+"feed/")
+        self.assertTrue(all(url.startswith("https://") for url in client.calls))
+
+    def test_html_timeout_preserves_source_time_for_direct_feed(self):
+        clock={"now":100.0}
+        site="https://itapebi.ba.gov.br/"
+        client=Client(feeds={site+"feed/":[1]})
+        def slow_html(*args,**kwargs):
+            self.assertLessEqual(client.deadline,106.1)
+            clock["now"]=106.0
+            raise config.Deferred("Limite de duração da execução atingido.")
+        client.request=slow_html
+        original_feed=client.feed
+        def fallback(url):
+            self.assertEqual(client.deadline,120.0)
+            self.assertGreater(client.deadline,clock["now"])
+            return original_feed(url)
+        client.feed=fallback
+        with patch.object(config.time,"monotonic",side_effect=lambda:clock["now"]):
+            with contextlib.redirect_stdout(io.StringIO()),patch.object(config,"public_feed_host"):
+                self.assertEqual(config.configure(self.path,client,
+                    [("Prefeitura de Itapebi","noticias-regiao",site,True)],seconds=20),0)
+
+    def test_html_dns_warning_is_explicit_and_fallback_is_still_tried(self):
+        site="https://itapebi.ba.gov.br/"
+        client=Client(feeds={site+"feed/":[1]})
+        client.request=lambda *a,**k:(_ for _ in ()).throw(config.Deferred("Falha de DNS da fonte."))
+        output=io.StringIO()
+        with contextlib.redirect_stdout(output),patch.object(config,"public_feed_host"):
+            result=config.configure(self.path,client,[("Itapebi","noticias-regiao",site,True)])
+        self.assertEqual(result,0)
+        self.assertIn("Falha de DNS da fonte",output.getvalue())
+        self.assertIn("continuando",output.getvalue())
+
     def test_legacy_php_and_rss_without_trailing_slash(self):
         definitions = [
             ("Portal TX", "noticias-regiao", "https://portaltx.site/", True),

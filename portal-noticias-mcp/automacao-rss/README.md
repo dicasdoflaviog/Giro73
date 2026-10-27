@@ -326,6 +326,19 @@ Para novos lotes ou repetir a descoberta depois de instalar, sem baixar arquivos
 
 Códigos de saída: 0 para verificação sem pendências, 1 para resultado parcial (fontes válidas salvas, outras pendentes), 2 para falha de configuração/instalação. Não desabilitar TLS nem aceitar HTML como se fosse XML para contornar esses resultados.
 
+Correção após o log de Itapebi: alguns sites respondem em HTTPS, mas o cabeçalho `Location` aponta para `http://www...`. A descoberta e o coletor agora tentam o **mesmo destino em HTTPS**, inclusive quando o link RSS declarado usa HTTP, e nunca fazem a requisição em HTTP nessa normalização. DNS público e certificado continuam validados a cada destino. Se o endereço HTTPS resultante continuar retornando o mesmo redirecionamento, o erro informa o loop; se ele não existir ou falhar no certificado, não se declara sucesso. Isso não prova que o município tenha RSS ou que os caminhos testados existam.
+
+O orçamento da descoberta HTML agora usa no máximo um terço do tempo da fonte, limitado a seis segundos no deadline do cliente, restaurando o restante para os caminhos RSS. Esses deadlines não substituem o comportamento do resolvedor DNS e dos timeouts do sistema. O aviso de HTML passou a informar os motivos locais conhecidos (DNS, certificado, tempo ou configuração), seguido da indicação de que os caminhos RSS ainda serão testados. Um RSS reconhecido com zero entradas é cadastrado, mas recebe aviso de que não fornece matérias naquele momento.
+
+Para repetir um lote pequeno após atualizar os scripts pelo instalador:
+
+```bash
+bash /root/expandir-fontes-oficiais.sh "$RSS_REF" \
+  --city itapebi --city belmonte --timeout 60
+```
+
+As fontes já existentes serão preservadas. Se a rotina anterior ainda estiver em execução, aguarde sua conclusão antes de atualizar: o lock impede a substituição durante a coleta ou descoberta.
+
 A consulta de `/feed/` aos 38 endereços neste ambiente foi impedida pelo proxy (`Tunnel connection failed: 403 Forbidden`), não por um status HTTP verificado dos servidores municipais. A confirmação final precisa ser feita na VPS; nenhuma dessas 38 URLs foi declarada como RSS confirmado na entrega.
 
 Se o cron estiver instalado exatamente como no exemplo, roda de hora em hora com o limite padrão de **cinco candidatos totais**, em rodízio persistente entre fontes. `--limit 10` permite até dez candidatos totais por execução, sem alterar a coleta das 50 entradas iniciais de cada feed. Um candidato pode ser antigo, duplicado, insuficiente, bloqueado ou adiado; o número real de posts pode ser menor. A instalação do cron e a versão efetivamente em uso na VPS não foram inspecionadas por SSH nesta etapa.

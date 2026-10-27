@@ -24,7 +24,9 @@ from datetime import datetime
 from urllib.parse import urljoin, urlsplit
 
 sys.path.insert(0, "/opt/giro73-rss")
-from coletor_rss import Client, ConfigError, MAX_SOURCES, canonical_url, load_sources, plain, public_feed_host
+from coletor_rss import (Client, ConfigError, Deferred, ItemError, StopRun, MAX_SOURCES,
+                        canonical_url, feed_redirect_url, https_feed_url,
+                        load_sources, plain, public_feed_host)
 
 # Nome, categoria, endereço informado, procurar feed no site.
 FONTES = [
@@ -151,15 +153,20 @@ class FeedLinks(HTMLParser):
 
 
 def discover_candidates(client, site):
-    """Links declarados primeiro; caminhos comuns são apenas candidatos."""
+    """A tentativa de HTML não pode consumir todo o orçamento dos caminhos RSS."""
     candidates, current = [], site
+    source_deadline = client.deadline
+    # Com 20 s por fonte, reserva a maior parte para testar o XML diretamente.
+    # O teto continua global; não aumenta o tempo de execução por órgão.
+    html_seconds = max(1, min(6, (source_deadline-time.monotonic())/3))
+    client.deadline = min(source_deadline, time.monotonic()+html_seconds)
     try:
         for _ in range(4):
             public_feed_host(current)
             response = client.request("GET", current, "rss", stream=True)
             try:
                 if response.status_code in {301, 302, 303, 307, 308}:
-                    current = urljoin(current, response.headers.get("Location", ""))
+                    current = feed_redirect_url(current, response.headers.get("Location", ""))
                     continue
                 if response.status_code != 200:
                     announce("  Página inicial: HTTP", response.status_code)
@@ -177,14 +184,26 @@ def discover_candidates(client, site):
             finally:
                 response.close()
     except Exception as error:
-        announce("  Descoberta no HTML indisponível:", type(error).__name__)
+        # As exceções de ConfigError/Deferred/StopRun são mensagens locais do
+        # coletor, sem URL com token, corpo de resposta ou chaves de API.
+        reason = str(error) if isinstance(error, (ConfigError, Deferred, ItemError, StopRun)) else type(error).__name__
+        announce("  AVISO: descoberta no HTML indisponível:", reason,
+                 "| continuando a verificação direta dos caminhos RSS.")
+    finally:
+        client.deadline = source_deadline
     for base in dict.fromkeys([site, current]):
         candidates.extend(urljoin(base, path) for path in (
             "feed/", "?feed=rss2", "rss.php", "rss", "feed", "feed.xml", "rss2.xml",
             "index.php?format=feed&type=rss",
-            "feed/", "?feed=rss2", "rss/", "rss.xml", "?format=feed&type=rss"
+            "rss/", "rss.xml", "?format=feed&type=rss"
         ))
-    return list(dict.fromkeys(candidates))
+    normalized = []
+    for candidate in candidates:
+        try:
+            normalized.append(https_feed_url(candidate))
+        except (ConfigError, ValueError):
+            continue
+    return list(dict.fromkeys(normalized))
 
 
 def save_config(path, data):
@@ -272,6 +291,8 @@ def configure(path, client, definitions=FONTES, seconds=60):
             added += 1
             found = True
             announce("  RSS VALIDADO:", candidate, "| entradas:", len(entries))
+            if not entries:
+                announce("  AVISO: XML válido, mas sem entradas; nenhuma matéria poderá ser coletada deste feed agora.")
             if publisher != name:
                 announce("  FONTE NO CADASTRO:", publisher)
             break
