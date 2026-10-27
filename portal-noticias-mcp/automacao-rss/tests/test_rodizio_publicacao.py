@@ -261,4 +261,21 @@ class RotationPublicationTests(unittest.TestCase):
         self.assertIsNone(row['wp_status'])
 
 
+class ReferenceDateTests(unittest.TestCase):
+    def test_municipal_and_sai_historical_references(self):
+        now=1793102400  # 27/10/2026 UTC
+        for path in ['/noticias/105/luto-23-08-2026', '/2026/08/23/luto/', '/noticia-23082026123000000-luto']:
+            with self.subTest(path=path):
+                self.assertEqual(m.source_date_review_reason('https://fonte.example'+path,now),'referencia_historica_ou_futura_requer_revisao')
+
+    def test_invalid_date_and_undated_reference(self):
+        self.assertEqual(m.source_date_review_reason('https://fonte.example/fato-31-02-2026'),'data_da_referencia_invalida')
+        self.assertIsNone(m.source_date_review_reason('https://fonte.example/fato-sem-data'))
+
+    def test_recent_and_future_references(self):
+        now=1793102400
+        self.assertIsNone(m.source_date_review_reason('https://fonte.example/fato-26-10-2026',now))
+        self.assertEqual(m.source_date_review_reason('https://fonte.example/fato-30-10-2026',now),'referencia_historica_ou_futura_requer_revisao')
+
+
 if __name__=='__main__':unittest.main()

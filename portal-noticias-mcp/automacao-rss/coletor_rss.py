@@ -792,20 +792,42 @@ def payload_from(generated: dict, entry: dict, category: str, image=None) -> dic
             "image_url": image_url, "image_credit": image_credit, "image_credit_url": image_credit_url,
             "status": "draft", "meta": seo}
 
+def source_url_date(url):
+    """Indício datado da referência, não prova da data de um acontecimento."""
+    path = unquote(urlsplit(url).path).lower()
+    patterns = [
+        (r"/(20\d{2})/(\d{2})/(\d{2})(?:/|$)", (1, 2, 3)),
+        (r"(?:/|-)(\d{2})-(\d{2})-(20\d{2})(?:/|$)", (3, 2, 1)),
+        (r"/(?:noticia|novidade)-(\d{2})(\d{2})(20\d{2})\d{6,10}-", (3, 2, 1)),
+    ]
+    for pattern, order in patterns:
+        match = re.search(pattern, path)
+        if match:
+            value = "-".join(match.group(i) for i in order)
+            return calendar.timegm(time.strptime(value, "%Y-%m-%d"))
+    return None
+
+
+def source_date_review_reason(url, now=None):
+    try:
+        stamp = source_url_date(url)
+    except ValueError:
+        return "data_da_referencia_invalida"
+    current = time.time() if now is None else now
+    if stamp is not None and (stamp < current-7*86400 or stamp > current+86400):
+        return "referencia_historica_ou_futura_requer_revisao"
+    return None
+
+
 def editorial_review_reason(entry, generated):
     """Sinais objetivos para revisão; não constitui checagem factual ou jurídica."""
     parsed = urlsplit(entry.get("url", ""))
     path = unquote(parsed.path).lower()
     if path in {"", "/", "/noticias", "/noticias/", "/noticias/index.php"} or path.startswith(("/category/", "/categoria/", "/tag/")):
         return "referencia_generica_requer_revisao"
-    dated = re.search(r"/(20\d{2})/(\d{2})/(\d{2})(?:/|$)", path)
-    if dated:
-        try:
-            stamp = calendar.timegm(time.strptime("-".join(dated.groups()), "%Y-%m-%d"))
-        except ValueError:
-            return "data_da_referencia_invalida"
-        if stamp < time.time() - 7*86400 or stamp > time.time() + 86400:
-            return "referencia_historica_ou_futura_requer_revisao"
+    review = source_date_review_reason(entry.get("url", ""))
+    if review:
+        return review
     text = " ".join([str(generated.get("title", ""))] + [str(b.get("text", "")) for b in generated.get("blocks", []) if isinstance(b, dict)])
     material = str(entry.get("source_title", "")) + " " + str(entry.get("source_text", "")) + " " + text
     if re.search(r"\b(?:acusa\w*|den[uú]ncia\w*|viol[eê]ncia sexual|abuso sexual|estupro\w*|explora[cç][aã]o financeira|morte (?:de |da |do )?crian[cç]a)\b", material, re.I):
@@ -822,6 +844,8 @@ def publication_decision(source, entry, generated, payload, image=None):
     review = editorial_review_reason(entry, generated)
     if review:
         return "draft", review
+    if entry.get("date_basis") == "updated":
+        return "draft", "somente_data_de_atualizacao_requer_revisao"
     minimum = source.get("auto_min_chars",600)
     if len(plain(entry.get("source_text",""))) < minimum:
         return "draft", "texto_da_fonte_insuficiente"
@@ -894,6 +918,9 @@ def discover(client: Client, store: Store, sources: list):
                     continue
                 if not url:
                     continue
+                # Conversores podem fornecer uma data de captura recente para um arquivo antigo.
+                if source_date_review_reason(url):
+                    continue
                 parsed_date = entry.get("published_parsed") or entry.get("updated_parsed")
                 published = calendar.timegm(parsed_date) if parsed_date else None
                 if published is None and not source.get("allow_undated", False):
@@ -909,7 +936,8 @@ def discover(client: Client, store: Store, sources: list):
                 item = {"guid": str(entry.get("id") or entry.get("guid") or ""), "url": url,
                         "publisher": source["name"], "source_title": plain(entry.get("title", ""))[:300],
                         "source_text": material, "published_at": published,
-                        "max_age_hours": source["max_age_hours"], "regional_scope": "Teixeira de Freitas e Extremo Sul da Bahia"}
+                        "max_age_hours": source["max_age_hours"], "regional_scope": "Teixeira de Freitas e Extremo Sul da Bahia",
+                        "date_basis": "published" if entry.get("published_parsed") else "updated" if entry.get("updated_parsed") else "unknown"}
                 item["image_candidates"] = feed_image_candidates(entry, url)
                 credits = entry.get("media_credit", [])
                 media_credit = " ".join(str(c.get("content") or c.get("value") or "") for c in credits if isinstance(c,dict))
@@ -935,6 +963,11 @@ def process(client: Client, store: Store, limit: int, dry_run=False, sources=Non
             payload = json.loads(item["payload"]) if item["payload"] else None
             # Payload já enviado/tentado é imutável, mesmo se envelhecer: resolve resposta perdida.
             if payload is None:
+                review = source_date_review_reason(entry.get("url", ""))
+                if review:
+                    store.finish(key, "blocked", error=review)
+                    LOG.warning("Item %s reservado para revisão: %s; nenhuma geração ou publicação solicitada.", key[:12], review)
+                    continue
                 if entry["published_at"] and entry["published_at"] < time.time()-entry["max_age_hours"]*3600:
                     store.finish(key, "skipped", error="fonte_antiga")
                     continue

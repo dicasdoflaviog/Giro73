@@ -111,6 +111,23 @@ function g73_pub_source_url($url) {
  ksort($query);$host=strtolower($p['host']);$port=isset($p['port'])&&!in_array((int)$p['port'],array(80,443),true)?':'.(int)$p['port']:'';
  return 'https://'.$host.$port.$path.($query?'?'.http_build_query($query):'');
 }
+/** Datas explícitas no endereço são indícios; não são data de publicação inventada. */
+function g73_pub_source_review($url,$now=null) {
+ $path=strtolower(rawurldecode((string)wp_parse_url($url,PHP_URL_PATH)));$parts=null;
+ if(preg_match('~/(20[0-9]{2})/([0-9]{2})/([0-9]{2})(?:/|$)~',$path,$m)){$parts=array((int)$m[1],(int)$m[2],(int)$m[3]);}
+ elseif(preg_match('~(?:/|-)([0-9]{2})-([0-9]{2})-(20[0-9]{2})(?:/|$)~',$path,$m)){$parts=array((int)$m[3],(int)$m[2],(int)$m[1]);}
+ elseif(preg_match('~/(?:noticia|novidade)-([0-9]{2})([0-9]{2})(20[0-9]{2})[0-9]{6,10}-~',$path,$m)){$parts=array((int)$m[3],(int)$m[2],(int)$m[1]);}
+ $result=array('date'=>'','reason'=>'','historical'=>false);
+ if(!$parts){return $result;}
+ if(!checkdate($parts[1],$parts[2],$parts[0])){$result['reason']='data_da_referencia_invalida';return $result;}
+ $stamp=gmmktime(0,0,0,$parts[1],$parts[2],$parts[0]);$now=null===$now?time():(int)$now;
+ $result['date']=gmdate('Y-m-d',$stamp);$result['historical']=$stamp<$now-7*DAY_IN_SECONDS;
+ if($result['historical']||$stamp>$now+DAY_IN_SECONDS){$result['reason']='referencia_historica_ou_futura_requer_revisao';}
+ return $result;
+}
+add_action('init',function(){
+ foreach(array('g73_editorial_archive','g73_news_eligible') as $key){register_post_meta('post',$key,array('single'=>true,'type'=>'boolean','default'=>false,'show_in_rest'=>true,'sanitize_callback'=>'rest_sanitize_boolean','auth_callback'=>function($allowed,$meta_key,$post_id){return current_user_can('edit_post',(int)$post_id);}));}
+});
 function g73_pub_story_tokens($value) {
  $value=preg_replace('~<figure\b[^>]*>[\s\S]*?</figure>~i','',$value);
  $value=strtolower(remove_accents(html_entity_decode(wp_strip_all_tags($value),ENT_QUOTES,'UTF-8')));
@@ -247,6 +264,9 @@ function g73_pub_publish($request) {
   }
   $duplicate=g73_pub_find_duplicate($p);
   if($duplicate){return new WP_Error($duplicate['review']?'g73_duplicate_review':'g73_duplicate_article',$duplicate['review']?'Pauta semelhante já existe; compare os fatos antes de publicar.':'Esta notícia já foi recebida de sua fonte.',array('status'=>409,'existing_id'=>$duplicate['id'],'existing_url'=>get_permalink($duplicate['id']),'reason'=>$duplicate['reason']));}
+  // Depois da resolução idempotente: não muda o fingerprint de payloads antigos.
+  $source_review=g73_pub_source_review($p['source_url']);
+  if($source_review['reason']){$p['status']='draft';$warnings[]='Referência temporal exige revisão: '.$source_review['reason'].($source_review['date']?' ('.$source_review['date'].')':'').'.';}
   $rate=(array)get_transient('g73_pub_rate');$now=time();$rate=array_values(array_filter($rate,function($v)use($now){return $v>$now-300;}));if(count($rate)>=20){return g73_pub_error('rate_limited','Limite de 20 tentativas de criação em cinco minutos.',429);}$rate[]=$now;set_transient('g73_pub_rate',$rate,300);
   $image_alt=array_key_exists('rank_math_focus_keyword',$p['meta'])?$p['meta']['rank_math_focus_keyword']:($p['focus_keyword']?:$p['title']);
   if($p['image_url']){
@@ -259,6 +279,9 @@ function g73_pub_publish($request) {
   if(!$image&&'publish'===$p['status']){$p['status']='draft';$warnings[]='Capa pendente: matéria preservada como rascunho para não publicar sem imagem.';}
   $meta=array('_g73_ingest_key'=>$key,'_g73_ingest_fingerprint'=>$fingerprint,'_g73_automated'=>1,'rank_math_title'=>$p['title'],'rank_math_description'=>wp_html_excerpt($p['excerpt'],160,''),'rank_math_robots'=>array('index','follow'),'rank_math_advanced_robots'=>array('max-snippet'=>-1,'max-video-preview'=>-1,'max-image-preview'=>'large'));
   if($p['source_url']){$meta['_g73_source_url']=$p['source_url'];}
+  if($source_review['date']){$meta['_g73_source_reference_date']=$source_review['date'];}
+  if($source_review['reason']){$meta['_g73_source_review_reason']=$source_review['reason'];$meta['g73_news_eligible']=false;}
+  if($source_review['historical']){$meta['g73_editorial_archive']=true;}
   if($p['focus_keyword']){$meta['rank_math_focus_keyword']=$p['focus_keyword'];}
   // Somente os três campos SEO permitidos; meta recebido tem prioridade sobre os valores automáticos.
   $meta=array_merge($meta,$p['meta']);
