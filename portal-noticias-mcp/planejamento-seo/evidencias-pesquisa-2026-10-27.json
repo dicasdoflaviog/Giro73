@@ -1,0 +1,967 @@
+{
+  "data": "2026-10-27",
+  "country": "br",
+  "se_ranking": {
+    "before": 99500,
+    "after": 99300,
+    "consumed": 200,
+    "expiration_date_as_returned": "2026-11-09 19:52:54",
+    "keywords_requested": 56,
+    "records_returned": 56,
+    "records_with_data": 29
+  },
+  "dataforseo": {
+    "before_usd": 0.908,
+    "after_usd": 0.898,
+    "consumed_usd": 0.01,
+    "serp_count": 5,
+    "sum_reported_cost_usd": 0.01
+  },
+  "wordpress_inventory": {
+    "publish": 34,
+    "draft": 8,
+    "total": 42
+  },
+  "gsc": {
+    "start_date": "2026-09-29",
+    "end_date": "2026-10-26",
+    "search_type": "web",
+    "group_by": "query",
+    "row_count": 0,
+    "interpretation": "Sem consultas retornadas; não prova ausência de indexação, tráfego ou impressões agregadas."
+  },
+  "site_changed": false,
+  "cron_configured": false,
+  "new_posts_published": 0,
+  "plan_counts": {
+    "nova": 27,
+    "atualizacao": 3
+  },
+  "serps": [
+    {
+      "pauta": "P01",
+      "keyword": "maquininha para mei",
+      "datetime": "2026-10-27 10:48:47 +00:00",
+      "location_code": 2076,
+      "device": "mobile",
+      "cost_usd": 0.002,
+      "organic_top3": [
+        {
+          "rank_group": 1,
+          "title": "Melhor maquininha de cartão para MEI com taxas baixas · Blog do Jota",
+          "url": "https://jota.ai/blog/arquivo/melhor-maquininha-cartao-mei-2026/",
+          "description": "11 de mar. de 2026 — A InfinitePay se destaca no crédito parcelado em 12x para volumes mais altos, enquanto o Fala Tap tende a ser mais competitivo em débito e ..."
+        },
+        {
+          "rank_group": 2,
+          "title": "Sou MEI, Posso Ter Maquininha de Cartão?",
+          "url": "https://www.usemaquininhadecartao.com.br/artigos/sou-mei-posso-ter-maquininha-de-cart%C3%A3o",
+          "description": "O Mercado Pago oferece a Point Mini NFC, uma maquininha ideal para MEIs que desejam começar a aceitar cartões sem grandes investimentos. Ela se destaca pela ..."
+        },
+        {
+          "rank_group": 3,
+          "title": "What is the BEST CARD MACHINE for MEI with the LOWEST RATE ...",
+          "url": "https://www.youtube.com/watch?v=11Cr6ADEVao",
+          "description": "... Maquininha Correta trago sempre conteúdo atualizado sobre as melhores maquininhas de cartão, melhores serviços e também as menores taxas ..."
+        }
+      ],
+      "full_pages_read": false
+    },
+    {
+      "pauta": "P02",
+      "keyword": "verificação em duas etapas whatsapp",
+      "datetime": "2026-10-27 10:48:57 +00:00",
+      "location_code": 2076,
+      "device": "mobile",
+      "cost_usd": 0.002,
+      "organic_top3": [
+        {
+          "rank_group": 1,
+          "title": "Verificação em dois passos chega ao WhatsApp – e você deveria ativá-la já",
+          "url": "https://brasil.elpais.com/brasil/2017/02/10/tecnologia/1486720265_257149.html?outputType=amp",
+          "description": "10 de fev. de 2017 — Para ativar essa camada adicional de segurança, o usuário precisa acessar: Ajustes > Conta > Verificação em Duas Etapas, e então clicar em ..."
+        },
+        {
+          "rank_group": 2,
+          "title": "Sua conta do WhatsApp está protegida? No vídeo de hoje ...",
+          "url": "https://www.facebook.com/jjinformaticarc/videos/-sua-conta-do-whatsapp-est%C3%A1-protegidano-v%C3%ADdeo-de-hoje-mostramos-passo-a-passo-co/1046290485016888/",
+          "description": "Nunca compartilhe códigos de verificação, senhas ou informações pessoais. ✓ Ative a confirmação em duas etapas ✓ Crie um PIN seguro ✓ ..."
+        },
+        {
+          "rank_group": 3,
+          "title": "Como ativar a verificação em duas etapas do WhatsApp - Cia Tutoriais",
+          "url": "https://www.ciacomputadores.com/como-ativar-a-verificacao-em-duas-etapas-do-whatsapp/",
+          "description": "Abra o aplicativo WhatsApp no seu dispositivo móvel, toque nos três pontos verticais no canto superior direito da tela e selecione “Configurações”. · Em seguida, ..."
+        }
+      ],
+      "full_pages_read": false
+    },
+    {
+      "pauta": "P05",
+      "keyword": "como chegar em cumuruxatiba",
+      "datetime": "2026-10-27 10:49:06 +00:00",
+      "location_code": 2076,
+      "device": "mobile",
+      "cost_usd": 0.002,
+      "organic_top3": [
+        {
+          "rank_group": 1,
+          "title": "Cumuruxatiba - BA Você precisa saber",
+          "url": "https://www.youtube.com/watch?v=OW6VIVMdppQ",
+          "description": "Saímos de Prado em direção a Cumuruxatiba e fomos conhecendo as praias da Paixão e Tororão - um lugar mais bonito que outro."
+        },
+        {
+          "rank_group": 2,
+          "title": "Praias de Cumuruxatiba, Bahia – Tudo o que você precisa saber!",
+          "url": "https://guia.melhoresdestinos.com.br/cumuruxatiba-praias.html",
+          "description": "Partindo do centro da vila, rumo à esquerda, a primeira parada é a Praia de Cumuruxatiba, ou Praia do Centro. Ela marca o trecho mais movimentado da beira-mar, ..."
+        },
+        {
+          "rank_group": 3,
+          "title": "De Vitória da Conquista para Cumuruxatiba",
+          "url": "https://www.rome2rio.com/pt/s/Vit%C3%B3ria-da-Conquista/Cumuruxatiba",
+          "description": "Há 5 rotas para ir de Vitória da Conquista para Cumuruxatiba de ônibus, táxi, carro, avião ou carro balsa · Ônibus, táxi. Melhor · Carro 439,9 km. Mais baratos."
+        }
+      ],
+      "full_pages_read": false
+    },
+    {
+      "pauta": "P06",
+      "keyword": "capital de giro mei",
+      "datetime": "2026-10-27 10:49:02 +00:00",
+      "location_code": 2076,
+      "device": "mobile",
+      "cost_usd": 0.002,
+      "organic_top3": [
+        {
+          "rank_group": 1,
+          "title": "Capital Empreendedor - Sua Plataforma de Crédito Empresarial",
+          "url": "https://www.capitalempreendedor.com.br/",
+          "description": "A Capital Empreendedor é um marketplace de crédito para empresas. Nosso objetivo é garantir o MELHOR crédito para o empreendedor brasileiro."
+        },
+        {
+          "rank_group": 2,
+          "title": "Como funciona o capital de giro para empresas?",
+          "url": "https://finanzero.com.br/blog/como-funciona-o-capital-de-giro-para-empresas/",
+          "description": "O Microempreendedor Individual pode utilizar o capital de giro para garantir o seu funcionamento em momentos de crise. Portanto, esse produto ..."
+        },
+        {
+          "rank_group": 3,
+          "title": "O que é capital de giro?",
+          "url": "https://www.sicoob.com.br/web/blog/b/capital-de-giro-o-que-e-e-por-que-e-t%C3%A3o-importante-para-o-seu-negocio",
+          "description": "2 de out. de 2023 — O capital de giro de uma empresa é um indicador estratégico da saúde financeira de um negócio. Se permanecer baixo por muito tempo, é necessário ..."
+        }
+      ],
+      "full_pages_read": false
+    },
+    {
+      "pauta": "P07",
+      "keyword": "procon teixeira de freitas",
+      "datetime": "2026-10-27 10:48:52 +00:00",
+      "location_code": 2076,
+      "device": "mobile",
+      "cost_usd": 0.002,
+      "organic_top3": [
+        {
+          "rank_group": 1,
+          "title": "SJDH/PROCON - Posto SAC Busca Vida",
+          "url": "https://www.sac.ba.gov.br/unidades/4181/0/59",
+          "description": "Solicitar Registro de Atendimento - PROCON · Justificar Ausência e/ou Solicitar Cancelamento de Audiência de Conciliação - PROCON · Protocolar Petição, ..."
+        },
+        {
+          "rank_group": 2,
+          "title": "O Procon-BA lançou a nova Central de Atendimento 151 para facilitar ...",
+          "url": "https://www.instagram.com/p/DW3kP6lkTog/",
+          "description": "Localizado na Avenida Pedro I, 382, no bairro de Tambi á, o Procon-JP opera de segunda a sexta-feira, das 8h às 17h. A distribuição de fichas ..."
+        },
+        {
+          "rank_group": 3,
+          "title": "Canal de denúncias e reclamações ao Procon-BA, Consumidor.gov está ...",
+          "url": "https://www.ba.gov.br/social/noticia/2024-05/10576/canal-de-denuncias-e-reclamacoes-ao-procon-ba-consumidorgov-esta-disponivel",
+          "description": "O canal serve para aprimorar as políticas de prevenção de condutas que violam os direitos do consumidor e para fortalecer a promoção da ..."
+        }
+      ],
+      "full_pages_read": false
+    }
+  ],
+  "competitors": [
+    {
+      "domain": "sulbahianews.com.br",
+      "requested_limit": 40,
+      "returned_rows": 10,
+      "items": [
+        {
+          "block_type": null,
+          "block_position": 2,
+          "keyword": "sul bahia news",
+          "position": 2,
+          "prev_pos": null,
+          "volume": 12100,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://www.sulbahianews.com.br/teixeira-nova-ubs-do-redencao-avanca-na-preparacao-dos-ambientes/",
+          "difficulty": 85,
+          "total_sites": null,
+          "traffic": 746,
+          "traffic_percent": 14.67,
+          "price": 0,
+          "serp_features": [
+            "video",
+            "images",
+            "sge",
+            "related_searches"
+          ],
+          "intents": [
+            "I"
+          ]
+        },
+        {
+          "block_type": null,
+          "block_position": 3,
+          "keyword": "sul bahia news",
+          "position": 3,
+          "prev_pos": null,
+          "volume": 12100,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://www.sulbahianews.com.br/empresa-abre-vaga-para-recepcionista-em-teixeira-de-freitas/",
+          "difficulty": 85,
+          "total_sites": null,
+          "traffic": 577,
+          "traffic_percent": 11.35,
+          "price": 0,
+          "serp_features": [
+            "video",
+            "images",
+            "sge",
+            "related_searches"
+          ],
+          "intents": [
+            "I"
+          ]
+        },
+        {
+          "block_type": "sge",
+          "block_position": 1,
+          "keyword": "sulbahianews",
+          "position": 1,
+          "prev_pos": null,
+          "volume": 14800,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://www.sulbahianews.com.br/",
+          "difficulty": 84,
+          "total_sites": null,
+          "traffic": 504,
+          "traffic_percent": 9.91,
+          "price": 0,
+          "serp_features": [
+            "reviews",
+            "video",
+            "images",
+            "sge"
+          ],
+          "intents": [
+            "I"
+          ]
+        },
+        {
+          "block_type": null,
+          "block_position": 6,
+          "keyword": "sul bahia news",
+          "position": 6,
+          "prev_pos": null,
+          "volume": 12100,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://www.sulbahianews.com.br/caso-robson-jovem-sequestrado-e-encontrado-morto-em-estrada-vicial/",
+          "difficulty": 85,
+          "total_sites": null,
+          "traffic": 242,
+          "traffic_percent": 4.76,
+          "price": 0,
+          "serp_features": [
+            "video",
+            "images",
+            "sge",
+            "related_searches"
+          ],
+          "intents": [
+            "I"
+          ]
+        },
+        {
+          "block_type": "sge",
+          "block_position": 1,
+          "keyword": "sul bahia news",
+          "position": 1,
+          "prev_pos": null,
+          "volume": 12100,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://www.sulbahianews.com.br/",
+          "difficulty": 85,
+          "total_sites": null,
+          "traffic": 238,
+          "traffic_percent": 4.68,
+          "price": 0,
+          "serp_features": [
+            "video",
+            "images",
+            "sge",
+            "related_searches"
+          ],
+          "intents": [
+            "I"
+          ]
+        },
+        {
+          "block_type": null,
+          "block_position": 3,
+          "keyword": "sulbahianews",
+          "position": 3,
+          "prev_pos": null,
+          "volume": 14800,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://www.sulbahianews.com.br/homem-e-flagrado-em-ato-de-importunacao-sexual-dentro-de-onibus/",
+          "difficulty": 84,
+          "total_sites": null,
+          "traffic": 236,
+          "traffic_percent": 4.64,
+          "price": 0,
+          "serp_features": [
+            "reviews",
+            "video",
+            "images",
+            "sge"
+          ],
+          "intents": [
+            "I"
+          ]
+        },
+        {
+          "block_type": null,
+          "block_position": 6,
+          "keyword": "urticaria emocional",
+          "position": 5,
+          "prev_pos": null,
+          "volume": 14800,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://www.sulbahianews.com.br/entenda-o-que-e-a-urticaria-nervosa/",
+          "difficulty": 92,
+          "total_sites": null,
+          "traffic": 157,
+          "traffic_percent": 3.09,
+          "price": 0,
+          "serp_features": [
+            "people_also_ask",
+            "images",
+            "sge"
+          ],
+          "intents": [
+            "I"
+          ]
+        },
+        {
+          "block_type": null,
+          "block_position": 4,
+          "keyword": "sulbahianews",
+          "position": 4,
+          "prev_pos": null,
+          "volume": 14800,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://www.sulbahianews.com.br/noticias/policia/page/97/",
+          "difficulty": 84,
+          "total_sites": null,
+          "traffic": 157,
+          "traffic_percent": 3.09,
+          "price": 0,
+          "serp_features": [
+            "reviews",
+            "video",
+            "images",
+            "sge"
+          ],
+          "intents": [
+            "I"
+          ]
+        },
+        {
+          "block_type": "sge",
+          "block_position": 1,
+          "keyword": "sulbahianews",
+          "position": 1,
+          "prev_pos": null,
+          "volume": 14800,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://www.sulbahianews.com.br/noticias/policia/page/97/",
+          "difficulty": 84,
+          "total_sites": null,
+          "traffic": 111,
+          "traffic_percent": 2.18,
+          "price": 0,
+          "serp_features": [
+            "reviews",
+            "video",
+            "images",
+            "sge"
+          ],
+          "intents": [
+            "I"
+          ]
+        },
+        {
+          "block_type": "sge",
+          "block_position": 1,
+          "keyword": "sul bahia news",
+          "position": 1,
+          "prev_pos": null,
+          "volume": 12100,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://www.sulbahianews.com.br/empresa-abre-vaga-para-recepcionista-em-teixeira-de-freitas/",
+          "difficulty": 85,
+          "total_sites": null,
+          "traffic": 96,
+          "traffic_percent": 1.89,
+          "price": 0,
+          "serp_features": [
+            "video",
+            "images",
+            "sge",
+            "related_searches"
+          ],
+          "intents": [
+            "I"
+          ]
+        }
+      ],
+      "interpretation": "Amostra dominada por termos de marca; não equivale a ranking de oportunidades nem auditoria integral do domínio."
+    },
+    {
+      "domain": "liberdadenews.com.br",
+      "requested_limit": 40,
+      "returned_rows": 10,
+      "items": [
+        {
+          "block_type": "sitelinks",
+          "block_position": 1,
+          "keyword": "liberdadenews",
+          "position": 1,
+          "prev_pos": null,
+          "volume": 201000,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://liberdadenews.com.br/",
+          "difficulty": 93,
+          "total_sites": null,
+          "traffic": 40922,
+          "traffic_percent": 50.63,
+          "price": 0,
+          "serp_features": [
+            "sitelinks",
+            "video",
+            "people_also_ask",
+            "images",
+            "related_searches"
+          ],
+          "intents": [
+            "I",
+            "N"
+          ]
+        },
+        {
+          "block_type": "sitelinks",
+          "block_position": 1,
+          "keyword": "liberdade news",
+          "position": 1,
+          "prev_pos": null,
+          "volume": 90500,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://liberdadenews.com.br/",
+          "difficulty": 96,
+          "total_sites": null,
+          "traffic": 31210,
+          "traffic_percent": 38.62,
+          "price": 0,
+          "serp_features": [
+            "sitelinks",
+            "video",
+            "related_searches"
+          ],
+          "intents": [
+            "I",
+            "N"
+          ]
+        },
+        {
+          "block_type": "sitelinks",
+          "block_position": 1,
+          "keyword": "liberdade news",
+          "position": 1,
+          "prev_pos": null,
+          "volume": 90500,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://liberdadenews.com.br/policia",
+          "difficulty": 96,
+          "total_sites": null,
+          "traffic": 2392,
+          "traffic_percent": 2.96,
+          "price": 0,
+          "serp_features": [
+            "sitelinks",
+            "video",
+            "related_searches"
+          ],
+          "intents": [
+            "I",
+            "N"
+          ]
+        },
+        {
+          "block_type": "sitelinks",
+          "block_position": 1,
+          "keyword": "liberdade news",
+          "position": 1,
+          "prev_pos": null,
+          "volume": 90500,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://liberdadenews.com.br/regionais",
+          "difficulty": 96,
+          "total_sites": null,
+          "traffic": 780,
+          "traffic_percent": 0.97,
+          "price": 0,
+          "serp_features": [
+            "sitelinks",
+            "video",
+            "related_searches"
+          ],
+          "intents": [
+            "I",
+            "N"
+          ]
+        },
+        {
+          "block_type": "sitelinks",
+          "block_position": 1,
+          "keyword": "liberdade news",
+          "position": 1,
+          "prev_pos": null,
+          "volume": 90500,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://liberdadenews.com.br/teixeira-de-freitas",
+          "difficulty": 96,
+          "total_sites": null,
+          "traffic": 614,
+          "traffic_percent": 0.76,
+          "price": 0,
+          "serp_features": [
+            "sitelinks",
+            "video",
+            "related_searches"
+          ],
+          "intents": [
+            "I",
+            "N"
+          ]
+        },
+        {
+          "block_type": "sitelinks",
+          "block_position": 1,
+          "keyword": "liberdadenews",
+          "position": 1,
+          "prev_pos": null,
+          "volume": 201000,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://liberdadenews.com.br/policia",
+          "difficulty": 93,
+          "total_sites": null,
+          "traffic": 605,
+          "traffic_percent": 0.75,
+          "price": 0,
+          "serp_features": [
+            "sitelinks",
+            "video",
+            "people_also_ask",
+            "images",
+            "related_searches"
+          ],
+          "intents": [
+            "I",
+            "N"
+          ]
+        },
+        {
+          "block_type": "sitelinks",
+          "block_position": 1,
+          "keyword": "liberdade news",
+          "position": 1,
+          "prev_pos": null,
+          "volume": 90500,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://liberdadenews.com.br/politica",
+          "difficulty": 96,
+          "total_sites": null,
+          "traffic": 602,
+          "traffic_percent": 0.74,
+          "price": 0,
+          "serp_features": [
+            "sitelinks",
+            "video",
+            "related_searches"
+          ],
+          "intents": [
+            "I",
+            "N"
+          ]
+        },
+        {
+          "block_type": "sitelinks",
+          "block_position": 1,
+          "keyword": "liberdadenews",
+          "position": 1,
+          "prev_pos": null,
+          "volume": 201000,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://liberdadenews.com.br/teixeira-de-freitas",
+          "difficulty": 93,
+          "total_sites": null,
+          "traffic": 368,
+          "traffic_percent": 0.46,
+          "price": 0,
+          "serp_features": [
+            "sitelinks",
+            "video",
+            "people_also_ask",
+            "images",
+            "related_searches"
+          ],
+          "intents": [
+            "I",
+            "N"
+          ]
+        },
+        {
+          "block_type": null,
+          "block_position": 2,
+          "keyword": "liberdadenews polícia",
+          "position": 2,
+          "prev_pos": null,
+          "volume": 3200,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://admin.liberdadenews.com.br/policia?r=614&start=20560",
+          "difficulty": 46,
+          "total_sites": null,
+          "traffic": 221,
+          "traffic_percent": 0.27,
+          "price": 0,
+          "serp_features": [
+            "images",
+            "sge"
+          ],
+          "intents": [
+            "I"
+          ]
+        },
+        {
+          "block_type": "sitelinks",
+          "block_position": 1,
+          "keyword": "liberdadenews",
+          "position": 1,
+          "prev_pos": null,
+          "volume": 201000,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://liberdadenews.com.br/regionais",
+          "difficulty": 93,
+          "total_sites": null,
+          "traffic": 147,
+          "traffic_percent": 0.18,
+          "price": 0,
+          "serp_features": [
+            "sitelinks",
+            "video",
+            "people_also_ask",
+            "images",
+            "related_searches"
+          ],
+          "intents": [
+            "I",
+            "N"
+          ]
+        }
+      ],
+      "interpretation": "Amostra dominada por termos de marca; não equivale a ranking de oportunidades nem auditoria integral do domínio."
+    },
+    {
+      "domain": "radar.news",
+      "requested_limit": 40,
+      "returned_rows": 10,
+      "items": [
+        {
+          "block_type": "sitelinks",
+          "block_position": 1,
+          "keyword": "radar 64",
+          "position": 1,
+          "prev_pos": null,
+          "volume": 368000,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://radar.news/",
+          "difficulty": 97,
+          "total_sites": null,
+          "traffic": 128795,
+          "traffic_percent": 85.28,
+          "price": 0,
+          "serp_features": [
+            "sitelinks",
+            "video",
+            "related_searches"
+          ],
+          "intents": [
+            "I",
+            "N"
+          ]
+        },
+        {
+          "block_type": "sitelinks",
+          "block_position": 1,
+          "keyword": "radar 64",
+          "position": 1,
+          "prev_pos": null,
+          "volume": 368000,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://radar.news/tags/eunapolis/",
+          "difficulty": 97,
+          "total_sites": null,
+          "traffic": 9501,
+          "traffic_percent": 6.29,
+          "price": 0,
+          "serp_features": [
+            "sitelinks",
+            "video",
+            "related_searches"
+          ],
+          "intents": [
+            "I",
+            "N"
+          ]
+        },
+        {
+          "block_type": "sitelinks",
+          "block_position": 1,
+          "keyword": "radar 64",
+          "position": 1,
+          "prev_pos": null,
+          "volume": 368000,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://radar.news/editorias/policia/",
+          "difficulty": 97,
+          "total_sites": null,
+          "traffic": 2881,
+          "traffic_percent": 1.91,
+          "price": 0,
+          "serp_features": [
+            "sitelinks",
+            "video",
+            "related_searches"
+          ],
+          "intents": [
+            "I",
+            "N"
+          ]
+        },
+        {
+          "block_type": "sitelinks",
+          "block_position": 1,
+          "keyword": "radar 64",
+          "position": 1,
+          "prev_pos": null,
+          "volume": 368000,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://radar.news/tags/porto-seguro/",
+          "difficulty": 97,
+          "total_sites": null,
+          "traffic": 2281,
+          "traffic_percent": 1.51,
+          "price": 0,
+          "serp_features": [
+            "sitelinks",
+            "video",
+            "related_searches"
+          ],
+          "intents": [
+            "I",
+            "N"
+          ]
+        },
+        {
+          "block_type": "sitelinks",
+          "block_position": 1,
+          "keyword": "radar 64",
+          "position": 1,
+          "prev_pos": null,
+          "volume": 368000,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://radar.news/author/jornalismoradar64-com/",
+          "difficulty": 97,
+          "total_sites": null,
+          "traffic": 1867,
+          "traffic_percent": 1.24,
+          "price": 0,
+          "serp_features": [
+            "sitelinks",
+            "video",
+            "related_searches"
+          ],
+          "intents": [
+            "I",
+            "N"
+          ]
+        },
+        {
+          "block_type": null,
+          "block_position": 3,
+          "keyword": "radar 64 eunápolis",
+          "position": 3,
+          "prev_pos": null,
+          "volume": 9900,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://radar.news/tags/pau-brasil/",
+          "difficulty": 84,
+          "total_sites": null,
+          "traffic": 324,
+          "traffic_percent": 0.21,
+          "price": 0,
+          "serp_features": [
+            "reviews",
+            "people_also_ask",
+            "images",
+            "sge"
+          ],
+          "intents": [
+            "I"
+          ]
+        },
+        {
+          "block_type": "sge",
+          "block_position": 1,
+          "keyword": "radar 64 eunápolis",
+          "position": 1,
+          "prev_pos": null,
+          "volume": 9900,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://radar.news/tags/bairro-moises-reis/",
+          "difficulty": 84,
+          "total_sites": null,
+          "traffic": 220,
+          "traffic_percent": 0.15,
+          "price": 0,
+          "serp_features": [
+            "reviews",
+            "people_also_ask",
+            "images",
+            "sge"
+          ],
+          "intents": [
+            "I"
+          ]
+        },
+        {
+          "block_type": null,
+          "block_position": 4,
+          "keyword": "radar 64 porto seguro",
+          "position": 4,
+          "prev_pos": null,
+          "volume": 5400,
+          "cpc": 0.11,
+          "competition": 0,
+          "url": "https://radar.news/tags/bairro-mirante/",
+          "difficulty": 67,
+          "total_sites": null,
+          "traffic": 166,
+          "traffic_percent": 0.11,
+          "price": 18.26,
+          "serp_features": [
+            "reviews",
+            "images",
+            "sge",
+            "related_searches"
+          ],
+          "intents": [
+            "I"
+          ]
+        },
+        {
+          "block_type": "sge",
+          "block_position": 1,
+          "keyword": "radar 64 porto seguro",
+          "position": 1,
+          "prev_pos": null,
+          "volume": 5400,
+          "cpc": 0.11,
+          "competition": 0,
+          "url": "https://radar.news/page/257/?cidade",
+          "difficulty": 67,
+          "total_sites": null,
+          "traffic": 130,
+          "traffic_percent": 0.09,
+          "price": 14.3,
+          "serp_features": [
+            "reviews",
+            "images",
+            "sge",
+            "related_searches"
+          ],
+          "intents": [
+            "I"
+          ]
+        },
+        {
+          "block_type": null,
+          "block_position": 1,
+          "keyword": "radar 64 eunápolis crime hoje",
+          "position": 1,
+          "prev_pos": 1,
+          "volume": 590,
+          "cpc": 0,
+          "competition": 0,
+          "url": "https://radar.news/tags/eunapolis/",
+          "difficulty": 21,
+          "total_sites": null,
+          "traffic": 124,
+          "traffic_percent": 0.08,
+          "price": 0,
+          "serp_features": [
+            "images",
+            "related_searches",
+            "image_in_block"
+          ],
+          "intents": [
+            "I"
+          ]
+        }
+      ],
+      "interpretation": "Amostra dominada por termos de marca; não equivale a ranking de oportunidades nem auditoria integral do domínio."
+    }
+  ]
+}

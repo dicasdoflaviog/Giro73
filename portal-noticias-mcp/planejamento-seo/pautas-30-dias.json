@@ -1,0 +1,993 @@
+[
+  {
+    "id": "P01",
+    "data_proposta": "2026-10-27",
+    "prioridade": "primeiro_lote",
+    "editoria": "Dinheiro & Renda Extra",
+    "cidade": "Regional / Brasil",
+    "palavra_chave": "maquininha para mei",
+    "titulo_provisorio": "Maquininha para MEI: como comparar taxas, prazo de recebimento e custo total",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": 170,
+    "dificuldade_organica": 8,
+    "cpc_retornado_sem_moeda": 2.06,
+    "concorrencia_anunciantes": 1,
+    "dados_encontrados": true,
+    "fontes_candidatas": [
+      "Banco Central",
+      "Sebrae",
+      "Tabelas e contratos oficiais das operadoras"
+    ],
+    "links_internos": [
+      {
+        "id": 481,
+        "url": "https://giro73.com.br/conta-digital-pj-como-escolher/"
+      },
+      {
+        "id": 208,
+        "url": "https://giro73.com.br/renda-extra-calcular-ganho-real/"
+      }
+    ],
+    "condicao_para_publicar": "Comparação numérica hipotética identificada; não declarar vencedora sem verificar preços e condições.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": true
+  },
+  {
+    "id": "P02",
+    "data_proposta": "2026-10-28",
+    "prioridade": "primeiro_lote",
+    "editoria": "Tecnologia & Inovação",
+    "cidade": "Regional / Brasil",
+    "palavra_chave": "verificação em duas etapas whatsapp",
+    "titulo_provisorio": "Verificação em duas etapas no WhatsApp: como ativar e guardar seu PIN",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": 590,
+    "dificuldade_organica": 9,
+    "cpc_retornado_sem_moeda": 0,
+    "concorrencia_anunciantes": 0,
+    "dados_encontrados": true,
+    "fontes_candidatas": [
+      "Central de Ajuda do WhatsApp",
+      "CERT.br"
+    ],
+    "links_internos": [
+      {
+        "id": 210,
+        "url": "https://giro73.com.br/conta-invadida-primeiros-passos-seguranca/"
+      },
+      {
+        "id": 216,
+        "url": "https://giro73.com.br/registrato-consultar-emprestimos-cpf/"
+      }
+    ],
+    "condicao_para_publicar": "Confirmar os passos nas versões atuais de Android e iPhone; nunca pedir código ou PIN do leitor.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": true
+  },
+  {
+    "id": "P03",
+    "data_proposta": "2026-10-29",
+    "prioridade": "primeiro_lote",
+    "editoria": "Política",
+    "cidade": "Teixeira de Freitas",
+    "palavra_chave": "portal da transparência teixeira de freitas",
+    "titulo_provisorio": "Portal da Transparência de Teixeira: como procurar despesas, contratos e pagamentos",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": 210,
+    "dificuldade_organica": 8,
+    "cpc_retornado_sem_moeda": 0,
+    "concorrencia_anunciantes": 0,
+    "dados_encontrados": true,
+    "fontes_candidatas": [
+      "Prefeitura de Teixeira de Freitas",
+      "Portal da Transparência municipal"
+    ],
+    "links_internos": [
+      {
+        "id": 209,
+        "url": "https://giro73.com.br/orcamento-municipal-documentos-prioridades-prefeitura/"
+      },
+      {
+        "id": 214,
+        "url": "https://giro73.com.br/transferencias-emendas-municipios-extremo-sul-bahia/"
+      }
+    ],
+    "condicao_para_publicar": "Testar o portal municipal atual; registrar data de consulta e diferenciar empenho, liquidação e pagamento.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": false
+  },
+  {
+    "id": "P04",
+    "data_proposta": "2026-10-30",
+    "prioridade": "primeiro_lote",
+    "editoria": "Dinheiro & Renda Extra",
+    "cidade": "Regional / Brasil",
+    "palavra_chave": "como pagar das mei",
+    "titulo_provisorio": "Como pagar o DAS do MEI nos canais oficiais e evitar cobranças falsas",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": 590,
+    "dificuldade_organica": 7,
+    "cpc_retornado_sem_moeda": 0.12,
+    "concorrencia_anunciantes": 0.1,
+    "dados_encontrados": true,
+    "fontes_candidatas": [
+      "Portal do Empreendedor",
+      "Receita Federal"
+    ],
+    "links_internos": [
+      {
+        "id": 481,
+        "url": "https://giro73.com.br/conta-digital-pj-como-escolher/"
+      },
+      {
+        "id": 216,
+        "url": "https://giro73.com.br/registrato-consultar-emprestimos-cpf/"
+      }
+    ],
+    "condicao_para_publicar": "Conferir emissão e vencimento atuais; não publicar valores fixos sem competência e fonte.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": false
+  },
+  {
+    "id": "P05",
+    "data_proposta": "2026-10-31",
+    "prioridade": "primeiro_lote",
+    "editoria": "Notícias & Região",
+    "cidade": "Prado / Cumuruxatiba",
+    "palavra_chave": "como chegar em cumuruxatiba",
+    "titulo_provisorio": "Como chegar a Cumuruxatiba: o que conferir na rota antes de sair",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": 480,
+    "dificuldade_organica": 11,
+    "cpc_retornado_sem_moeda": 0.07,
+    "concorrencia_anunciantes": 0.05,
+    "dados_encontrados": true,
+    "fontes_candidatas": [
+      "Prefeitura de Prado / Turismo",
+      "PRF",
+      "DNIT"
+    ],
+    "links_internos": [
+      {
+        "id": 215,
+        "url": "https://giro73.com.br/br-101-extremo-sul-bahia-checar-viagem/"
+      },
+      {
+        "id": 381,
+        "url": "https://giro73.com.br/missao-empresarial-leva-empresarios-da-costa-das-baleias-para-imersao-em-turismo-de-experiencia-no-ceara/"
+      }
+    ],
+    "condicao_para_publicar": "Verificar acessos e alternativas com fontes locais; não estimar tempo ou condição de estrada como fato atual sem checagem.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": true
+  },
+  {
+    "id": "P06",
+    "data_proposta": "2026-11-01",
+    "prioridade": "primeiro_lote",
+    "editoria": "Dinheiro & Renda Extra",
+    "cidade": "Regional / Brasil",
+    "palavra_chave": "capital de giro mei",
+    "titulo_provisorio": "Capital de giro para MEI: como calcular a necessidade antes de buscar crédito",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": 390,
+    "dificuldade_organica": 6,
+    "cpc_retornado_sem_moeda": 0.69,
+    "concorrencia_anunciantes": 0.78,
+    "dados_encontrados": true,
+    "fontes_candidatas": [
+      "Sebrae",
+      "Banco Central"
+    ],
+    "links_internos": [
+      {
+        "id": 481,
+        "url": "https://giro73.com.br/conta-digital-pj-como-escolher/"
+      },
+      {
+        "id": 208,
+        "url": "https://giro73.com.br/renda-extra-calcular-ganho-real/"
+      }
+    ],
+    "condicao_para_publicar": "Criar exemplo didático de fluxo de caixa; separar necessidade operacional de oferta de empréstimo e explicar CET.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": true
+  },
+  {
+    "id": "P07",
+    "data_proposta": "2026-11-02",
+    "prioridade": "primeiro_lote",
+    "editoria": "Notícias & Região",
+    "cidade": "Teixeira de Freitas",
+    "palavra_chave": "procon teixeira de freitas",
+    "titulo_provisorio": "Procon em Teixeira de Freitas: como confirmar atendimento e preparar sua reclamação",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": 110,
+    "dificuldade_organica": 23,
+    "cpc_retornado_sem_moeda": 0.09,
+    "concorrencia_anunciantes": 0.33,
+    "dados_encontrados": true,
+    "fontes_candidatas": [
+      "Prefeitura de Teixeira de Freitas",
+      "Procon-BA",
+      "Consumidor.gov.br"
+    ],
+    "links_internos": [
+      {
+        "id": 216,
+        "url": "https://giro73.com.br/registrato-consultar-emprestimos-cpf/"
+      },
+      {
+        "id": 435,
+        "url": "https://giro73.com.br/camara-municipal-de-itabela-transparencia-e-acesso-a-informacao/"
+      }
+    ],
+    "condicao_para_publicar": "Confirmar unidade, telefone, endereço e atendimento por fonte primária; a SERP trouxe localidades divergentes.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": true
+  },
+  {
+    "id": "P08",
+    "data_proposta": "2026-11-03",
+    "prioridade": "primeiro_lote",
+    "editoria": "Dinheiro & Renda Extra",
+    "cidade": "Regional / Brasil",
+    "palavra_chave": "seguro residencial barato",
+    "titulo_provisorio": "Seguro residencial: como comparar preço, franquia e cobertura para vendaval",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": 140,
+    "dificuldade_organica": 5,
+    "cpc_retornado_sem_moeda": 0.69,
+    "concorrencia_anunciantes": 0.74,
+    "dados_encontrados": true,
+    "fontes_candidatas": [
+      "SUSEP",
+      "Condições gerais oficiais das seguradoras"
+    ],
+    "links_internos": [
+      {
+        "id": 414,
+        "url": "https://giro73.com.br/prefeito-de-teixeira-de-freitas-mobiliza-equipes-para-recuperacao-apos-vendaval/"
+      },
+      {
+        "id": 208,
+        "url": "https://giro73.com.br/renda-extra-calcular-ganho-real/"
+      }
+    ],
+    "condicao_para_publicar": "Unir barato, preço e vendaval em uma pauta; não prometer indenização nem afirmar cobertura universal.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": false
+  },
+  {
+    "id": "P09",
+    "data_proposta": "2026-11-04",
+    "prioridade": "primeiro_lote",
+    "editoria": "Dinheiro & Renda Extra",
+    "cidade": "Regional / Brasil",
+    "palavra_chave": "mei precisa declarar imposto de renda",
+    "titulo_provisorio": "MEI precisa declarar Imposto de Renda? Entenda a diferença para a declaração da empresa",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": 990,
+    "dificuldade_organica": 6,
+    "cpc_retornado_sem_moeda": 0.01,
+    "concorrencia_anunciantes": 0.11,
+    "dados_encontrados": true,
+    "fontes_candidatas": [
+      "Receita Federal",
+      "Portal do Empreendedor"
+    ],
+    "links_internos": [
+      {
+        "id": 481,
+        "url": "https://giro73.com.br/conta-digital-pj-como-escolher/"
+      },
+      {
+        "id": 208,
+        "url": "https://giro73.com.br/renda-extra-calcular-ganho-real/"
+      }
+    ],
+    "condicao_para_publicar": "Conferir regras do exercício pertinente e separar pessoa física de DASN-SIMEI; não antecipar regras de 2027.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": false
+  },
+  {
+    "id": "P10",
+    "data_proposta": "2026-11-05",
+    "prioridade": "primeiro_lote",
+    "editoria": "Dinheiro & Renda Extra",
+    "cidade": "Regional / Brasil",
+    "palavra_chave": "id jovem passagem gratuita",
+    "titulo_provisorio": "ID Jovem e passagem gratuita: requisitos e cuidados antes de planejar a viagem",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": 390,
+    "dificuldade_organica": 10,
+    "cpc_retornado_sem_moeda": 0.07,
+    "concorrencia_anunciantes": 0.27,
+    "dados_encontrados": true,
+    "fontes_candidatas": [
+      "Secretaria Nacional de Juventude",
+      "ANTT",
+      "Gov.br"
+    ],
+    "links_internos": [
+      {
+        "id": 215,
+        "url": "https://giro73.com.br/br-101-extremo-sul-bahia-checar-viagem/"
+      },
+      {
+        "id": 208,
+        "url": "https://giro73.com.br/renda-extra-calcular-ganho-real/"
+      }
+    ],
+    "condicao_para_publicar": "Validar elegibilidade, modalidade de transporte e limites vigentes; não garantir reserva ou disponibilidade.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": false
+  },
+  {
+    "id": "P11",
+    "data_proposta": "2026-11-06",
+    "prioridade": "reserva_editorial",
+    "editoria": "Notícias & Região",
+    "cidade": "Teixeira de Freitas",
+    "palavra_chave": "sac teixeira de freitas",
+    "titulo_provisorio": "SAC de Teixeira de Freitas: como consultar serviços e agendamento oficial",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": 20,
+    "dificuldade_organica": 24,
+    "cpc_retornado_sem_moeda": 0,
+    "concorrencia_anunciantes": 0,
+    "dados_encontrados": true,
+    "fontes_candidatas": [
+      "SAC Bahia",
+      "BA.GOV.BR"
+    ],
+    "links_internos": [
+      {
+        "id": 306,
+        "url": "https://giro73.com.br/atencao-horario-de-funcionamento-da-camara-de-teixeira-de-freitas/"
+      },
+      {
+        "id": 435,
+        "url": "https://giro73.com.br/camara-municipal-de-itabela-transparencia-e-acesso-a-informacao/"
+      }
+    ],
+    "condicao_para_publicar": "Confirmar unidade e canal de agendamento; não inferir horário a partir de diretórios.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": false
+  },
+  {
+    "id": "P12",
+    "data_proposta": "2026-11-07",
+    "prioridade": "reserva_editorial",
+    "editoria": "Tecnologia & Inovação",
+    "cidade": "Regional / Brasil",
+    "palavra_chave": "como recuperar conta gov br",
+    "titulo_provisorio": "Conta gov.br: como procurar a recuperação de acesso nos canais oficiais",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": null,
+    "dificuldade_organica": null,
+    "cpc_retornado_sem_moeda": null,
+    "concorrencia_anunciantes": null,
+    "dados_encontrados": false,
+    "fontes_candidatas": [
+      "Gov.br / Atendimento",
+      "CERT.br"
+    ],
+    "links_internos": [
+      {
+        "id": 210,
+        "url": "https://giro73.com.br/conta-invadida-primeiros-passos-seguranca/"
+      },
+      {
+        "id": 216,
+        "url": "https://giro73.com.br/registrato-consultar-emprestimos-cpf/"
+      }
+    ],
+    "condicao_para_publicar": "Distinguir recuperação de senha de mudança de nível da conta; confirmar telas atuais.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": false
+  },
+  {
+    "id": "P13",
+    "data_proposta": "2026-11-08",
+    "prioridade": "reserva_editorial",
+    "editoria": "Notícias & Região",
+    "cidade": "Eunápolis",
+    "palavra_chave": "sac eunápolis",
+    "titulo_provisorio": "SAC de Eunápolis: o que consultar antes de agendar atendimento",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": 70,
+    "dificuldade_organica": 28,
+    "cpc_retornado_sem_moeda": 0,
+    "concorrencia_anunciantes": 0,
+    "dados_encontrados": true,
+    "fontes_candidatas": [
+      "SAC Bahia",
+      "BA.GOV.BR"
+    ],
+    "links_internos": [
+      {
+        "id": 435,
+        "url": "https://giro73.com.br/camara-municipal-de-itabela-transparencia-e-acesso-a-informacao/"
+      },
+      {
+        "id": 215,
+        "url": "https://giro73.com.br/br-101-extremo-sul-bahia-checar-viagem/"
+      }
+    ],
+    "condicao_para_publicar": "Checar unidade, serviços e documentação; não replicar integralmente o guia de Teixeira.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": false
+  },
+  {
+    "id": "P14",
+    "data_proposta": "2026-11-09",
+    "prioridade": "reserva_editorial",
+    "editoria": "Notícias & Região",
+    "cidade": "Prado / Corumbau",
+    "palavra_chave": "como chegar em corumbau",
+    "titulo_provisorio": "Como chegar a Corumbau: acessos e perguntas para fazer antes da viagem",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": 260,
+    "dificuldade_organica": 11,
+    "cpc_retornado_sem_moeda": 0.01,
+    "concorrencia_anunciantes": 0.09,
+    "dados_encontrados": true,
+    "fontes_candidatas": [
+      "Prefeitura de Prado / Turismo",
+      "Prefeitura de Porto Seguro / Turismo",
+      "PRF"
+    ],
+    "links_internos": [
+      {
+        "id": 215,
+        "url": "https://giro73.com.br/br-101-extremo-sul-bahia-checar-viagem/"
+      },
+      {
+        "id": 381,
+        "url": "https://giro73.com.br/missao-empresarial-leva-empresarios-da-costa-das-baleias-para-imersao-em-turismo-de-experiencia-no-ceara/"
+      }
+    ],
+    "condicao_para_publicar": "Confirmar rota de origem e eventual travessia; tarifas, marés e horários exigem fonte atual.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": false
+  },
+  {
+    "id": "P15",
+    "data_proposta": "2026-11-10",
+    "prioridade": "reserva_editorial",
+    "editoria": "Notícias & Região",
+    "cidade": "Teixeira de Freitas",
+    "palavra_chave": "sinebahia teixeira de freitas",
+    "titulo_provisorio": "SineBahia em Teixeira: como consultar vagas e conferir documentos exigidos",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": null,
+    "dificuldade_organica": null,
+    "cpc_retornado_sem_moeda": null,
+    "concorrencia_anunciantes": null,
+    "dados_encontrados": false,
+    "fontes_candidatas": [
+      "SETRE / SineBahia",
+      "SAC Bahia"
+    ],
+    "links_internos": [
+      {
+        "id": 208,
+        "url": "https://giro73.com.br/renda-extra-calcular-ganho-real/"
+      },
+      {
+        "id": 481,
+        "url": "https://giro73.com.br/conta-digital-pj-como-escolher/"
+      }
+    ],
+    "condicao_para_publicar": "Somente listar vagas abertas se houver boletim atual com data; o guia não promete contratação.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": false
+  },
+  {
+    "id": "P16",
+    "data_proposta": "2026-11-11",
+    "prioridade": "reserva_editorial",
+    "editoria": "Política",
+    "cidade": "Teixeira de Freitas",
+    "palavra_chave": "diário oficial teixeira de freitas",
+    "titulo_provisorio": "Diário Oficial de Teixeira: como localizar um ato e conferir sua validade",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": null,
+    "dificuldade_organica": null,
+    "cpc_retornado_sem_moeda": null,
+    "concorrencia_anunciantes": null,
+    "dados_encontrados": false,
+    "fontes_candidatas": [
+      "Prefeitura de Teixeira de Freitas",
+      "Diário Oficial municipal"
+    ],
+    "links_internos": [
+      {
+        "id": 209,
+        "url": "https://giro73.com.br/orcamento-municipal-documentos-prioridades-prefeitura/"
+      },
+      {
+        "id": 214,
+        "url": "https://giro73.com.br/transferencias-emendas-municipios-extremo-sul-bahia/"
+      }
+    ],
+    "condicao_para_publicar": "Diferenciar publicação, vigência e efeito do ato; testar busca e edição no sistema atual.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": false
+  },
+  {
+    "id": "P17",
+    "data_proposta": "2026-11-12",
+    "prioridade": "reserva_editorial",
+    "editoria": "Notícias & Região",
+    "cidade": "Extremo Sul da Bahia",
+    "palavra_chave": "segunda via embasa",
+    "titulo_provisorio": "Segunda via da Embasa: como consultar a conta nos canais oficiais",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": 10800,
+    "dificuldade_organica": 57,
+    "cpc_retornado_sem_moeda": 0.13,
+    "concorrencia_anunciantes": 0,
+    "dados_encontrados": true,
+    "fontes_candidatas": [
+      "Embasa"
+    ],
+    "links_internos": [
+      {
+        "id": 210,
+        "url": "https://giro73.com.br/conta-invadida-primeiros-passos-seguranca/"
+      },
+      {
+        "id": 216,
+        "url": "https://giro73.com.br/registrato-consultar-emprestimos-cpf/"
+      }
+    ],
+    "condicao_para_publicar": "Não pedir matrícula ou CPF no Giro73; identificar canais oficiais e formas atuais de emissão.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": false
+  },
+  {
+    "id": "P18",
+    "data_proposta": "2026-11-13",
+    "prioridade": "reserva_editorial",
+    "editoria": "Notícias & Região",
+    "cidade": "Extremo Sul da Bahia",
+    "palavra_chave": "segunda via coelba",
+    "titulo_provisorio": "Segunda via da Coelba: onde conferir a fatura com segurança",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": 22400,
+    "dificuldade_organica": 95,
+    "cpc_retornado_sem_moeda": 0.01,
+    "concorrencia_anunciantes": 0.04,
+    "dados_encontrados": true,
+    "fontes_candidatas": [
+      "Neoenergia Coelba"
+    ],
+    "links_internos": [
+      {
+        "id": 210,
+        "url": "https://giro73.com.br/conta-invadida-primeiros-passos-seguranca/"
+      },
+      {
+        "id": 216,
+        "url": "https://giro73.com.br/registrato-consultar-emprestimos-cpf/"
+      }
+    ],
+    "condicao_para_publicar": "Não reproduzir cobrança ou boleto; confirmar aplicativo, domínio e procedimento vigentes.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": false
+  },
+  {
+    "id": "P19",
+    "data_proposta": "2026-11-14",
+    "prioridade": "reserva_editorial",
+    "editoria": "Notícias & Região",
+    "cidade": "Teixeira de Freitas / região",
+    "palavra_chave": "cursos gratuitos teixeira de freitas",
+    "titulo_provisorio": "Cursos gratuitos em Teixeira e região: onde verificar editais e inscrições",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": null,
+    "dificuldade_organica": null,
+    "cpc_retornado_sem_moeda": null,
+    "concorrencia_anunciantes": null,
+    "dados_encontrados": false,
+    "fontes_candidatas": [
+      "IF Baiano",
+      "UNEB",
+      "SENAI Bahia",
+      "Prefeitura de Teixeira de Freitas"
+    ],
+    "links_internos": [
+      {
+        "id": 208,
+        "url": "https://giro73.com.br/renda-extra-calcular-ganho-real/"
+      },
+      {
+        "id": 481,
+        "url": "https://giro73.com.br/conta-digital-pj-como-escolher/"
+      }
+    ],
+    "condicao_para_publicar": "Só anunciar inscrições abertas com edital e prazo conferidos; sem edital atual, publicar guia de consulta.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": false
+  },
+  {
+    "id": "P20",
+    "data_proposta": "2026-11-15",
+    "prioridade": "reserva_editorial",
+    "editoria": "Dinheiro & Renda Extra",
+    "cidade": "Regional / Brasil",
+    "palavra_chave": "como consultar dívida mei",
+    "titulo_provisorio": "Dívida do MEI: como consultar pendências e identificar o órgão responsável",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": null,
+    "dificuldade_organica": null,
+    "cpc_retornado_sem_moeda": null,
+    "concorrencia_anunciantes": null,
+    "dados_encontrados": false,
+    "fontes_candidatas": [
+      "Receita Federal",
+      "PGFN / Regularize",
+      "Portal do Empreendedor"
+    ],
+    "links_internos": [
+      {
+        "id": 481,
+        "url": "https://giro73.com.br/conta-digital-pj-como-escolher/"
+      },
+      {
+        "id": 216,
+        "url": "https://giro73.com.br/registrato-consultar-emprestimos-cpf/"
+      }
+    ],
+    "condicao_para_publicar": "Distinguir cobrança na Receita e dívida ativa; validar regras de parcelamento antes de citar números.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": false
+  },
+  {
+    "id": "P21",
+    "data_proposta": "2026-11-16",
+    "prioridade": "reserva_editorial",
+    "editoria": "Notícias & Região",
+    "cidade": "Teixeira de Freitas",
+    "palavra_chave": "detran teixeira de freitas",
+    "titulo_provisorio": "Detran em Teixeira: como confirmar serviços, taxas e agendamento",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": 10,
+    "dificuldade_organica": 26,
+    "cpc_retornado_sem_moeda": 0.16,
+    "concorrencia_anunciantes": 0.05,
+    "dados_encontrados": true,
+    "fontes_candidatas": [
+      "Detran-BA",
+      "SAC Bahia"
+    ],
+    "links_internos": [
+      {
+        "id": 306,
+        "url": "https://giro73.com.br/atencao-horario-de-funcionamento-da-camara-de-teixeira-de-freitas/"
+      },
+      {
+        "id": 435,
+        "url": "https://giro73.com.br/camara-municipal-de-itabela-transparencia-e-acesso-a-informacao/"
+      }
+    ],
+    "condicao_para_publicar": "Confirmar competência da unidade e canal oficial; não informar taxa vencida ou mutirão não comprovado.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": false
+  },
+  {
+    "id": "P22",
+    "data_proposta": "2026-11-17",
+    "prioridade": "reserva_editorial",
+    "editoria": "Notícias & Região",
+    "cidade": "Teixeira de Freitas",
+    "palavra_chave": "cadastro único teixeira de freitas",
+    "titulo_provisorio": "CadÚnico em Teixeira: como confirmar onde atualizar o cadastro",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": null,
+    "dificuldade_organica": null,
+    "cpc_retornado_sem_moeda": null,
+    "concorrencia_anunciantes": null,
+    "dados_encontrados": false,
+    "fontes_candidatas": [
+      "Prefeitura / Assistência Social",
+      "Ministério do Desenvolvimento e Assistência Social"
+    ],
+    "links_internos": [
+      {
+        "id": 377,
+        "url": "https://giro73.com.br/prefeitura-de-teixeira-de-freitas-realiza-acao-do-outubro-rosa-no-cras-vila-vargas/"
+      },
+      {
+        "id": 435,
+        "url": "https://giro73.com.br/camara-municipal-de-itabela-transparencia-e-acesso-a-informacao/"
+      }
+    ],
+    "condicao_para_publicar": "Confirmar CRAS e canais locais; não publicar endereços de famílias nem prometer concessão de benefício.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": false
+  },
+  {
+    "id": "P23",
+    "data_proposta": "2026-11-18",
+    "prioridade": "reserva_editorial",
+    "editoria": "Esportes",
+    "cidade": "Bahia / região",
+    "palavra_chave": "futebol feminino bahia",
+    "titulo_provisorio": "Futebol feminino na Bahia: onde acompanhar calendário e transmissões oficiais",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": null,
+    "dificuldade_organica": null,
+    "cpc_retornado_sem_moeda": null,
+    "concorrencia_anunciantes": null,
+    "dados_encontrados": false,
+    "fontes_candidatas": [
+      "FBF",
+      "CBF",
+      "Clubes e detentores oficiais de transmissão"
+    ],
+    "links_internos": [
+      {
+        "id": 217,
+        "url": "https://giro73.com.br/jogos-bahia-vitoria-conferir-tabela-oficial/"
+      },
+      {
+        "id": 211,
+        "url": "https://giro73.com.br/ba-vi-torcedor-tabela-ingressos-seguranca/"
+      }
+    ],
+    "condicao_para_publicar": "Checar competição, data e emissora a cada atualização; não inventar transmissão gratuita.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": false
+  },
+  {
+    "id": "P24",
+    "data_proposta": "2026-11-19",
+    "prioridade": "reserva_editorial",
+    "editoria": "Esportes",
+    "cidade": "Bahia / região",
+    "palavra_chave": "ingressos bahia fonte nova",
+    "titulo_provisorio": "Ba-Vi e jogos em Salvador: revisar os canais oficiais de ingresso e as regras de acesso",
+    "acao": "atualizacao",
+    "post_a_atualizar": 211,
+    "volume_mensal_estimado": null,
+    "dificuldade_organica": null,
+    "cpc_retornado_sem_moeda": null,
+    "concorrencia_anunciantes": null,
+    "dados_encontrados": false,
+    "fontes_candidatas": [
+      "Bahia",
+      "Vitória",
+      "Arena Fonte Nova",
+      "Organizadores oficiais"
+    ],
+    "links_internos": [
+      {
+        "id": 217,
+        "url": "https://giro73.com.br/jogos-bahia-vitoria-conferir-tabela-oficial/"
+      }
+    ],
+    "condicao_para_publicar": "Atualizar o post 211 com seção de canais e segurança; preservar URL e separar regras por partida.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": false
+  },
+  {
+    "id": "P25",
+    "data_proposta": "2026-11-20",
+    "prioridade": "reserva_editorial",
+    "editoria": "Esportes",
+    "cidade": "Teixeira de Freitas / região",
+    "palavra_chave": "futebol amador teixeira de freitas",
+    "titulo_provisorio": "Futebol regional: como acompanhar a próxima rodada e confirmar local dos jogos",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": null,
+    "dificuldade_organica": null,
+    "cpc_retornado_sem_moeda": null,
+    "concorrencia_anunciantes": null,
+    "dados_encontrados": false,
+    "fontes_candidatas": [
+      "Organização da competição",
+      "Secretarias de Esporte",
+      "Clubes participantes"
+    ],
+    "links_internos": [
+      {
+        "id": 441,
+        "url": "https://giro73.com.br/itabela-brilha-na-estreia-da-copa-condesc-e-vence-itagimirim-por-3-a-2-no-manzolao/"
+      },
+      {
+        "id": 217,
+        "url": "https://giro73.com.br/jogos-bahia-vitoria-conferir-tabela-oficial/"
+      }
+    ],
+    "condicao_para_publicar": "Exige tabela oficial atual; não presumir rodada, placar, horário ou venda de ingressos.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": false
+  },
+  {
+    "id": "P26",
+    "data_proposta": "2026-11-21",
+    "prioridade": "reserva_editorial",
+    "editoria": "Famosos & Entretenimento",
+    "cidade": "Regional / Brasil",
+    "palavra_chave": "como cancelar assinatura streaming",
+    "titulo_provisorio": "Streaming no orçamento: revisar cancelamento, renovação e cobranças",
+    "acao": "atualizacao",
+    "post_a_atualizar": 212,
+    "volume_mensal_estimado": null,
+    "dificuldade_organica": null,
+    "cpc_retornado_sem_moeda": null,
+    "concorrencia_anunciantes": null,
+    "dados_encontrados": false,
+    "fontes_candidatas": [
+      "Centrais oficiais das plataformas",
+      "Consumidor.gov.br"
+    ],
+    "links_internos": [
+      {
+        "id": 208,
+        "url": "https://giro73.com.br/renda-extra-calcular-ganho-real/"
+      }
+    ],
+    "condicao_para_publicar": "Acrescentar seção ao post 212; validar diferenças entre contratação direta e loja de aplicativos.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": false
+  },
+  {
+    "id": "P27",
+    "data_proposta": "2026-11-22",
+    "prioridade": "reserva_editorial",
+    "editoria": "Famosos & Entretenimento",
+    "cidade": "Porto Seguro / região",
+    "palavra_chave": "agenda cultural porto seguro",
+    "titulo_provisorio": "Agenda cultural de Porto Seguro: como conferir programação e ingressos oficiais",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": 20,
+    "dificuldade_organica": 14,
+    "cpc_retornado_sem_moeda": 0,
+    "concorrencia_anunciantes": 0.02,
+    "dados_encontrados": true,
+    "fontes_candidatas": [
+      "Secretaria de Cultura de Porto Seguro",
+      "Organizadores e espaços oficiais"
+    ],
+    "links_internos": [
+      {
+        "id": 381,
+        "url": "https://giro73.com.br/missao-empresarial-leva-empresarios-da-costa-das-baleias-para-imersao-em-turismo-de-experiencia-no-ceara/"
+      },
+      {
+        "id": 215,
+        "url": "https://giro73.com.br/br-101-extremo-sul-bahia-checar-viagem/"
+      }
+    ],
+    "condicao_para_publicar": "Publicar apenas eventos confirmados com data e fonte; vincular ao CPT g73_event sem criar evento-modelo público.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": false
+  },
+  {
+    "id": "P28",
+    "data_proposta": "2026-11-23",
+    "prioridade": "reserva_editorial",
+    "editoria": "Tecnologia & Inovação",
+    "cidade": "Regional / Brasil",
+    "palavra_chave": "como verificar notícia falsa",
+    "titulo_provisorio": "Recebeu uma notícia no WhatsApp? Como conferir fonte, data e contexto",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": null,
+    "dificuldade_organica": null,
+    "cpc_retornado_sem_moeda": null,
+    "concorrencia_anunciantes": null,
+    "dados_encontrados": false,
+    "fontes_candidatas": [
+      "TSE / Justiça Eleitoral",
+      "CERT.br",
+      "Fonte primária de cada alegação"
+    ],
+    "links_internos": [
+      {
+        "id": 210,
+        "url": "https://giro73.com.br/conta-invadida-primeiros-passos-seguranca/"
+      },
+      {
+        "id": 216,
+        "url": "https://giro73.com.br/registrato-consultar-emprestimos-cpf/"
+      }
+    ],
+    "condicao_para_publicar": "Usar exemplos didáticos identificados; não transformar suspeita em desmentido sem evidência.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": false
+  },
+  {
+    "id": "P29",
+    "data_proposta": "2026-11-24",
+    "prioridade": "reserva_editorial",
+    "editoria": "Política",
+    "cidade": "Itabela / Extremo Sul da Bahia",
+    "palavra_chave": "lei de acesso à informação como solicitar",
+    "titulo_provisorio": "Acesso à informação em Itabela: revisar o guia de pedidos e acompanhamento",
+    "acao": "atualizacao",
+    "post_a_atualizar": 435,
+    "volume_mensal_estimado": 10,
+    "dificuldade_organica": 33,
+    "cpc_retornado_sem_moeda": 0,
+    "concorrencia_anunciantes": 0,
+    "dados_encontrados": true,
+    "fontes_candidatas": [
+      "Câmara de Itabela / SIC",
+      "Prefeitura / SIC",
+      "CGU"
+    ],
+    "links_internos": [
+      {
+        "id": 214,
+        "url": "https://giro73.com.br/transferencias-emendas-municipios-extremo-sul-bahia/"
+      }
+    ],
+    "condicao_para_publicar": "Atualizar o post 435 com canais e acompanhamento conferidos; não prometer prazo diferente da legislação aplicável.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": false
+  },
+  {
+    "id": "P30",
+    "data_proposta": "2026-11-25",
+    "prioridade": "reserva_editorial",
+    "editoria": "Notícias & Região",
+    "cidade": "Teixeira de Freitas",
+    "palavra_chave": "aeroporto teixeira de freitas",
+    "titulo_provisorio": "Aeroporto de Teixeira de Freitas: como confirmar voos e planejar o embarque",
+    "acao": "nova",
+    "post_a_atualizar": null,
+    "volume_mensal_estimado": 10,
+    "dificuldade_organica": 17,
+    "cpc_retornado_sem_moeda": 0.1,
+    "concorrencia_anunciantes": 0.2,
+    "dados_encontrados": true,
+    "fontes_candidatas": [
+      "Operador aeroportuário",
+      "ANAC",
+      "Companhias aéreas"
+    ],
+    "links_internos": [
+      {
+        "id": 215,
+        "url": "https://giro73.com.br/br-101-extremo-sul-bahia-checar-viagem/"
+      },
+      {
+        "id": 381,
+        "url": "https://giro73.com.br/missao-empresarial-leva-empresarios-da-costa-das-baleias-para-imersao-em-turismo-de-experiencia-no-ceara/"
+      }
+    ],
+    "condicao_para_publicar": "Checar operação e horários na data; não garantir rota ou voo com base em anúncio antigo.",
+    "estado": "planejado_apuracao_pendente",
+    "serp_consultada": false
+  }
+]
