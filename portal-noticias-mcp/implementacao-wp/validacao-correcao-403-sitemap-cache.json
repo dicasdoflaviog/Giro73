@@ -1,0 +1,788 @@
+{
+  "checked_at_utc": "2026-10-27T12:13:13.081209+00:00",
+  "screenshot_statuses": "403 on existing public URLs, report dated 2026-10-26",
+  "real_se_ranking_ips_tested": false,
+  "url_checks_before_purge": [
+    {
+      "url": "https://giro73.com.br/category/noticias-regiao/",
+      "ua": "browser",
+      "status": 200,
+      "final": "https://giro73.com.br/category/noticias-regiao/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/category/noticias-regiao/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://giro73.com.br/category/noticias-regiao/",
+      "ua": "audit_ua",
+      "status": 200,
+      "final": "https://giro73.com.br/category/noticias-regiao/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/category/noticias-regiao/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://giro73.com.br/category/politica/",
+      "ua": "browser",
+      "status": 200,
+      "final": "https://giro73.com.br/category/politica/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/category/politica/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://giro73.com.br/category/politica/",
+      "ua": "audit_ua",
+      "status": 200,
+      "final": "https://giro73.com.br/category/politica/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/category/politica/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://giro73.com.br/category/dinheiro-renda-extra/",
+      "ua": "browser",
+      "status": 200,
+      "final": "https://giro73.com.br/category/dinheiro-renda-extra/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/category/dinheiro-renda-extra/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://giro73.com.br/category/dinheiro-renda-extra/",
+      "ua": "audit_ua",
+      "status": 200,
+      "final": "https://giro73.com.br/category/dinheiro-renda-extra/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/category/dinheiro-renda-extra/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://giro73.com.br/category/tecnologia-inovacao/",
+      "ua": "browser",
+      "status": 200,
+      "final": "https://giro73.com.br/category/tecnologia-inovacao/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/category/tecnologia-inovacao/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://giro73.com.br/category/tecnologia-inovacao/",
+      "ua": "audit_ua",
+      "status": 200,
+      "final": "https://giro73.com.br/category/tecnologia-inovacao/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/category/tecnologia-inovacao/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://giro73.com.br/category/famosos-entretenimento/",
+      "ua": "browser",
+      "status": 200,
+      "final": "https://giro73.com.br/category/famosos-entretenimento/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/category/famosos-entretenimento/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://giro73.com.br/category/famosos-entretenimento/",
+      "ua": "audit_ua",
+      "status": 200,
+      "final": "https://giro73.com.br/category/famosos-entretenimento/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/category/famosos-entretenimento/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://giro73.com.br/sobre-nos/",
+      "ua": "browser",
+      "status": 200,
+      "final": "https://giro73.com.br/sobre-nos/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/sobre-nos/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://giro73.com.br/sobre-nos/",
+      "ua": "audit_ua",
+      "status": 200,
+      "final": "https://giro73.com.br/sobre-nos/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/sobre-nos/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://giro73.com.br/politica-editorial/",
+      "ua": "browser",
+      "status": 200,
+      "final": "https://giro73.com.br/politica-editorial/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/politica-editorial/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://giro73.com.br/politica-editorial/",
+      "ua": "audit_ua",
+      "status": 200,
+      "final": "https://giro73.com.br/politica-editorial/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/politica-editorial/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://giro73.com.br/politica-de-privacidade/",
+      "ua": "browser",
+      "status": 200,
+      "final": "https://giro73.com.br/politica-de-privacidade/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/politica-de-privacidade/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://giro73.com.br/politica-de-privacidade/",
+      "ua": "audit_ua",
+      "status": 200,
+      "final": "https://giro73.com.br/politica-de-privacidade/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/politica-de-privacidade/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "hit"
+    },
+    {
+      "url": "https://giro73.com.br/termos-de-uso/",
+      "ua": "browser",
+      "status": 200,
+      "final": "https://giro73.com.br/termos-de-uso/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/termos-de-uso/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://giro73.com.br/termos-de-uso/",
+      "ua": "audit_ua",
+      "status": 200,
+      "final": "https://giro73.com.br/termos-de-uso/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/termos-de-uso/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://giro73.com.br/contato/",
+      "ua": "browser",
+      "status": 200,
+      "final": "https://giro73.com.br/contato/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/contato/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://giro73.com.br/contato/",
+      "ua": "audit_ua",
+      "status": 200,
+      "final": "https://giro73.com.br/contato/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/contato/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://giro73.com.br/ba-vi-torcedor-tabela-ingressos-seguranca/",
+      "ua": "browser",
+      "status": 200,
+      "final": "https://giro73.com.br/ba-vi-torcedor-tabela-ingressos-seguranca/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/ba-vi-torcedor-tabela-ingressos-seguranca/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://giro73.com.br/ba-vi-torcedor-tabela-ingressos-seguranca/",
+      "ua": "audit_ua",
+      "status": 200,
+      "final": "https://giro73.com.br/ba-vi-torcedor-tabela-ingressos-seguranca/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/ba-vi-torcedor-tabela-ingressos-seguranca/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "hit"
+    },
+    {
+      "url": "https://giro73.com.br/inscricoes-para-vagas-remanescentes-do-fies-estao-abertas/",
+      "ua": "browser",
+      "status": 200,
+      "final": "https://giro73.com.br/inscricoes-para-vagas-remanescentes-do-fies-estao-abertas/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/inscricoes-para-vagas-remanescentes-do-fies-estao-abertas/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://giro73.com.br/inscricoes-para-vagas-remanescentes-do-fies-estao-abertas/",
+      "ua": "audit_ua",
+      "status": 200,
+      "final": "https://giro73.com.br/inscricoes-para-vagas-remanescentes-do-fies-estao-abertas/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/inscricoes-para-vagas-remanescentes-do-fies-estao-abertas/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "hit"
+    },
+    {
+      "url": "https://giro73.com.br/author/elder-mendonca-jr/",
+      "ua": "browser",
+      "status": 200,
+      "final": "https://giro73.com.br/author/elder-mendonca-jr/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/author/elder-mendonca-jr/"
+      ],
+      "robots": [
+        "follow, index, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://giro73.com.br/author/elder-mendonca-jr/",
+      "ua": "audit_ua",
+      "status": 200,
+      "final": "https://giro73.com.br/author/elder-mendonca-jr/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/author/elder-mendonca-jr/"
+      ],
+      "robots": [
+        "follow, index, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "hit"
+    },
+    {
+      "url": "https://giro73.com.br/category/esportes/",
+      "ua": "browser",
+      "status": 200,
+      "final": "https://giro73.com.br/category/esportes/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/category/esportes/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "miss"
+    },
+    {
+      "url": "https://giro73.com.br/category/esportes/",
+      "ua": "audit_ua",
+      "status": 200,
+      "final": "https://giro73.com.br/category/esportes/",
+      "chain": [],
+      "canonical": [
+        "https://giro73.com.br/category/esportes/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+      ],
+      "x_robots_tag": null,
+      "server": "envoy",
+      "cache": "hit"
+    }
+  ],
+  "purge": {
+    "summary": "2 cleared, 1 skipped. See layers[] for each cache.",
+    "changed": true,
+    "dry_run": false,
+    "scope": "site",
+    "urls": [],
+    "layers": [
+      {
+        "id": "rank-math-sitemap",
+        "label": "Rank Math sitemap cache",
+        "kind": "data",
+        "status": "cleared",
+        "applies": "now",
+        "detail": "Rank Math cleared its whole sitemap cache."
+      },
+      {
+        "id": "elementor",
+        "label": "Elementor",
+        "kind": "asset",
+        "status": "skipped",
+        "reason": "not_selected",
+        "detail": "Not in the `caches` list of this call."
+      },
+      {
+        "id": "litespeed-cache",
+        "label": "LiteSpeed Cache",
+        "kind": "page",
+        "status": "cleared",
+        "applies": "after_response",
+        "detail": "LiteSpeed Cache cleared this site's page cache."
+      }
+    ],
+    "not_covered": [],
+    "verify": {
+      "urls": [
+        "https://giro73.com.br/"
+      ],
+      "after_seconds": 5,
+      "how": "Fetch each URL exactly as written, with no added query string (a query string bypasses or changes the cache key), and check that the change is in the HTML."
+    }
+  },
+  "sitemap_after_purge": {
+    "post_status_counts": {
+      "draft": 3,
+      "publish": 39,
+      "trash": 30
+    },
+    "maps": {
+      "post": {
+        "http": 200,
+        "url": "https://giro73.com.br/post-sitemap.xml",
+        "count": 40,
+        "urls": [
+          "https://giro73.com.br/",
+          "https://giro73.com.br/renda-extra-calcular-ganho-real/",
+          "https://giro73.com.br/orcamento-municipal-documentos-prioridades-prefeitura/",
+          "https://giro73.com.br/conta-invadida-primeiros-passos-seguranca/",
+          "https://giro73.com.br/ba-vi-torcedor-tabela-ingressos-seguranca/",
+          "https://giro73.com.br/streaming-comparar-planos-assinatura-vitalicia/",
+          "https://giro73.com.br/chas-remedios-cuidados-produtos-naturais/",
+          "https://giro73.com.br/transferencias-emendas-municipios-extremo-sul-bahia/",
+          "https://giro73.com.br/br-101-extremo-sul-bahia-checar-viagem/",
+          "https://giro73.com.br/registrato-consultar-emprestimos-cpf/",
+          "https://giro73.com.br/jogos-bahia-vitoria-conferir-tabela-oficial/",
+          "https://giro73.com.br/prado-realiza-audiencia-publica-de-prestacao-de-contas-do-2o-quadrimestre-de-2026/",
+          "https://giro73.com.br/camara-municipal-de-prado-aprova-criacao-da-secretaria-municipal-de-politicas-de-promocao-da-igualdade-racial/",
+          "https://giro73.com.br/atencao-horario-de-funcionamento-da-camara-de-teixeira-de-freitas/",
+          "https://giro73.com.br/macrodrenagem-em-prado-avancos-e-impactos-na-comunidade/",
+          "https://giro73.com.br/oficiais-da-87a-cipm-concluem-curso-de-aph-tatico-ministrado-pela-forca-nacional-em-teixeira-de-freitas/",
+          "https://giro73.com.br/crianca-de-4-anos-morre-apos-cair-em-cisterna-em-teixeira-de-freitas/",
+          "https://giro73.com.br/camara-municipal-de-teixeira-de-freitas-importancia-da-cultura-e-alteracoes-administrativas/",
+          "https://giro73.com.br/audiencia-publica-de-avaliacao-das-metas-fiscais-em-prado-compromisso-com-a-transparencia/",
+          "https://giro73.com.br/obras-da-nova-ponte-sobre-o-rio-jucurucu-avancam-em-ritmo-acelerado/",
+          "https://giro73.com.br/escolha-da-educacao-guarani-vai-receber-uma-das-maiores-e-mais-modernas-escolas-da-regiao/",
+          "https://giro73.com.br/devastacao-ambiental-em-prado-relatorio-da-secretaria-de-meio-ambiente-revela-situacao-alarmante/",
+          "https://giro73.com.br/prefeitura-de-itabela-decreta-luto-oficial-de-tres-dias-pela-morte-de-lourival/",
+          "https://giro73.com.br/saude-fortalecida-ubs-de-cumuruxatiba-e-reinaugurada-com-estrutura-moderna/",
+          "https://giro73.com.br/itabela-e-representada-no-2o-encontro-nacional-das-defesas-civis-municipais-e-debate-impactos-do-el-nino-2026-2027/",
+          "https://giro73.com.br/prefeitura-de-teixeira-de-freitas-realiza-acao-do-outubro-rosa-no-cras-vila-vargas/",
+          "https://giro73.com.br/missao-empresarial-leva-empresarios-da-costa-das-baleias-para-imersao-em-turismo-de-experiencia-no-ceara/",
+          "https://giro73.com.br/eleitora-da-espanha-chega-tarde-e-perde-chance-de-votar-na-bahia/",
+          "https://giro73.com.br/inscricoes-para-vagas-remanescentes-do-fies-estao-abertas/",
+          "https://giro73.com.br/prefeito-de-teixeira-de-freitas-mobiliza-equipes-para-recuperacao-apos-vendaval/",
+          "https://giro73.com.br/prefeitura-de-itabela-garante-322-titulos-de-propriedade-para-familias-do-bairro-pereirao/",
+          "https://giro73.com.br/camara-municipal-de-itabela-transparencia-e-acesso-a-informacao/",
+          "https://giro73.com.br/pauta-da-reuniao-ordinaria-de-27-de-outubro-de-2026-em-teixeira-de-freitas/",
+          "https://giro73.com.br/itabela-brilha-na-estreia-da-copa-condesc-e-vence-itagimirim-por-3-a-2-no-manzolao/",
+          "https://giro73.com.br/lamine-yamal-e-vicky-lopez-vencem-trofeu-kopa-2026/",
+          "https://giro73.com.br/conta-digital-pj-como-escolher/",
+          "https://giro73.com.br/prefeitura-de-itabela-avanca-na-regularizacao-de-325-imoveis-no-bairro-pereirao/",
+          "https://giro73.com.br/defesa-civil-de-itabela-participa-de-capacitacao-sobre-mapeamento-de-areas-de-risco-geologico/",
+          "https://giro73.com.br/copa-brasil-de-supercross-em-itabela-velocidade-e-emocao-na-4a-etapa-com-r-35-mil-em-premiacao/",
+          "https://giro73.com.br/nota-de-esclarecimento-sobre-pregao-eletronico-no-007-2026-em-itabela/"
+        ],
+        "unexpected_urls": [
+          "https://giro73.com.br/"
+        ],
+        "expected_missing": [],
+        "x_robots_tag": "noindex",
+        "allowed_extra_home": [
+          "https://giro73.com.br/"
+        ],
+        "unexpected_non_home": []
+      },
+      "page": {
+        "http": 200,
+        "url": "https://giro73.com.br/page-sitemap.xml",
+        "count": 7,
+        "urls": [
+          "https://giro73.com.br/",
+          "https://giro73.com.br/sobre-nos/",
+          "https://giro73.com.br/politica-de-privacidade/",
+          "https://giro73.com.br/agenda-73/",
+          "https://giro73.com.br/politica-editorial/",
+          "https://giro73.com.br/contato/",
+          "https://giro73.com.br/termos-de-uso/"
+        ],
+        "unexpected_urls": [
+          "https://giro73.com.br/"
+        ],
+        "expected_missing": [],
+        "x_robots_tag": "noindex",
+        "allowed_extra_home": [
+          "https://giro73.com.br/"
+        ],
+        "unexpected_non_home": []
+      },
+      "category": {
+        "http": 200,
+        "url": "https://giro73.com.br/category-sitemap.xml",
+        "count": 6,
+        "urls": [
+          "https://giro73.com.br/category/noticias-regiao/",
+          "https://giro73.com.br/category/dinheiro-renda-extra/",
+          "https://giro73.com.br/category/tecnologia-inovacao/",
+          "https://giro73.com.br/category/esportes/",
+          "https://giro73.com.br/category/famosos-entretenimento/",
+          "https://giro73.com.br/category/politica/"
+        ],
+        "unexpected_urls": [],
+        "expected_missing": [],
+        "x_robots_tag": "noindex",
+        "allowed_extra_home": [],
+        "unexpected_non_home": []
+      }
+    },
+    "index": {
+      "http": 200,
+      "children": [
+        "https://giro73.com.br/post-sitemap.xml",
+        "https://giro73.com.br/page-sitemap.xml",
+        "https://giro73.com.br/category-sitemap.xml"
+      ]
+    }
+  },
+  "assets_after_purge": {
+    "pages": [
+      {
+        "url": "https://giro73.com.br/",
+        "assets_referenced": 11
+      },
+      {
+        "url": "https://giro73.com.br/conta-digital-pj-como-escolher/",
+        "assets_referenced": 11
+      }
+    ],
+    "owned_asset_urls": 9,
+    "checks": [
+      {
+        "url": "https://giro73.com.br/wp-content/themes/hostinger-ai-theme/assets/css/style.min.css?ver=2.1.14",
+        "type": "css",
+        "ua": "browser",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-content/themes/hostinger-ai-theme/assets/css/style.min.css?ver=2.1.14",
+        "content_type": "text/css"
+      },
+      {
+        "url": "https://giro73.com.br/wp-content/themes/hostinger-ai-theme/assets/css/style.min.css?ver=2.1.14",
+        "type": "css",
+        "ua": "audit_ua",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-content/themes/hostinger-ai-theme/assets/css/style.min.css?ver=2.1.14",
+        "content_type": "text/css"
+      },
+      {
+        "url": "https://giro73.com.br/wp-includes/js/jquery/jquery.min.js?ver=3.7.1",
+        "type": "js",
+        "ua": "browser",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-includes/js/jquery/jquery.min.js?ver=3.7.1",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-includes/js/jquery/jquery.min.js?ver=3.7.1",
+        "type": "js",
+        "ua": "audit_ua",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-includes/js/jquery/jquery.min.js?ver=3.7.1",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1",
+        "type": "js",
+        "ua": "browser",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1",
+        "type": "js",
+        "ua": "audit_ua",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-content/plugins/google-site-kit/dist/assets/js/sign-in-with-google-5a9e012872c712a23a12.js",
+        "type": "js",
+        "ua": "browser",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-content/plugins/google-site-kit/dist/assets/js/sign-in-with-google-5a9e012872c712a23a12.js",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-content/plugins/google-site-kit/dist/assets/js/sign-in-with-google-5a9e012872c712a23a12.js",
+        "type": "js",
+        "ua": "audit_ua",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-content/plugins/google-site-kit/dist/assets/js/sign-in-with-google-5a9e012872c712a23a12.js",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-includes/js/dist/hooks.min.js?ver=f0f188028580e8dc1255",
+        "type": "js",
+        "ua": "browser",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-includes/js/dist/hooks.min.js?ver=f0f188028580e8dc1255",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-includes/js/dist/hooks.min.js?ver=f0f188028580e8dc1255",
+        "type": "js",
+        "ua": "audit_ua",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-includes/js/dist/hooks.min.js?ver=f0f188028580e8dc1255",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216",
+        "type": "js",
+        "ua": "browser",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216",
+        "type": "js",
+        "ua": "audit_ua",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-content/themes/hostinger-ai-theme/assets/js/front-scripts.min.js?ver=2.1.14",
+        "type": "js",
+        "ua": "browser",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-content/themes/hostinger-ai-theme/assets/js/front-scripts.min.js?ver=2.1.14",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-content/themes/hostinger-ai-theme/assets/js/front-scripts.min.js?ver=2.1.14",
+        "type": "js",
+        "ua": "audit_ua",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-content/themes/hostinger-ai-theme/assets/js/front-scripts.min.js?ver=2.1.14",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-content/plugins/google-site-kit/dist/assets/js/googlesitekit-events-provider-content-events-90bacb156ab34fa090db.js",
+        "type": "js",
+        "ua": "browser",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-content/plugins/google-site-kit/dist/assets/js/googlesitekit-events-provider-content-events-90bacb156ab34fa090db.js",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-content/plugins/google-site-kit/dist/assets/js/googlesitekit-events-provider-content-events-90bacb156ab34fa090db.js",
+        "type": "js",
+        "ua": "audit_ua",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-content/plugins/google-site-kit/dist/assets/js/googlesitekit-events-provider-content-events-90bacb156ab34fa090db.js",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-content/plugins/google-site-kit/dist/assets/js/googlesitekit-events-provider-wpforms-7c53eae50325da8a6935.js",
+        "type": "js",
+        "ua": "browser",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-content/plugins/google-site-kit/dist/assets/js/googlesitekit-events-provider-wpforms-7c53eae50325da8a6935.js",
+        "content_type": "application/x-javascript"
+      },
+      {
+        "url": "https://giro73.com.br/wp-content/plugins/google-site-kit/dist/assets/js/googlesitekit-events-provider-wpforms-7c53eae50325da8a6935.js",
+        "type": "js",
+        "ua": "audit_ua",
+        "status": 200,
+        "final": "https://giro73.com.br/wp-content/plugins/google-site-kit/dist/assets/js/googlesitekit-events-provider-wpforms-7c53eae50325da8a6935.js",
+        "content_type": "application/x-javascript"
+      }
+    ],
+    "third_party_assets_not_tested": true
+  },
+  "relevant_active_plugins": [
+    {
+      "plugin": "litespeed-cache/litespeed-cache.php",
+      "version": "7.9.2"
+    },
+    {
+      "plugin": "seo-by-rank-math/rank-math.php",
+      "version": "1.0.280"
+    }
+  ],
+  "redirections_module_active": false,
+  "wordPress_content_changed": false,
+  "redirects_added": 0,
+  "sitemap_settings_changed": false,
+  "firewall_changed": false,
+  "cdn_purged": false,
+  "se_ranking_recrawl_triggered": false,
+  "wp_cli_or_nginx_commands_executed": false
+}
