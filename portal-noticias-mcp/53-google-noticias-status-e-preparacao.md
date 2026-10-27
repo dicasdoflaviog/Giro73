@@ -1,6 +1,6 @@
 # Google Notícias — situação observável do Giro73
 
-Conferência de leitura em 27/10/2026. O responsável informou ter realizado um cadastro, mas ainda não identificou o serviço/tela nem forneceu seu status. A integração disponível consulta WordPress e Search Console; não fornece acesso ao painel privado do Publisher Center. Não se declarou o cadastro aprovado, recusado ou em revisão.
+Conferência de leitura em 27/10/2026. O responsável confirmou que o cadastro foi feito no **Google Publisher Center**, mas ainda não forneceu o status exibido. A integração disponível consulta WordPress e Search Console; não fornece acesso ao painel privado do Publisher Center. Não se declarou o cadastro aprovado, recusado ou em revisão.
 
 ## Tráfego consultado
 
@@ -39,14 +39,14 @@ Antes de ampliar a distribuição, priorizar data original/contexto, informaçã
 
 ## Como interpretar o cadastro
 
-Google Notícias seleciona conteúdos elegíveis automaticamente. Cadastrar uma organização/publicação em um painel não garante que todas as matérias serão selecionadas ou que receberão tráfego. Publisher Center, Search Console e AdSense têm funções distintas; aprovação/monetização AdSense é outro processo.
+Google Notícias seleciona conteúdos elegíveis automaticamente. A descrição retornada para o [comunicado oficial do Google](https://support.google.com/news/publisher-center/answer/15898024?hl=en) confirma a transição completa para páginas de publicação geradas automaticamente no fim de março de 2025. Cadastrar uma organização/publicação no Publisher Center não garante que todas as matérias serão selecionadas ou que receberão tráfego. Publisher Center, Search Console e AdSense têm funções distintas; aprovação/monetização AdSense é outro processo. Não interpretar automaticamente um status de outro produto do Publisher Center como aprovação de distribuição no Google Notícias.
 
-Para confirmar o cadastro específico mencionado, é necessário o nome da tela e o texto do status exibido pelo serviço. Esse dado foi solicitado ao responsável, sem pedir credenciais. Não foram solicitadas mudanças de permissão ou novo login.
+Para confirmar o cadastro específico mencionado, falta o texto do status exibido ao abrir Giro73 no Publisher Center. O serviço já foi identificado pelo responsável, sem pedir credenciais. Não foram solicitadas mudanças de permissão ou novo login.
 
 Próximas ações recomendadas: revisar os exemplos históricos, manter produção regional original e datada, acompanhar os três relatórios do Search Console e, como melhoria técnica opcional, avaliar a ativação do news sitemap após definir os conteúdos que devem integrá-lo. Não foi prometido prazo de inclusão, nota mínima ou quantidade de artigos para seleção.
 
 ## Limites e evidências
 
-As tentativas de ler diretamente três páginas oficiais de documentação Google foram impedidas pelo proxy deste ambiente (`Tunnel connection failed: 403 Forbidden`). Não se alegou leitura dessas páginas nem foi feita consulta paga alternativa. As explicações gerais não foram atribuídas a uma página supostamente lida nessa tentativa.
+As tentativas de ler diretamente três páginas oficiais de documentação Google foram impedidas pelo proxy deste ambiente (`Tunnel connection failed: 403 Forbidden`). Em seguida, uma consulta Google Live pelo DataForSEO retornou título, URL e descrição do comunicado oficial `15898024`, entre outros resultados. Foi examinada a descrição desse resultado oficial, não o artigo integral nem o resumo gerado por IA da SERP. O custo retornado foi US$ 0,002, coincidente com a diferença do saldo de US$ 0,898 para US$ 0,896. Não houve recarga ou outra consulta paga nesta conferência.
 
 Nenhum módulo, sitemap, cadastro, status de post, cron ou cache foi alterado nesta etapa. Evidências: [validação Google Notícias](implementacao-wp/validacao-google-noticias.json).

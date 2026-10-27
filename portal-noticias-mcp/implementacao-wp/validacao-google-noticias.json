@@ -93,7 +93,7 @@
     }
   ],
   "publisher_center_account_status_accessible": false,
-  "registration_service_and_status_pending_user_reply": true,
+  "registration_service_and_status_pending_user_reply": false,
   "no_rejection_inferred_from_zero_traffic": true,
   "sitemap_submission": [
     {
@@ -138,8 +138,29 @@
       "reason": "Tunnel connection failed: 403 Forbidden"
     }
   ],
-  "paid_search_queries": 0,
+  "paid_search_queries": 1,
   "wordpress_changed": false,
   "publisher_center_changed": false,
-  "content_changed": false
+  "content_changed": false,
+  "registration_service": "Google Publisher Center",
+  "registration_status_pending_user_reply": true,
+  "rules_confirmation": {
+    "official_organic_results": [
+      {
+        "title": "Google News transitions to automatically-generated ...",
+        "url": "https://support.google.com/news/publisher-center/answer/15898024?hl=en",
+        "description": "Google News is fully transitioning to automatically generated publication pages in late March 2025."
+      },
+      {
+        "title": "Announcements - Publisher Center Help",
+        "url": "https://support.google.com/news/publisher-center/announcements/10146168?hl=en",
+        "description": "Google News is fully transitioning to automatically generated publication pages in late March 2025."
+      }
+    ],
+    "article_full_text_read": false,
+    "ai_overview_used": false,
+    "cost_usd": 0.002,
+    "balance_before_usd": 0.898,
+    "balance_after_usd": 0.896
+  }
 }
