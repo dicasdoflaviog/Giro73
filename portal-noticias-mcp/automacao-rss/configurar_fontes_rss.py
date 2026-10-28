@@ -20,6 +20,7 @@ import shutil
 import sys
 import tempfile
 import time
+import requests
 from datetime import datetime
 from urllib.parse import urljoin, urlsplit
 
@@ -41,6 +42,11 @@ FONTES = [
     ("Extremo Sul Notícias", "noticias-regiao", "https://extremosulnoticias.com.br/feed/", False),
     ("Bahia Notícias — Esportes", "esportes", "https://www.bahianoticias.com.br/esportes/rss.xml", False),
     ("Agência Brasil — Economia", "dinheiro-renda-extra", "https://agenciabrasil.ebc.com.br/rss/economia/feed.xml", False),
+    ("Agência Brasil — Esportes", "esportes", "https://agenciabrasil.ebc.com.br/rss/esportes/feed.xml", False),
+    ("GE Bahia", "esportes", "https://ge.globo.com/rss/ge/futebol/times/bahia/", False),
+    ("Canal Rural", "dinheiro-renda-extra", "https://www.canalrural.com.br/feed/", False),
+    ("Notícias Agrícolas", "dinheiro-renda-extra", "https://www.noticiasagricolas.com.br/rss/noticias.xml", False),
+    ("Canaltech", "tecnologia-inovacao", "https://canaltech.com.br/rss/", False),
     ("Olhar Digital", "tecnologia-inovacao", "https://olhardigital.com.br/feed/", False),
     ("Portal Leo Dias", "famosos-entretenimento", "https://portalleodias.com/feed", False),
     ("Sul Bahia News", "noticias-regiao", "https://www.sulbahianews.com.br/feed/", False),
@@ -240,6 +246,16 @@ def configure(path, client, definitions=FONTES, seconds=60):
             (discover and (host_key(feed.get("url", "")) == host_key(address) or
                            host_key(feed.get("site_url", "")) == host_key(address)))), None)
         if existing is not None:
+            if existing.get("authorized") is not True:
+                client.deadline = time.monotonic()+seconds
+                try:
+                    client.feed(existing["url"])
+                except (ItemError, ConfigError, Deferred, StopRun, requests.exceptions.RequestException) as error:
+                    failures.append(name)
+                    announce("NÃO REATIVADA:", name, "|", type(error).__name__)
+                    continue
+                existing["authorized"] = True
+                added += 1
             announce("JÁ CADASTRADA:", name, "|", existing["url"],
                      "| habilitada:", existing.get("authorized") is True)
             continue

@@ -26,8 +26,27 @@ APPROVED = {
         "https://agenciabrasil.ebc.com.br/rss/economia/feed.xml",
         "https://g1.globo.com/rss/g1/bahia/",
         "https://portalleodias.com/feed",
+        "https://agenciabrasil.ebc.com.br/rss/esportes/feed.xml",
+        "https://ge.globo.com/rss/ge/futebol/times/bahia/",
+        "https://www.canalrural.com.br/feed/",
+        "https://www.noticiasagricolas.com.br/rss/noticias.xml",
+        "https://olhardigital.com.br/feed/",
+        "https://canaltech.com.br/rss/",
     )
 }
+
+
+def approved_feed(feed):
+    if identity(feed.get("url","")) in APPROVED:
+        return True
+    # Government domains are the existing administrator-approved array.
+    from configurar_fontes_rss import MUNICIPIOS, FONTES, CONVERTIDAS
+    if identity(feed.get("url","")) in {identity(row[2]) for row in FONTES+CONVERTIDAS}:
+        return True
+    host = (urlsplit(feed.get("url","")).hostname or "").lower().removeprefix("www.")
+    allowed = {domain for row in MUNICIPIOS for domain in row[2:]}
+    site_host = (urlsplit(feed.get("site_url","")).hostname or "").lower().removeprefix("www.")
+    return host in allowed or (site_host in allowed and feed.get("source_type") in {"prefeitura","camara"})
 
 
 def configure(path, apply=False):
@@ -37,11 +56,16 @@ def configure(path, apply=False):
     feeds = data.get("feeds") if isinstance(data,dict) else None
     if not isinstance(feeds,list) or not feeds or any(not isinstance(f,dict) for f in feeds):
         raise ValueError('Esperado um objeto JSON com lista "feeds" não vazia.')
+    covers = json.loads(Path(__file__).with_name("capas_editorias.json").read_text())
     automatic = 0
     for feed in feeds:
-        mode = "auto" if identity(feed.get("url","")) in APPROVED else "draft"
+        mode = "auto" if approved_feed(feed) else "draft"
         feed["publication_mode"] = mode
         if mode == "auto":
+            feed["use_full_content"] = True
+            feed["fetch_article_text"] = True
+            if feed.get("category") in covers:
+                feed["fallback_image"] = covers[feed["category"]]
             feed["auto_min_chars"] = 600
             feed["auto_max_age_hours"] = 24
             automatic += feed.get("authorized") is True

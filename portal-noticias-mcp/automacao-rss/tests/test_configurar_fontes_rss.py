@@ -163,12 +163,12 @@ class ConfigureTests(unittest.TestCase):
         self.assertEqual(len(feeds), 2)
         self.assertEqual(feeds[-1]["category"], "esportes")
 
-    def test_all_fifteen_definitions_without_duplicate_liberdade(self):
+    def test_all_definitions_without_duplicate_liberdade(self):
         feeds = {address if not discover else address+"feed/": [1]
                  for _, _, address, discover in config.FONTES}
         client = Client(feeds=feeds)
         self.assertEqual(self.run_config(client, config.FONTES), 0)
-        self.assertEqual(len(json.loads(self.path.read_text())["feeds"]), 15)
+        self.assertEqual(len(json.loads(self.path.read_text())["feeds"]), len(config.FONTES))
 
     def test_government_registry_contains_requested_cities_and_roles(self):
         definitions = config.government_definitions()

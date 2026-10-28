@@ -13,7 +13,7 @@ Python 3.10+ em Ubuntu 22.04/24.04 ou posterior compatível. Não depende do bot
 - `giro73-rss.env.example`: exemplo sem credenciais reais.
 - `run-coletor-rss.sh`: wrapper com caminhos absolutos e ambiente.
 - `atualizar-vps.sh`: atualização de uma instalação existente, com backup e bloqueio contra coleta simultânea.
-- `giro73-rss.cron`: coleta de hora em hora, com limite externo de 50 minutos.
+- `giro73-rss.cron`: coleta a cada duas horas, com `--limit 10` e limite externo de 50 minutos.
 - `giro73-rss.logrotate`: rotação dos logs.
 - `tests/test_coletor_rss.py`: 27 testes automatizados com APIs simuladas.
 - `tests/test_configurar_fontes_rss.py`: 12 testes de descoberta e atualização segura da configuração.
@@ -365,3 +365,19 @@ python3 -m venv .venv-test
 ```
 
 Passaram **93 testes locais**: 27 do coletor, 12 do configurador, 12 das imagens, 12 do OpenRouter, 24 de rodízio/publicação e 6 de duplicatas. Incluem RSS → OpenRouter → WordPress com APIs simuladas, 429/503, saldo insuficiente, JSON Schema estrito, `.env`, fallback 422, resposta perdida, migração do banco, deduplicação, fotos em Handler.ashx, figura/ALT, rodízio entre execuções, prioridade para notícias recentes, publicação seletiva, sinais de revisão editorial e confirmação do status real. Nenhuma chave real foi utilizada nem matéria real criada por esses testes. O agente não acessou a VPS; a validação real deve ser feita com os comandos acima.
+
+
+## Fluxo contínuo — atualização de 28/10/2026
+
+- Até 10 candidatos por execução; cron `0 */2 * * *` (horário da VPS).
+- Rodízio persistente por **editoria e fonte** para que o volume municipal não sufoque tecnologia, economia ou esportes.
+- Fontes selecionadas do cadastro de imprensa e dos 19 municípios passam a `auto`; atas, editais, licitações e pregões ficam em revisão por matéria. Permanecem as verificações de conteúdo, frescor e sensibilidade já existentes.
+- O configurador verifica RSS antes de cadastrar ou reativar; 403, 404 e XML inválido são informados, sem inventar feeds nem ignorar proteção contra entidades XML. GE Bahia, Canal Rural, Notícias Agrícolas, Canaltech e Agência Brasil Esportes foram acrescentados à seleção.
+- Nas fontes automáticas, lê `content:encoded` e tenta o texto completo na página original. Um resumo curto não é inflado pela IA. Sem texto suficiente, a matéria não é publicada automaticamente.
+- Sem foto na fonte, usa `capas_editorias.json`: seis capas de arquivo já autorizadas e seus créditos/licenças. São identificadas como **imagem ilustrativa de arquivo**; não se apresentam como fotografia do acontecimento. Não há busca aleatória nem aprovação visual da IA implementada.
+- A atualização preserva `.env`, banco e chaves de idempotência, faz backup privado e instala o cron. O timer opcional `giro73-rss.timer` é desativado para evitar agendamento duplicado.
+- Payloads já preparados/tentados e notícias já enviadas não são promovidos nem republicados: a nova política vale para novos candidatos.
+
+Na VPS, execute o atualizador com `--apply-publication-policy`. Ele instala os arquivos, verifica/adiciona fontes de imprensa e dos municípios, aplica as capas/política, confere OpenRouter e roda **um** lote com `--limit 10`. Os logs mostram fonte, editoria, decisão, ID, capa e link efetivamente devolvidos pelo WordPress. Falhas de validação de feeds são parciais e não confirmam a ativação de uma fonte indisponível.
+
+A suíte local cobre o fluxo com APIs simuladas. A execução real depende das credenciais e do acesso de rede da VPS; estes não estão disponíveis no ambiente de desenvolvimento.

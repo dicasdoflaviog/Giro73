@@ -311,6 +311,7 @@ class Store:
           alias TEXT PRIMARY KEY, item_id TEXT NOT NULL REFERENCES items(id)
         );
         CREATE INDEX IF NOT EXISTS ready ON items(status,next_try,created_at);
+        CREATE TABLE IF NOT EXISTS category_rotation (category TEXT PRIMARY KEY, last_turn INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS source_rotation (
           source TEXT PRIMARY KEY, last_turn INTEGER NOT NULL
         );
@@ -351,7 +352,7 @@ class Store:
                 self.db.execute("INSERT OR IGNORE INTO aliases VALUES(?,?)", (alias, item_id))
         return old is None
     def ready(self, limit: int, sources=None):
-        """Rodízio persistente: a fonte menos atendida recebe a próxima vez."""
+        """Rodízio persistente por editoria e fonte, sem deixar municípios monopolizarem o lote."""
         visited = []
         for _ in range(limit):
             clauses = ["i.status IN ('queued','prepared')", "i.next_try<=?"]
@@ -366,14 +367,16 @@ class Store:
                 params.extend(visited)
             with self.db:
                 item = self.db.execute(
-                    "SELECT i.* FROM items i LEFT JOIN source_rotation r ON r.source=i.source WHERE "
-                    +" AND ".join(clauses)+" ORDER BY COALESCE(r.last_turn,0),CASE WHEN i.status='prepared' THEN 0 ELSE 1 END,"
+                    "SELECT i.* FROM items i LEFT JOIN source_rotation r ON r.source=i.source LEFT JOIN category_rotation cr ON cr.category=i.category WHERE "
+                    +" AND ".join(clauses)+" ORDER BY COALESCE(cr.last_turn,0),COALESCE(r.last_turn,0),CASE WHEN i.status='prepared' THEN 0 ELSE 1 END,"
                     "i.published_at DESC,i.created_at,i.rowid LIMIT 1",params).fetchone()
                 if item is None:
                     return
                 turn = self.db.execute("SELECT COALESCE(MAX(last_turn),0)+1 FROM source_rotation").fetchone()[0]
                 self.db.execute("INSERT INTO source_rotation(source,last_turn) VALUES(?,?) "
                                 "ON CONFLICT(source) DO UPDATE SET last_turn=excluded.last_turn",(item["source"],turn))
+                self.db.execute("INSERT INTO category_rotation(category,last_turn) VALUES(?,?) "
+                                "ON CONFLICT(category) DO UPDATE SET last_turn=excluded.last_turn",(item["category"],turn))
             visited.append(item["id"])
             yield item
     def prepare(self, key: str, payload: dict):
@@ -682,6 +685,32 @@ class Client:
             self.image_cache[url] = None
             raise
 
+    def complete_text(self, entry):
+        """Read the original article only for sources configured for full text."""
+        deadline = time.monotonic()+min(20,self.remaining()-1)
+        markup, _ = self.asset(entry["url"], 2*1024*1024, deadline)
+        soup = BeautifulSoup(markup, "html.parser")
+        for node in soup.select("script,style,nav,footer,header,aside,form,.related-posts,.sharedaddy"):
+            node.decompose()
+        candidates = soup.select('[itemprop="articleBody"], .entry-content, .post-content, .noticia-conteudo, .conteudo-noticia, article')
+        texts = [plain(str(node))[:20000] for node in candidates]
+        text = max(texts,key=len,default="")
+        if len(text) > len(entry.get("source_text","")):
+            entry["source_text"] = text
+        return entry
+
+    def fallback_image(self, source):
+        fallback = source.get("fallback_image")
+        if not fallback:
+            return None
+        try:
+            info = self.image_info(fallback["url"],time.monotonic()+min(15,self.remaining()-1))
+            info.update({"credit":fallback["credit"],"credit_url":fallback["credit_url"],"illustrative":True})
+            return info
+        except (ItemError, ConfigError, Deferred, requests.exceptions.RequestException):
+            self.remaining()
+            return None
+
     def resolve_image(self, entry):
         deadline = time.monotonic()+min(30,self.remaining()-1)
         seen = set()
@@ -772,14 +801,14 @@ def payload_from(generated: dict, entry: dict, category: str, image=None) -> dic
     image_url, image_credit, image_credit_url = "", "", ""
     if isinstance(image,dict) and clean_image_url(image.get("url", "")):
         image_url = image["url"]
-        image_credit = entry.get("image_credit") or "Imagem da fonte: "+entry["publisher"]
-        image_credit_url = entry.get("image_credit_url", "")
+        image_credit = image.get("credit") or entry.get("image_credit") or "Imagem da fonte: "+entry["publisher"]
+        image_credit_url = image.get("credit_url") or entry.get("image_credit_url", "")
         caption = image_credit if re.match(r"^(?:foto|imagem|fonte|cr[eé]dito)\s*:",image_credit,re.I) else "Foto: "+image_credit
         dimensions = ""
         if image.get("width") and image.get("height"):
             dimensions = f' width="{int(image["width"])}" height="{int(image["height"])}"'
         figure = ('<figure class="g73-imported-image"><img src="'+html.escape(image_url,quote=True)
-                  +'" alt="'+html.escape(seo["rank_math_focus_keyword"],quote=True)+'"'
+                  +'" alt="'+html.escape("Imagem ilustrativa de arquivo — "+category if image.get("illustrative") else seo["rank_math_focus_keyword"],quote=True)+'"'
                   +dimensions+' loading="lazy" decoding="async" /><figcaption>'
                   +html.escape(caption)+'</figcaption></figure>')
         position = next((index+1 for index,block in enumerate(blocks) if block["type"]=="p"),0)
@@ -841,6 +870,9 @@ def publication_decision(source, entry, generated, payload, image=None):
     """O status vem da configuração local; a IA não pode liberar uma publicação."""
     if source.get("publication_mode","draft") != "auto":
         return "draft", "revisao_manual_da_fonte"
+    material = entry.get("source_title","")+" "+entry.get("source_text","")
+    if re.search(r"\b(?:edital|editais|ata de (?:sess[aã]o|reuni[aã]o|registro)|atas de (?:sess[oõ]es|reuni[oõ]es)|licita[cç][aã]o|preg[aã]o|chamamento p[uú]blico)\b", material, re.I):
+        return "draft", "documento_institucional_requer_revisao"
     review = editorial_review_reason(entry, generated)
     if review:
         return "draft", review
@@ -890,6 +922,14 @@ def load_sources(path: Path):
             f[field] = f.get(field,default)
             if type(f[field]) is not int or not low <= f[field] <= high:
                 raise ConfigError(f"{field} deve ser inteiro entre {low} e {high}.")
+        fallback = f.get("fallback_image")
+        if fallback is not None:
+            if not isinstance(fallback,dict) or not all(isinstance(fallback.get(k),str) and fallback[k].strip() for k in ("url","credit","credit_url")):
+                raise ConfigError("fallback_image exige url, credit e credit_url autorizados.")
+            checked_url(fallback["url"],https_only=True)
+            checked_url(fallback["credit_url"],https_only=True)
+        if type(f.get("fetch_article_text",False)) is not bool:
+            raise ConfigError("fetch_article_text deve ser booleano JSON.")
         f["name"] = plain(f.get("name") or f["id"])
         for field in ("image_credit", "image_credit_url"):
             if field in f and (not isinstance(f[field],str) or len(f[field])>500):
@@ -931,7 +971,9 @@ def discover(client: Client, store: Store, sources: list):
                 if source.get("use_full_content") is True and entry.get("content"):
                     raw = " ".join(x.get("value", "") for x in entry["content"])
                 material = plain(raw)[:20000]
-                if len(material) < 180:
+                if source.get("fetch_article_text") and len(material)<30:
+                    material = plain(entry.get("title", ""))[:300]
+                if len(material) < (30 if source.get("fetch_article_text") else 180):
                     continue
                 item = {"guid": str(entry.get("id") or entry.get("guid") or ""), "url": url,
                         "publisher": source["name"], "source_title": plain(entry.get("title", ""))[:300],
@@ -971,14 +1013,24 @@ def process(client: Client, store: Store, limit: int, dry_run=False, sources=Non
                 if entry["published_at"] and entry["published_at"] < time.time()-entry["max_age_hours"]*3600:
                     store.finish(key, "skipped", error="fonte_antiga")
                     continue
+                if source.get("fetch_article_text") and hasattr(client,"complete_text"):
+                    try:
+                        entry = client.complete_text(entry)
+                    except (ItemError, ConfigError, Deferred, requests.exceptions.RequestException):
+                        client.remaining()
+                        LOG.warning("Item %s: texto original indisponível; usando material do feed.", key[:12])
                 generated = client.generate(entry)
                 image = client.resolve_image(entry) if isinstance(generated,dict) and generated.get("apto") and hasattr(client,"resolve_image") else None
+                if image is None and isinstance(generated,dict) and generated.get("apto") and hasattr(client,"fallback_image"):
+                    image = client.fallback_image(source)
+                    if image:
+                        LOG.info("Item %s: capa temática autorizada da editoria %s (imagem ilustrativa).",key[:12],item["category"])
                 payload = payload_from(generated, entry, item["category"], image=image)
                 if payload is None:
                     store.finish(key, "skipped", error="fonte_insuficiente_ou_revisao_necessaria")
                     continue
                 payload["status"], reason = publication_decision(source,entry,generated,payload,image=image)
-                LOG.info("Item %s | fonte: %s | destino: %s | motivo: %s",key[:12],source.get("name",item["source"]),payload["status"],reason)
+                LOG.info("Item %s | fonte: %s | editoria: %s | destino: %s | motivo: %s",key[:12],source.get("name",item["source"]),item["category"],payload["status"],reason)
                 store.prepare(key, payload)
                 if not payload.get("image_url"):
                     LOG.warning("Item %s: fotografia não encontrada; rascunho ficará com capa pendente.",key[:12])
@@ -1034,7 +1086,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--feeds", type=Path, default=Path("rss_fontes.json"))
     parser.add_argument("--state", type=Path, default=Path("vistos_rss.sqlite3"))
-    parser.add_argument("--limit", type=int, default=5, choices=range(1, 11), metavar="1..10")
+    parser.add_argument("--limit", type=int, default=10, choices=range(1, 11), metavar="1..10")
     parser.add_argument("--dry-run", action="store_true", help="Gera/salva os payloads, sem enviá-los; utiliza OpenRouter.")
     parser.add_argument("--check", action="store_true", help="Valida modelo, feeds e token WP sem criar matérias.")
     parser.add_argument("--check-ai", action="store_true", help="Valida chave e modelo OpenRouter, sem gerar texto nem chamar WordPress.")

@@ -52,6 +52,49 @@ class RotationPublicationTests(unittest.TestCase):
                              "permalink":"https://giro73.com.br/?p=21"}
         return r
 
+    def test_categories_get_a_turn_even_with_many_municipal_sources(self):
+        for n in range(1,15):
+            self.add(n,dict(self.source,id=f"cidade-{n}"))
+        self.add(20,dict(self.source,id="tecnologia",category="tecnologia-inovacao"))
+        self.add(21,dict(self.source,id="esportes",category="esportes"))
+        self.assertEqual({r["category"] for r in self.store.ready(3)},
+                         {"noticias-regiao","tecnologia-inovacao","esportes"})
+
+    def test_official_notice_draft_but_city_service_publishes(self):
+        e=entry();g=generated();payload=m.payload_from(g,e,"noticias-regiao",self.photo)
+        for title in ("Edital de licitação da prefeitura", "Ata de sessão da Câmara", "Pregão eletrônico"):
+            with self.subTest(title=title):
+                e["source_title"]=title
+                self.assertEqual(m.publication_decision(self.source,e,g,payload,self.photo),
+                                 ("draft","documento_institucional_requer_revisao"))
+        e["source_title"]="Prefeitura abre atendimento para vacinação"
+        self.assertEqual(m.publication_decision(self.source,e,g,payload,self.photo)[0],"publish")
+
+    def test_missing_original_image_uses_approved_cover_and_attribution(self):
+        self.add(1);c=self.client();c.resolve_image.return_value=None
+        cover=dict(self.photo,credit="Imagem ilustrativa — Autora / CC BY 4.0",
+                   credit_url="https://commons.wikimedia.org/wiki/File:Photo.jpg",illustrative=True)
+        c.fallback_image=Mock(return_value=cover)
+        c.session.request=Mock(return_value=self.response())
+        self.assertEqual(m.process(c,self.store,1,sources=[self.source]),(1,False))
+        payload=c.session.request.call_args.kwargs["json"]
+        self.assertEqual(payload["status"],"publish")
+        self.assertEqual(payload["image_credit"],cover["credit"])
+        self.assertIn("Imagem ilustrativa",payload["content"])
+
+    def test_full_article_is_read_before_generation(self):
+        self.add(1);c=self.client();c.complete_text=Mock(side_effect=lambda e:dict(e,source_text="Texto completo. "*80))
+        c.session.request=Mock(return_value=self.response())
+        m.process(c,self.store,1,sources=[dict(self.source,fetch_article_text=True)])
+        self.assertEqual(c.generate.call_args.args[0]["source_text"],"Texto completo. "*80)
+
+    def test_new_section_feeds_and_government_are_automatic(self):
+        for url in ("https://canaltech.com.br/rss/", "https://olhardigital.com.br/feed/",
+                    "https://agenciabrasil.ebc.com.br/rss/esportes/feed.xml",
+                    "https://portoseguro.ba.gov.br/feed/", "https://cmeunapolis.ba.gov.br/feed/"):
+            with self.subTest(url=url):self.assertTrue(policy.approved_feed({"url":url}))
+        self.assertFalse(policy.approved_feed({"url":"https://portoseguro.ba.gov.br.evil.example/feed/"}))
+
     def test_persistent_rotation_does_not_let_large_feed_dominate_limit_one(self):
         for n in range(1,5):self.add(n)
         b=dict(self.source,id="fonte-b");c=dict(self.source,id="fonte-c")
@@ -228,7 +271,7 @@ class RotationPublicationTests(unittest.TestCase):
             self.assertEqual(path.read_bytes(),original)
             policy.configure(path,apply=True)
         saved=json.loads(path.read_bytes())
-        self.assertEqual([f['publication_mode'] for f in saved['feeds']],['auto']*4+['draft']*2)
+        self.assertEqual([f['publication_mode'] for f in saved['feeds']],['auto']*6)
         self.assertEqual(saved['extra'],'preservar')
         self.assertEqual(next(path.parent.glob('feeds.json.bak-publicacao-*')).read_bytes(),original)
 

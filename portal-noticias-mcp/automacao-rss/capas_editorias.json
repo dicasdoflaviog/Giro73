@@ -1,0 +1,32 @@
+{
+  "noticias-regiao": {
+    "url": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-20-914aaac0a592.webp",
+    "credit": "Imagem ilustrativa de arquivo — Kelwy / CC BY-SA 4.0",
+    "credit_url": "https://commons.wikimedia.org/wiki/File:Teixeira_de_Freitas,_Bahia.jpg"
+  },
+  "politica": {
+    "url": "https://giro73.com.br/wp-content/uploads/2026/10/politica.webp",
+    "credit": "Imagem ilustrativa de arquivo — Leandro Ciuffo / CC BY 2.0",
+    "credit_url": "https://commons.wikimedia.org/wiki/File:Congresso_Nacional_Brasil.jpg"
+  },
+  "dinheiro-renda-extra": {
+    "url": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-21-5f8a5cfe768c.webp",
+    "credit": "Imagem ilustrativa de arquivo — Carlos Muza kmuza / CC0",
+    "credit_url": "https://commons.wikimedia.org/wiki/File:Statistics_on_a_laptop_(Unsplash).jpg"
+  },
+  "tecnologia-inovacao": {
+    "url": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-22-822089d7588b.webp",
+    "credit": "Imagem ilustrativa de arquivo — Simon Hattinga Verschure webmarbles / CC0",
+    "credit_url": "https://commons.wikimedia.org/wiki/File:Typing_on_a_laptop_(Unsplash).jpg"
+  },
+  "esportes": {
+    "url": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-23-5a4c87cbd163.webp",
+    "credit": "Imagem ilustrativa de arquivo — Leandro Neumann Ciuffo / CC BY 2.0",
+    "credit_url": "https://commons.wikimedia.org/wiki/File:Maracan%C3%A3_stadium.jpg"
+  },
+  "famosos-entretenimento": {
+    "url": "https://giro73.com.br/wp-content/uploads/2026/10/giro73-foto-24-4b97b8387fdd.webp",
+    "credit": "Imagem ilustrativa de arquivo — Santeri Viinamäki / CC BY-SA 4.0",
+    "credit_url": "https://commons.wikimedia.org/wiki/File:TV_remote_control_in_hand.jpg"
+  }
+}

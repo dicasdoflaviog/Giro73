@@ -31,7 +31,7 @@ fi
 
 RSS_STAGE=$(mktemp -d "$RSS_ROOT/.update.XXXXXX")
 trap 'rm -rf -- "$RSS_STAGE"' EXIT
-for RSS_FILE in coletor_rss.py requirements-rss.txt run-coletor-rss.sh configurar_publicacao_rss.py; do
+for RSS_FILE in coletor_rss.py requirements-rss.txt run-coletor-rss.sh configurar_publicacao_rss.py configurar_fontes_rss.py capas_editorias.json giro73-rss.cron; do
   curl --fail --silent --show-error --location --retry 3 --max-time 60 \
     "$RSS_BASE/$RSS_FILE" --output "$RSS_STAGE/$RSS_FILE"
 done
@@ -50,7 +50,7 @@ if ! flock -w 30 9; then
 fi
 
 RSS_BACKUP=$(mktemp -d /root/giro73-rss-backup.XXXXXX)
-for RSS_FILE in coletor_rss.py requirements-rss.txt run .env configurar_publicacao_rss.py; do
+for RSS_FILE in coletor_rss.py requirements-rss.txt run .env configurar_publicacao_rss.py configurar_fontes_rss.py capas_editorias.json; do
   if [[ -f "$RSS_ROOT/$RSS_FILE" ]]; then cp -a "$RSS_ROOT/$RSS_FILE" "$RSS_BACKUP/"; fi
 done
 if [[ -f /etc/giro73-rss.env ]]; then cp -a /etc/giro73-rss.env "$RSS_BACKUP/legacy.env"; fi
@@ -88,6 +88,9 @@ if ! (cd "$RSS_ROOT" && sudo -u giro73-rss "$RSS_ROOT/.venv/bin/python" \
   echo 'O usuário giro73-rss não consegue importar as bibliotecas. Confira permissões do venv e arquivos locais com nomes de módulos; o coletor não foi substituído.' >&2
   exit 1
 fi
+for RSS_FILE in configurar_fontes_rss.py capas_editorias.json; do
+  install -o root -g giro73-rss -m 0640 "$RSS_STAGE/$RSS_FILE" "$RSS_ROOT/$RSS_FILE"
+done
 install -o root -g giro73-rss -m 0640 "$RSS_STAGE/coletor_rss.py" "$RSS_ROOT/coletor_rss.py.new"
 install -o root -g giro73-rss -m 0640 "$RSS_STAGE/requirements-rss.txt" "$RSS_ROOT/requirements-rss.txt.new"
 install -o root -g giro73-rss -m 0750 "$RSS_STAGE/run-coletor-rss.sh" "$RSS_ROOT/run.new"
@@ -102,13 +105,22 @@ mv -f "$RSS_ROOT/requirements-rss.txt.new" "$RSS_ROOT/requirements-rss.txt"
 mv -f "$RSS_ROOT/run.new" "$RSS_ROOT/run"
 mv -f "$RSS_ROOT/configurar_publicacao_rss.py.new" "$RSS_ROOT/configurar_publicacao_rss.py"
 if [[ "$RSS_POLICY" == '--apply-publication-policy' ]]; then
+  # Feed verification failures are reported individually; do not invent RSS endpoints.
+  "$RSS_ROOT/.venv/bin/python" "$RSS_ROOT/configurar_fontes_rss.py" --timeout 20 || [[ $? == 1 ]]
+  "$RSS_ROOT/.venv/bin/python" "$RSS_ROOT/configurar_fontes_rss.py" --only-government --timeout 20 || [[ $? == 1 ]]
   "$RSS_ROOT/.venv/bin/python" "$RSS_ROOT/configurar_publicacao_rss.py" --apply
 fi
+# Replace the canonical cron, and stop the optional timer to avoid duplicate schedules.
+if command -v systemctl >/dev/null && systemctl cat giro73-rss.timer >/dev/null 2>&1; then
+  systemctl disable --now giro73-rss.timer
+fi
+if [[ -f /etc/cron.d/giro73-rss ]]; then cp -a /etc/cron.d/giro73-rss "$RSS_BACKUP/cron"; fi
+install -o root -g root -m 0644 "$RSS_STAGE/giro73-rss.cron" /etc/cron.d/giro73-rss
 flock -u 9
 exec 9>&-
 
 echo "Atualização instalada. Backup privado: $RSS_BACKUP"
 echo 'Validando OpenRouter sem gerar texto...'
 sudo -u giro73-rss /opt/giro73-rss/run --check-ai
-echo 'Processando até um candidato; confira ID, capa e link no log...'
-sudo -u giro73-rss /opt/giro73-rss/run --limit 1
+echo 'Processando até dez candidatos; confira editoria, status, capa e link no log...'
+sudo -u giro73-rss /opt/giro73-rss/run --limit 10
