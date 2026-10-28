@@ -51,8 +51,9 @@ NON_IMAGE_EXTENSIONS = {".svg", ".ico", ".pdf", ".html", ".htm", ".js", ".css", 
                         ".txt", ".mp4", ".webm", ".mp3", ".zip", ".woff", ".woff2"}
 SCHEMA = {
     "type": "object", "additionalProperties": False,
-    "required": ["apto", "observacao", "title", "excerpt", "blocks", "summary_points", "tags", "meta"],
+    "required": ["apto", "observacao", "title", "excerpt", "blocks", "summary_points", "tags", "meta", "editorial_category"],
     "properties": {
+        "editorial_category": {"type":"string","enum":sorted(CATEGORIES)},
         "summary_points": {"type":"array","minItems":3,"maxItems":3,"items":{"type":"string"}},
         "apto": {"type": "boolean"}, "observacao": {"type": "string"},
         "title": {"type": "string"}, "excerpt": {"type": "string"},
@@ -90,7 +91,17 @@ focus keyword 100, título SEO 100, descrição SEO 200; até 8 tags de 60 carac
 Comece o texto com um parágrafo. Use uma palavra-chave fiel aos fatos e, de modo natural,
 inclua-a no título, título SEO, descrição SEO, primeiro parágrafo e em um subtítulo quando
 apropriado. Não repita artificialmente nem aumente o texto sem informação para obter nota.
-Entregue summary_points com exatamente três fatos: o que aconteceu, onde/quando e impacto prático; não invente impacto ou data ausente. Título SEO de 50 a 60 caracteres e descrição SEO de 140 a 155 caracteres, sem encher texto ou inventar localização. O programa insere resumo GEO, links internos, fotografia e seu ALT; não invente imagens, créditos ou URLs.
+A palavra-chave deve ser uma expressão natural que apareça literalmente no título, título SEO,
+meta descrição e primeiro parágrafo. Escolha uma expressão curta já sustentada pelos fatos;
+não escolha "Bahia x São Paulo" se escreveu "Bahia e São Paulo". Quando houver subtítulos,
+use a expressão em um deles apenas se continuar claro e natural. Título SEO preferencialmente
+até 65 caracteres, descrição até 160, sem cortar fatos ou fabricar números. Não há mínimo
+obrigatório de 600 palavras, densidade-alvo, obrigação de lista, FAQ ou sumário. Nunca infle
+texto para pontuação. Escreva o essencial primeiro; identifique fonte, nomes, local e datas
+somente quando fornecidos. Não converta prognóstico em certeza nem data de coleta em evento.
+editorial_category deve classificar a notícia pelo assunto, não pela marca do feed: futebol
+publicado no Olhar Digital pertence a esportes. Use apenas as seis categorias permitidas.
+summary_points deve conter exatamente três fatos: o que aconteceu, onde/quando e impacto prático, sem inventar informações ausentes. O programa insere o resumo GEO, a fotografia e seu ALT; não invente imagens, créditos ou URLs.
 A política local pode publicar fontes autorizadas; a IA não decide o status. Casos que exigem
 apuração adicional devem retornar apto=false. Responda apenas no JSON solicitado."""
 
@@ -261,10 +272,10 @@ def html_image_candidates(markup, base, article=False):
                 size = float(words[1][:-1]) if len(words)>1 and re.fullmatch(r"\d+(?:\.\d+)?[wx]", words[1]) else 0
                 variants.append((size, words[0]))
         for _, url in sorted(variants, reverse=True):
-            candidates.append({"url": url})
+            candidates.append({"url": url,"alt":plain(tag.get("alt", ""))[:300]})
         for key in ("data-src", "data-lazy-src", "data-original", "src"):
             if tag.get(key):
-                candidates.append({"url": tag[key]})
+                candidates.append({"url": tag[key],"alt":plain(tag.get("alt", ""))[:300]})
     result, seen = [], set()
     for candidate in candidates:
         url = clean_image_url(candidate["url"], base)
@@ -288,12 +299,140 @@ def feed_image_candidates(entry, base):
     for candidate in candidates:
         url = clean_image_url(candidate["url"], base)
         if url and url not in seen:
-            seen.add(url); result.append({"url": url})
+            seen.add(url); result.append(dict(candidate,url=url))
     return result[:8]
 
 def without_managed_image(content):
     return re.sub(r'<figure\b[^>]*\bclass="[^\"]*\bg73-imported-image\b[^\"]*"[^>]*>.*?</figure\s*>',
                   '', content, flags=re.I|re.S)
+
+# HTML municipal: apenas páginas públicas da mesma origem e data original explícita.
+def municipal_host(url):
+    return (urlsplit(url).hostname or "").lower().removeprefix("www.")
+
+
+def municipal_article_url(url):
+    parsed=urlsplit(url)
+    path=unquote(parsed.path).rstrip("/").lower()
+    return bool(path and path not in {"/site","/site/index.php","/index.php","/noticias","/site/noticias","/noticia","/news"}
+                and not re.search(r"/(?:category|categoria|tag|feed|rss)(?:/|$)",path)
+                and Path(path).suffix not in NON_IMAGE_EXTENSIONS-{".html",".htm"})
+
+
+def municipal_links(markup, base):
+    soup=BeautifulSoup(markup,"html.parser")
+    found={}
+    for a in soup.find_all("a",href=True):
+        if a.find_parent(["nav","footer","aside"]):continue
+        if a.find_parent("header") and not a.find_parent("article"):continue
+        title=plain(str(a)) or str(a.get("title","")).strip()
+        if len(title)<20 or title.lower().startswith(("ver todas","mais notícias","leia mais","últimas notícias")):continue
+        try:url=https_feed_url(a["href"],base)
+        except (ConfigError,ValueError):continue
+        if municipal_host(url)!=municipal_host(base) or not municipal_article_url(url):continue
+        if not (a.find_parent(["h2","h3","h4","article"]) or a.find(["h2","h3","h4"]) or re.search(r"/(?:noticias?|news|20\d\d)(?:/|-)",urlsplit(url).path,re.I)):continue
+        key=canonical_url(url).rstrip("/")
+        if key not in found:found[key]={"url":url,"title":title[:300]}
+    return list(found.values())[:16]
+
+
+def municipal_date(value):
+    from datetime import datetime, timezone
+    from zoneinfo import ZoneInfo
+    value=str(value or "").strip()
+    if not value:return None
+    try:date=datetime.fromisoformat(value.replace("Z","+00:00"))
+    except ValueError:
+        date=None
+        match=re.search(r"\b(\d{2})/(\d{2})/(20\d{2})(?:\s+(?:[àa]s\s+)?(\d{2}):(\d{2}))?",value)
+        if match:
+            try:date=datetime(int(match[3]),int(match[2]),int(match[1]),int(match[4] or 0),int(match[5] or 0))
+            except ValueError:return None
+        else:
+            months={'janeiro':1,'fevereiro':2,'março':3,'abril':4,'maio':5,'junho':6,'julho':7,'agosto':8,'setembro':9,'outubro':10,'novembro':11,'dezembro':12}
+            match=re.search(r"\b(\d{1,2})\s+de\s+("+'|'.join(months)+r")\s+de\s+(20\d{2})\b",value,re.I)
+            if match:
+                try:date=datetime(int(match[3]),months[match[2].lower()],int(match[1]))
+                except ValueError:return None
+    if date is None:return None
+    if date.tzinfo is None:date=date.replace(tzinfo=ZoneInfo("America/Bahia"))
+    return date.astimezone(timezone.utc).timestamp()
+
+
+def municipal_article(markup, url, expected_title=""):
+    """Nenhuma data de rodapé, atualização do portal ou data de captura vira publicação."""
+    soup=BeautifulSoup(markup,"html.parser")
+    published=None
+    def nodes(value):
+        if isinstance(value,dict):
+            yield value
+            for child in value.values():yield from nodes(child)
+        elif isinstance(value,list):
+            for child in value:yield from nodes(child)
+    for script in soup.find_all('script',type='application/ld+json'):
+        try:graph=json.loads(script.string or script.get_text())
+        except (ValueError,TypeError):continue
+        for node in nodes(graph):
+            kinds=node.get('@type',[]);kinds=kinds if isinstance(kinds,list) else [kinds]
+            if set(kinds)&{'NewsArticle','Article','BlogPosting'}:
+                if node.get('url') and canonical_url(urljoin(url,str(node['url']))).rstrip('/')!=canonical_url(url).rstrip('/'):continue
+                published=municipal_date(node.get('datePublished'))
+                if published is not None:break
+        if published is not None:break
+    if published is None:
+        for meta in soup.select('meta[property="article:published_time"],meta[itemprop="datePublished"],meta[name="pubdate"]'):
+            published=municipal_date(meta.get('content'))
+            if published is not None:break
+    if published is None:
+        for node in soup.select('article time,main time,time.published,[itemprop="datePublished"],.entry-date,.data-publicacao,.data-noticia,.noticia-data,.post-date'):
+            classes=' '.join(node.get('class',[])).lower()
+            text=node.get_text(' ',strip=True)
+            if any(x in classes+' '+text.lower() for x in ('updated','modified','atualiza')):continue
+            published=municipal_date(node.get('datetime') or node.get('content') or text)
+            if published is not None:break
+    if published is None:
+        scope=soup.select_one('article,main')
+        if scope:
+            for node in scope.find_all(['small','span','div']):
+                label=node.get_text(' ',strip=True)
+                if len(label)<=180 and re.match(r'^(?:publicado(?: em)?|data de publica[cç][aã]o)\b',label,re.I):
+                    published=municipal_date(label)
+                    if published is not None:break
+    if published is None:return None
+    title_node=soup.select_one('article h1,main h1,.entry-title,.noticia-titulo')
+    title=plain(str(title_node)) if title_node else ''
+    if not title:
+        og=soup.find('meta',property='og:title');title=plain(og.get('content','')) if og else ''
+    if not title and soup.h1:title=plain(str(soup.h1))
+    if expected_title:
+        # Evita aceitar nome do portal ou listagem no lugar da matéria.
+        expected=set(re.findall(r'\w{4,}',expected_title.casefold()))
+        actual=set(re.findall(r'\w{4,}',title.casefold()))
+        if expected and len(expected&actual)/len(expected)<0.5:
+            for heading in soup.find_all(['h1','h2','h3']):
+                if heading.find_parent(['nav','footer','aside']):continue
+                candidate=plain(str(heading));tokens=set(re.findall(r'\w{4,}',candidate.casefold()))
+                if len(expected&tokens)/len(expected)>=0.8:
+                    title=candidate;actual=tokens;break
+        if not expected or len(expected&actual)/len(expected)<0.5:return None
+    if len(title)<20:return None
+    content=soup.select_one('[itemprop="articleBody"],.entry-content,.post-content,.noticia-conteudo,.conteudo-noticia,.texto-noticia,#divConteudoNoticia,article,main')
+    if content is None:return None
+    content=BeautifulSoup(str(content),'html.parser')
+    for node in content.select('script,style,nav,footer,header,aside,form,.related-posts,.entry-meta,.post-meta,.cookie-notice'):
+        node.decompose()
+    paragraphs=[p.get_text(' ',strip=True) for p in content.find_all('p') if len(p.get_text(' ',strip=True))>=30]
+    text='\n'.join(paragraphs)[:20000]
+    if len(text)<180:return None
+    canonical=soup.find('link',rel='canonical')
+    if canonical and canonical.get('href'):
+        candidate=https_feed_url(canonical['href'],url)
+        if municipal_host(candidate)==municipal_host(url) and municipal_article_url(candidate):url=candidate
+    images=html_image_candidates(markup,url,article=True)
+    return feedparser.FeedParserDict({'id':canonical_url(url),'link':url,'title':title[:300],
+        'summary':html.escape(text),'content':[{'value':html.escape(text)}],
+        'published_parsed':time.gmtime(published),'g73_html_images':images})
+
 
 class Store:
     def __init__(self, path: Path):
@@ -312,6 +451,7 @@ class Store:
           alias TEXT PRIMARY KEY, item_id TEXT NOT NULL REFERENCES items(id)
         );
         CREATE INDEX IF NOT EXISTS ready ON items(status,next_try,created_at);
+        CREATE TABLE IF NOT EXISTS category_rotation (category TEXT PRIMARY KEY, last_turn INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS source_rotation (
           source TEXT PRIMARY KEY, last_turn INTEGER NOT NULL
         );
@@ -338,6 +478,12 @@ class Store:
         # HTTP e HTTPS do mesmo endereço compartilham identidade; utm/fbclid são removidos.
         p = urlsplit(url)
         aliases = [digest("url:" + urlunsplit(("", p.netloc, p.path, p.query, "")))]
+        if p.hostname and p.port is None:
+            host=p.hostname.lower().removeprefix("www.")
+            for alias_host in (host,"www."+host):
+                for alias_path in (p.path.rstrip("/"),p.path.rstrip("/")+"/"):
+                    aliases.append(digest("url:"+urlunsplit(("",alias_host,alias_path,p.query,""))))
+        aliases=list(dict.fromkeys(aliases))
         if entry.get("guid"):
             aliases.append(digest("guid:" + source["id"] + ":" + entry["guid"]))
         with self.db:
@@ -352,7 +498,7 @@ class Store:
                 self.db.execute("INSERT OR IGNORE INTO aliases VALUES(?,?)", (alias, item_id))
         return old is None
     def ready(self, limit: int, sources=None):
-        """Rodízio persistente: a fonte menos atendida recebe a próxima vez."""
+        """Rodízio persistente por editoria e fonte, sem deixar municípios monopolizarem o lote."""
         visited = []
         for _ in range(limit):
             clauses = ["i.status IN ('queued','prepared')", "i.next_try<=?"]
@@ -367,14 +513,16 @@ class Store:
                 params.extend(visited)
             with self.db:
                 item = self.db.execute(
-                    "SELECT i.* FROM items i LEFT JOIN source_rotation r ON r.source=i.source WHERE "
-                    +" AND ".join(clauses)+" ORDER BY COALESCE(r.last_turn,0),CASE WHEN i.status='prepared' THEN 0 ELSE 1 END,"
+                    "SELECT i.* FROM items i LEFT JOIN source_rotation r ON r.source=i.source LEFT JOIN category_rotation cr ON cr.category=i.category WHERE "
+                    +" AND ".join(clauses)+" ORDER BY COALESCE(cr.last_turn,0),COALESCE(r.last_turn,0),CASE WHEN i.status='prepared' THEN 0 ELSE 1 END,"
                     "i.published_at DESC,i.created_at,i.rowid LIMIT 1",params).fetchone()
                 if item is None:
                     return
                 turn = self.db.execute("SELECT COALESCE(MAX(last_turn),0)+1 FROM source_rotation").fetchone()[0]
                 self.db.execute("INSERT INTO source_rotation(source,last_turn) VALUES(?,?) "
                                 "ON CONFLICT(source) DO UPDATE SET last_turn=excluded.last_turn",(item["source"],turn))
+                self.db.execute("INSERT INTO category_rotation(category,last_turn) VALUES(?,?) "
+                                "ON CONFLICT(category) DO UPDATE SET last_turn=excluded.last_turn",(item["category"],turn))
             visited.append(item["id"])
             yield item
     def prepare(self, key: str, payload: dict):
@@ -537,13 +685,14 @@ class Client:
         soup = BeautifulSoup(data,"html.parser")
         for node in soup.select("script,style,nav,header,footer,aside,form"):
             node.decompose()
-        article = soup.select_one('article, [itemprop="articleBody"], .entry-content, .post-content, main')
+        article = soup.select_one('[itemprop="articleBody"], .entry-content, .post-content, .noticia-conteudo, .conteudo-noticia, .texto-noticia, #divConteudoNoticia, article, main')
         if article is None:
             raise ItemError("Não foi possível identificar o corpo da notícia original.")
         paragraphs = [plain(str(x)) for x in article.find_all("p") if len(plain(str(x))) >= 35][:2]
         if len(paragraphs) < 2:
             raise ItemError("Dois parágrafos originais não disponíveis: nenhuma redação gerada.")
         return "\n\n".join(paragraphs)[:8000]
+
     def preflight(self, entry):
         body = {"source_published_at":entry.get("published_at"),"source_date_basis":entry.get("date_basis"),
                 "source_url":entry.get("url"),"source_title":entry.get("source_title"),
@@ -561,6 +710,7 @@ class Client:
             return data
         finally:
             r.close()
+
     def generate(self, source: dict):
         self.check_model()
         material = {key: source[key] for key in ("source_title","source_text","url","publisher","published_at","regional_scope") if key in source}
@@ -712,6 +862,94 @@ class Client:
             self.image_cache[url] = None
             raise
 
+    def municipal_page(self, url, deadline):
+        """HTTPS e redirects públicos; não reutiliza headers de serviços autenticados."""
+        url=https_feed_url(url)
+        for _ in range(5):
+            public_feed_host(url)
+            budget=min(self.remaining(),deadline-time.monotonic())
+            if budget<=0:raise ItemError("Tempo de leitura HTML esgotado.")
+            previous=self.deadline
+            self.deadline=min(previous,deadline)
+            try:response=self.request('GET',url,'rss',stream=True)
+            finally:self.deadline=previous
+            try:
+                if response.status_code in {301,302,303,307,308}:
+                    target=feed_redirect_url(url,response.headers.get('Location',''))
+                    if municipal_host(target)!=municipal_host(url):raise ItemError('Redirecionamento HTML fora do domínio autorizado.')
+                    url=target;continue
+                if response.status_code!=200:raise ItemError(f'Página municipal HTTP {response.status_code}.')
+                data=bytearray()
+                for chunk in response.iter_content(32768):
+                    self.remaining()
+                    if time.monotonic()>deadline:raise ItemError('Tempo de leitura HTML esgotado.')
+                    data.extend(chunk)
+                    if len(data)>2*1024*1024:raise ItemError('Página municipal acima de 2 MB.')
+                return bytes(data),url
+            finally:response.close()
+        raise ItemError('Excesso de redirecionamentos HTML.')
+
+    def html_feed(self, source):
+        root=source.get('site_url') or source['url']
+        deadline=min(self.deadline,time.monotonic()+30)
+        paths=[source['url']] if source.get('transport')=='html' else []
+        paths+= [urljoin(root,'/noticias'),urljoin(root,'/site/noticias'),root]
+        links={};listings=[];verified=False
+        for address in dict.fromkeys(paths):
+            if time.monotonic()>=deadline:break
+            try:
+                markup,final=self.municipal_page(address,deadline)
+                if municipal_host(final)!=municipal_host(root):continue
+                candidates=municipal_links(markup,final)
+                soup=BeautifulSoup(markup,'html.parser')
+                headings=' '.join(h.get_text(' ',strip=True) for h in soup.find_all(['h1','h2']))
+                if candidates or re.search(r'not[ií]cias|nenhuma not[ií]cia',headings,re.I):
+                    verified=True;listings.append(final)
+                for candidate in candidates:links.setdefault(candidate['url'].rstrip('/'),candidate)
+                if links:break
+            except (ItemError,ConfigError,Deferred,requests.exceptions.RequestException):
+                self.remaining();continue
+        entries=[]
+        for candidate in list(links.values())[:8]:
+            if time.monotonic()>=deadline:break
+            try:
+                markup,final=self.municipal_page(candidate['url'],deadline)
+                if municipal_host(final)!=municipal_host(root):continue
+                entry=municipal_article(markup,final,candidate['title'])
+                if entry:entries.append(entry)
+            except (ItemError,ConfigError,Deferred,ValueError,requests.exceptions.RequestException):
+                self.remaining();continue
+        if not verified:raise ItemError('Nenhuma listagem HTML de notícias validada; revisar iframe, JavaScript ou estrutura.')
+        self.html_listing_url=listings[0]
+        LOG.info('Fonte municipal %s: HTML validado, %s matérias com texto e data original.',source.get('name',root),len(entries))
+        return entries
+
+    def complete_text(self, entry):
+        """Read the original article only for sources configured for full text."""
+        deadline = time.monotonic()+min(20,self.remaining()-1)
+        markup, _ = self.asset(entry["url"], 2*1024*1024, deadline)
+        soup = BeautifulSoup(markup, "html.parser")
+        for node in soup.select("script,style,nav,footer,header,aside,form,.related-posts,.sharedaddy"):
+            node.decompose()
+        candidates = soup.select('[itemprop="articleBody"], .entry-content, .post-content, .noticia-conteudo, .conteudo-noticia, article')
+        texts = [plain(str(node))[:20000] for node in candidates]
+        text = max(texts,key=len,default="")
+        if len(text) > len(entry.get("source_text","")):
+            entry["source_text"] = text
+        return entry
+
+    def fallback_image(self, source):
+        fallback = source.get("fallback_image")
+        if not fallback:
+            return None
+        try:
+            info = self.image_info(fallback["url"],time.monotonic()+min(15,self.remaining()-1))
+            info.update({"credit":fallback["credit"],"credit_url":fallback["credit_url"],"illustrative":True})
+            return info
+        except (ItemError, ConfigError, Deferred, requests.exceptions.RequestException):
+            self.remaining()
+            return None
+
     def resolve_image(self, entry):
         deadline = time.monotonic()+min(30,self.remaining()-1)
         seen = set()
@@ -724,7 +962,10 @@ class Client:
                     break
                 seen.add(url)
                 try:
-                    return self.image_info(url, deadline)
+                    info = self.image_info(url, deadline)
+                    if isinstance(candidate,dict) and candidate.get("alt"):
+                        info["alt"] = plain(candidate["alt"])[:300]
+                    return info
                 except (ItemError, ConfigError, Deferred, requests.exceptions.RequestException):
                     self.remaining()  # Só o limite global encerra a fila; DNS de foto não encerra.
                     continue
@@ -781,6 +1022,9 @@ def payload_from(generated: dict, entry: dict, category: str, image=None) -> dic
         if not result:
             raise ItemError("Campo editorial vazio após sanitização.")
         return result
+    category = generated.get("editorial_category",category)
+    if category not in CATEGORIES:
+        raise ItemError("Editoria editorial inválida.")
     title = text(generated.get("title"), 200)
     if len(title.encode()) > 600:
         raise ItemError("Título acima do limite do endpoint.")
@@ -802,34 +1046,35 @@ def payload_from(generated: dict, entry: dict, category: str, image=None) -> dic
     image_url, image_credit, image_credit_url = "", "", ""
     if isinstance(image,dict) and clean_image_url(image.get("url", "")):
         image_url = image["url"]
-        image_credit = entry.get("image_credit") or "Imagem da fonte: "+entry["publisher"]
-        image_credit_url = entry.get("image_credit_url", "")
+        image_credit = image.get("credit") or entry.get("image_credit") or "Imagem da fonte: "+entry["publisher"]
+        image_credit_url = image.get("credit_url") or entry.get("image_credit_url", "")
         caption = image_credit if re.match(r"^(?:foto|imagem|fonte|cr[eé]dito)\s*:",image_credit,re.I) else "Foto: "+image_credit
         dimensions = ""
         if image.get("width") and image.get("height"):
             dimensions = f' width="{int(image["width"])}" height="{int(image["height"])}"'
         figure = ('<figure class="g73-imported-image"><img src="'+html.escape(image_url,quote=True)
-                  +'" alt="'+html.escape(seo["rank_math_focus_keyword"],quote=True)+'"'
+                  +'" alt="'+html.escape("Imagem ilustrativa de arquivo — "+category if image.get("illustrative") else image.get("alt") or "Imagem fornecida por "+entry["publisher"],quote=True)+'"'
                   +dimensions+' loading="lazy" decoding="async" /><figcaption>'
                   +html.escape(caption)+'</figcaption></figure>')
         position = next((index+1 for index,block in enumerate(blocks) if block["type"]=="p"),0)
         content.insert(position,figure)
+    category_names={"noticias-regiao":"Notícias e Região","politica":"Política", "dinheiro-renda-extra":"Dinheiro e Renda Extra", "tecnologia-inovacao":"Tecnologia e Inovação", "esportes":"Esportes", "famosos-entretenimento":"Famosos e Entretenimento"}
+    content.append('<p>Veja também a editoria de <a href="https://giro73.com.br/category/'+category+'/">'+category_names[category]+'</a> do Giro73.</p>')
     points = generated.get("summary_points")
-    if not isinstance(points,list) or len(points) != 3 or any(not isinstance(x,str) or not x.strip() for x in points):
+    if not isinstance(points,list) or len(points)!=3 or any(not isinstance(x,str) or not x.strip() for x in points):
         raise ItemError("Resumo GEO exige exatamente três fatos verificáveis.")
-    # Server inserts summary once, immediately after the first paragraph.
-    content.append('<p>Leia também <a href="https://giro73.com.br/category/'+html.escape(category,quote=True)+'/">mais notícias desta editoria</a>.</p>')
     tags = generated.get("tags", [])
     if not isinstance(tags, list) or len(tags) > 8:
         raise ItemError("Tags inválidas.")
     return {"title": title, "content": "\n".join(content), "excerpt": excerpt,"source_url":entry["url"],
             "category": category, "tags": list(dict.fromkeys(text(x, 60) for x in tags)),
             "image_url": image_url, "image_credit": image_credit, "image_credit_url": image_credit_url,
-            "status": "draft", "meta": seo, "summary_points": points,
-            "source_published_at": entry.get("published_at"), "source_date_basis": entry.get("date_basis"),
-            "source_lead": entry.get("source_lead",entry.get("source_text", ""))[:8000], "source_title": entry.get("source_title", ""),
-            "source_feed_url": entry.get("source_feed_url", ""), "source_name":entry.get("source_name",entry.get("publisher", "")),
-            "source_type": entry.get("source_type", "")}
+            "image_alt": ("Imagem ilustrativa de arquivo — "+category if image and image.get("illustrative") else image.get("alt") or "Imagem fornecida por "+entry["publisher"]) if image else "",
+            "status": "draft", "meta": seo, "summary_points":points,
+            "source_published_at":entry.get("published_at"),"source_date_basis":entry.get("date_basis"),
+            "source_lead":entry.get("source_lead",entry.get("source_text", ""))[:8000],"source_title":entry.get("source_title", ""),
+            "source_feed_url":entry.get("source_feed_url", ""),"source_name":entry.get("source_name",entry.get("publisher", "")),
+            "source_type":entry.get("source_type", "")}
 
 RSS_MAX_AGE_SECONDS = 86400
 
@@ -843,6 +1088,7 @@ def municipal_source(source, entry=None):
     name = " ".join(str(source.get(k, "")) for k in ("name", "source_type", "type"))
     return bool(re.search(r"prefeitura|c[aâ]mara|municipal|di[aá]rio oficial", name, re.I))
 
+
 def rss_freshness_reason(entry, now=None):
     now = time.time() if now is None else now
     stamp = entry.get("published_at")
@@ -853,6 +1099,7 @@ def rss_freshness_reason(entry, now=None):
     if now - stamp > RSS_MAX_AGE_SECONDS:
         return "fonte_antiga_mais_de_24h"
     return None
+
 
 def source_url_date(url):
     """Indício datado da referência, não prova da data de um acontecimento."""
@@ -899,15 +1146,34 @@ def editorial_review_reason(entry, generated):
     return None
 
 
+def seo_issues(payload):
+    """Content checks, never a fabricated Rank Math score or a word-count target."""
+    meta=payload.get("meta",{})
+    keyword=plain(meta.get("rank_math_focus_keyword","")).casefold().strip()
+    if not keyword:
+        return ["palavra_chave_ausente"]
+    soup=BeautifulSoup(payload.get("content",""),"html.parser")
+    lead=soup.find("p")
+    fields={"titulo":payload.get("title",""),"titulo_seo":meta.get("rank_math_title",""),
+            "descricao_seo":meta.get("rank_math_description",""),"abertura":lead.get_text(" ",strip=True) if lead else ""}
+    return ["palavra_chave_incoerente_"+name for name,value in fields.items()
+            if keyword not in plain(value).casefold()]
+
+
 def publication_decision(source, entry, generated, payload, image=None):
     """O status vem da configuração local; a IA não pode liberar uma publicação."""
-    if municipal_source(source, entry):
+    if municipal_source(source,entry):
         return "draft", "fonte_municipal_revisao_obrigatoria"
     if rss_freshness_reason(entry):
         return "draft", "data_fora_da_janela_automatica"
+    material = entry.get("source_title","")+" "+entry.get("source_text","")
+    if re.search(r"\b(?:edital|editais|ata de (?:sess[aã]o|reuni[aã]o|registro)|atas de (?:sess[oõ]es|reuni[oõ]es)|licita[cç][aã]o|preg[aã]o|chamamento p[uú]blico)\b", material, re.I):
+        return "draft", "documento_institucional_requer_revisao"
     review = editorial_review_reason(entry, generated)
     if review:
         return "draft", review
+    if seo_issues(payload):
+        return "draft", "seo_requer_revisao:"+",".join(seo_issues(payload))
     if entry.get("date_basis") == "updated":
         return "draft", "somente_data_de_atualizacao_requer_revisao"
     minimum = source.get("auto_min_chars",600)
@@ -943,10 +1209,13 @@ def load_sources(path: Path):
         checked_url(f.get("url", ""), https_only=True)
         if not isinstance(f.get("category"), str) or f["category"] not in CATEGORIES:
             raise ConfigError("Categoria de fonte fora das seis editorias configuradas.")
-        for flag in ("use_full_content", "allow_undated"):
+        for flag in ("use_full_content", "allow_undated", "seo_required", "html_fallback"):
             if type(f.get(flag, False)) is not bool:
                 raise ConfigError(f"{flag} deve ser booleano JSON.")
         f = dict(f)
+        f["transport"] = f.get("transport","rss")
+        if f["transport"] not in {"rss","html"}:raise ConfigError("transport deve ser rss ou html.")
+        if f["transport"]=="html":checked_url(f.get("site_url",f["url"]),https_only=True)
         f["publication_mode"] = f.get("publication_mode","draft")
         if f["publication_mode"] not in {"draft","auto"}:
             raise ConfigError("publication_mode deve ser draft ou auto.")
@@ -954,6 +1223,14 @@ def load_sources(path: Path):
             f[field] = f.get(field,default)
             if type(f[field]) is not int or not low <= f[field] <= high:
                 raise ConfigError(f"{field} deve ser inteiro entre {low} e {high}.")
+        fallback = f.get("fallback_image")
+        if fallback is not None:
+            if not isinstance(fallback,dict) or not all(isinstance(fallback.get(k),str) and fallback[k].strip() for k in ("url","credit","credit_url")):
+                raise ConfigError("fallback_image exige url, credit e credit_url autorizados.")
+            checked_url(fallback["url"],https_only=True)
+            checked_url(fallback["credit_url"],https_only=True)
+        if type(f.get("fetch_article_text",False)) is not bool:
+            raise ConfigError("fetch_article_text deve ser booleano JSON.")
         f["name"] = plain(f.get("name") or f["id"])
         for field in ("image_credit", "image_credit_url"):
             if field in f and (not isinstance(f[field],str) or len(f[field])>500):
@@ -962,6 +1239,7 @@ def load_sources(path: Path):
             checked_url(f["image_credit_url"],https_only=True)
         f["publication_mode"] = "draft" if municipal_source(f) else "auto"
         f["auto_max_age_hours"] = 24
+        f["seo_required"] = True
         f["allow_undated"] = False
         f["max_age_hours"] = 24
         if not 1 <= f["max_age_hours"] <= 720:
@@ -971,11 +1249,22 @@ def load_sources(path: Path):
         raise ConfigError("Nenhuma fonte autorizada: edite o JSON com URLs reais e authorized=true.")
     return approved
 
+def read_source(client,source):
+    if source.get("transport")=="html":return client.html_feed(source),"html"
+    try:return client.feed(source["url"]),"rss"
+    except (ItemError,ConfigError,Deferred,requests.exceptions.RequestException):
+        if source.get("html_fallback") and source.get("source_type") in {"prefeitura","camara"} and source.get("site_url"):
+            client.remaining()
+            LOG.warning("Fonte %s: RSS indisponível; verificando HTML da mesma fonte, sem novo cadastro.",source["id"])
+            return client.html_feed(source),"html"
+        raise
+
+
 def discover(client: Client, store: Store, sources: list):
     total, errors = 0, 0
     for source in sources:
         try:
-            entries = client.feed(source["url"])
+            entries, extraction = read_source(client,source)
             added = 0
             for entry in entries[:50]:
                 link = entry.get("link") or entry.get("id", "")
@@ -998,15 +1287,17 @@ def discover(client: Client, store: Store, sources: list):
                 if source.get("use_full_content") is True and entry.get("content"):
                     raw = " ".join(x.get("value", "") for x in entry["content"])
                 material = plain(raw)[:20000]
-                if len(material) < 180:
+                if source.get("fetch_article_text") and len(material)<30:
+                    material = plain(entry.get("title", ""))[:300]
+                if len(material) < (30 if source.get("fetch_article_text") else 180):
                     continue
                 item = {"guid": str(entry.get("id") or entry.get("guid") or ""), "url": url,
                         "publisher": source["name"], "source_title": plain(entry.get("title", ""))[:300],
                         "source_text": material, "published_at": published,
-                        "source_feed_url": source["url"], "source_name": source["name"],
-                        "source_type": source.get("source_type", ""), "max_age_hours": 24, "regional_scope": "Teixeira de Freitas e Extremo Sul da Bahia",
+                        "source_feed_url":source["url"], "source_name":source["name"], "source_type":source.get("source_type", ""),
+                        "max_age_hours":24, "extraction":extraction, "regional_scope": "Teixeira de Freitas e Extremo Sul da Bahia",
                         "date_basis": "published" if entry.get("published_parsed") else "updated" if entry.get("updated_parsed") else "unknown"}
-                item["image_candidates"] = feed_image_candidates(entry, url)
+                item["image_candidates"] = entry.get("g73_html_images") or feed_image_candidates(entry, url)
                 credits = entry.get("media_credit", [])
                 media_credit = " ".join(str(c.get("content") or c.get("value") or "") for c in credits if isinstance(c,dict))
                 item["image_credit"] = plain(source.get("image_credit") or media_credit)[:250]
@@ -1032,18 +1323,14 @@ def process(client: Client, store: Store, limit: int, dry_run=False, sources=Non
             client.remaining()
             entry = json.loads(item["input_json"])
             payload = json.loads(item["payload"]) if item["payload"] else None
-            reason = rss_freshness_reason(entry)
+            reason=rss_freshness_reason(entry)
             if reason:
                 store.finish(key,"skipped",error=reason)
                 LOG.info("Item %s descartado antes de gerar/enviar: %s",key[:12],reason)
                 continue
-            entry["source_lead"] = client.original_lead(entry)
-            # Preflight checks original source and last 50 posts before generation.
-            if not dry_run:
-                client.preflight(entry)
-            elif hasattr(client,"preflight"):
-                client.preflight(entry)
-            # Old prepared payloads cannot bypass freshness or new required metadata.
+            entry["source_lead"]=client.original_lead(entry)
+            client.preflight(entry)
+            # Prepared backlog cannot bypass freshness, original lead or deduplication.
             if payload is None:
                 review = source_date_review_reason(entry.get("url", ""))
                 if review:
@@ -1053,26 +1340,35 @@ def process(client: Client, store: Store, limit: int, dry_run=False, sources=Non
                 if rss_freshness_reason(entry):
                     store.finish(key, "skipped", error="fonte_antiga")
                     continue
+                if source.get("fetch_article_text") and entry.get("extraction")!="html" and hasattr(client,"complete_text"):
+                    try:
+                        entry = client.complete_text(entry)
+                    except (ItemError, ConfigError, Deferred, requests.exceptions.RequestException):
+                        client.remaining()
+                        LOG.warning("Item %s: texto original indisponível; usando material do feed.", key[:12])
                 generated = client.generate(entry)
                 image = client.resolve_image(entry) if isinstance(generated,dict) and generated.get("apto") and hasattr(client,"resolve_image") else None
+                if image is None and isinstance(generated,dict) and generated.get("apto") and hasattr(client,"fallback_image"):
+                    image = client.fallback_image(source)
+                    if image:
+                        LOG.info("Item %s: capa temática autorizada da editoria %s (imagem ilustrativa).",key[:12],item["category"])
                 payload = payload_from(generated, entry, item["category"], image=image)
                 if payload is None:
                     store.finish(key, "skipped", error="fonte_insuficiente_ou_revisao_necessaria")
                     continue
                 payload["status"], reason = publication_decision(source,entry,generated,payload,image=image)
                 payload["editorial_hold"] = payload["status"] == "draft" and not municipal_source(source,entry)
-                LOG.info("Item %s | fonte: %s | destino: %s | motivo: %s",key[:12],source.get("name",item["source"]),payload["status"],reason)
+                LOG.info("Item %s | fonte: %s | editoria: %s | destino: %s | motivo: %s",key[:12],source.get("name",item["source"]),payload["category"],payload["status"],reason)
                 store.prepare(key, payload)
                 if not payload.get("image_url"):
                     LOG.warning("Item %s: fotografia não encontrada; rascunho ficará com capa pendente.",key[:12])
-            # Rebuild publication policy even for a prepared payload; legacy payloads fail closed.
             if not payload.get("source_published_at") or not payload.get("summary_points"):
                 store.finish(key,"blocked",error="payload_legado_requer_repreparo_politica_20261028")
                 continue
             if municipal_source(source,entry):
-                payload["status"] = "draft"
-            elif payload["status"] == "draft":
-                payload["editorial_hold"] = True
+                payload["status"]="draft"
+            elif payload["status"]=="draft":
+                payload["editorial_hold"]=True
             if dry_run:
                 LOG.info("Item %s preparado; dry-run não envia ao WordPress.", key[:12])
                 continue
@@ -1196,13 +1492,13 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--feeds", type=Path, default=Path("rss_fontes.json"))
     parser.add_argument("--state", type=Path, default=Path("vistos_rss.sqlite3"))
-    parser.add_argument("--limit", type=int, default=5, choices=range(1, 11), metavar="1..10")
+    parser.add_argument("--limit", type=int, default=10, choices=range(1, 11), metavar="1..10")
     parser.add_argument("--dry-run", action="store_true", help="Gera/salva os payloads, sem enviá-los; utiliza OpenRouter.")
     parser.add_argument("--check", action="store_true", help="Valida modelo, feeds e token WP sem criar matérias.")
     parser.add_argument("--check-ai", action="store_true", help="Valida chave e modelo OpenRouter, sem gerar texto nem chamar WordPress.")
     parser.add_argument("--list-models", action="store_true", help="Lista IDs de modelos do catálogo OpenRouter.")
-    parser.add_argument("--policy-self-test", action="store_true", help="Valida travas sem rede, IA ou escrita no WordPress.")
-    parser.add_argument("--policy-check-server", action="store_true", help="Valida preflight autenticado, sem publicar nem usar IA.")
+    parser.add_argument("--policy-self-test",action="store_true",help="Valida as travas sem rede, IA ou publicações.")
+    parser.add_argument("--policy-check-server",action="store_true",help="Valida o preflight sem publicar ou usar IA.")
     parser.add_argument("--status", action="store_true", help="Mostra contagem local, sem acessar APIs.")
     parser.add_argument("--retry-image-errors", action="store_true", help="Reabre apenas os bloqueados por 422 de imagem, sem foto; não chama APIs.")
     args = parser.parse_args(argv)
@@ -1262,7 +1558,7 @@ def main(argv=None):
             client.check_model()
             client.check_wordpress()
             for source in sources:
-                LOG.info("Fonte %s: %s entradas RSS/Atom recebidas.", source["id"], len(client.feed(source["url"])))
+                LOG.info("Fonte %s: %s entradas RSS/Atom recebidas.", source["id"], len(read_source(client,source)[0]))
             LOG.info("Checagem concluída: nenhum artigo criado, nenhuma geração de texto solicitada.")
             return 0
         _, errors = discover(client, store, sources)
