@@ -16,7 +16,7 @@ import configurar_publicacao_rss as policy
 
 
 def generated():
-    return {"apto":True,"observacao":"","title":"Informação regional",
+    return {"summary_points":["O serviço foi atualizado.","A informação é regional.","Consulte os detalhes na fonte."],"apto":True,"observacao":"","title":"Informação regional",
             "excerpt":"Resumo factual.","blocks":[{"type":"p","text":"Informação confirmada pela fonte. "*25}],
             "tags":[],"meta":dict(zip(m.SEO_FIELDS,["informação regional","Informação regional","Descrição factual."]))}
 
@@ -24,7 +24,7 @@ def generated():
 def entry(number=1,age=60):
     return {"guid":str(number),"url":f"https://fonte.example/noticia-{number}",
             "publisher":"Fonte","source_title":"Notícia","source_text":"Informação factual da fonte. "*30,
-            "published_at":time.time()-age,"max_age_hours":72}
+            "date_basis":"published","published_at":time.time()-age,"max_age_hours":72}
 
 
 class RotationPublicationTests(unittest.TestCase):
@@ -44,6 +44,8 @@ class RotationPublicationTests(unittest.TestCase):
         self.addCleanup(c.session.close)
         c.generate=Mock(side_effect=lambda _:generated())
         c.resolve_image=Mock(return_value=self.photo)
+        c.preflight=Mock(return_value={"status":"publish"})
+        c.original_lead=Mock(side_effect=lambda e:e.get("source_text",""))
         return c
 
     def response(self,status="publish",media=22):
@@ -94,7 +96,7 @@ class RotationPublicationTests(unittest.TestCase):
         g=generated();e=entry()
         self.assertLess(len(g['blocks'][0]['text'].split()),600)
         payload=m.payload_from(g,e,'noticias-regiao',self.photo)
-        self.assertEqual(m.publication_decision(self.source,e,g,payload)[0],'publish')
+        self.assertEqual(m.publication_decision(self.source,e,g,payload,image=self.photo)[0],'publish')
         for target in ('source','generated','image','date'):
             with self.subTest(target=target):
                 data=copy.deepcopy(g);material=copy.deepcopy(e);out=copy.deepcopy(payload)
@@ -178,7 +180,7 @@ class RotationPublicationTests(unittest.TestCase):
         self.store.prepare(row['id'],old)
         c=self.client();c.session.request=Mock(return_value=self.response('draft'))
         m.process(c,self.store,1,sources=[self.source])
-        self.assertEqual(c.session.request.call_args.kwargs['json'],old)
+        self.assertEqual(c.session.request.call_args.kwargs['json'],dict(old,editorial_hold=True))
         c.generate.assert_not_called()
 
     def test_lost_publish_response_resumes_same_payload_and_idempotency_key(self):
@@ -191,14 +193,14 @@ class RotationPublicationTests(unittest.TestCase):
         self.assertEqual(first,c.session.request.call_args.kwargs)
         self.assertEqual(c.generate.call_count,1)
 
-    def test_revoked_auto_permission_does_not_send_prepared_publish(self):
+    def test_prepared_publish_is_forced_to_draft_for_municipal_source(self):
         self.add(1);row=self.store.db.execute('SELECT * FROM items').fetchone()
         payload=m.payload_from(generated(),entry(),'noticias-regiao',self.photo);payload['status']='publish'
         self.store.prepare(row['id'],payload)
-        c=self.client();c.session.request=Mock()
-        self.assertEqual(m.process(c,self.store,1,sources=[dict(self.source,publication_mode='draft')]),(0,True))
-        c.session.request.assert_not_called()
-        self.assertEqual(self.store.counts(),{'blocked':1})
+        c=self.client();c.session.request=Mock(return_value=self.response('draft'))
+        self.assertEqual(m.process(c,self.store,1,sources=[dict(self.source,name='Prefeitura Municipal')]),(1,False))
+        self.assertEqual(c.session.request.call_args.kwargs['json']['status'],'draft')
+        self.assertEqual(self.store.counts(),{'sent':1})
 
     def test_old_endpoint_image_error_retries_as_draft_not_publish(self):
         self.add(1);c=self.client();bad=self.response();bad.status_code=422
