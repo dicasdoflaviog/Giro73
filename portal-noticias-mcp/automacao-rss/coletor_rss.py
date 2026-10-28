@@ -51,8 +51,9 @@ NON_IMAGE_EXTENSIONS = {".svg", ".ico", ".pdf", ".html", ".htm", ".js", ".css", 
                         ".txt", ".mp4", ".webm", ".mp3", ".zip", ".woff", ".woff2"}
 SCHEMA = {
     "type": "object", "additionalProperties": False,
-    "required": ["apto", "observacao", "title", "excerpt", "blocks", "tags", "meta"],
+    "required": ["apto", "observacao", "title", "excerpt", "blocks", "summary_points", "tags", "meta"],
     "properties": {
+        "summary_points": {"type":"array","minItems":3,"maxItems":3,"items":{"type":"string"}},
         "apto": {"type": "boolean"}, "observacao": {"type": "string"},
         "title": {"type": "string"}, "excerpt": {"type": "string"},
         "blocks": {"type": "array", "items": {"type": "object", "additionalProperties": False,
@@ -89,7 +90,7 @@ focus keyword 100, título SEO 100, descrição SEO 200; até 8 tags de 60 carac
 Comece o texto com um parágrafo. Use uma palavra-chave fiel aos fatos e, de modo natural,
 inclua-a no título, título SEO, descrição SEO, primeiro parágrafo e em um subtítulo quando
 apropriado. Não repita artificialmente nem aumente o texto sem informação para obter nota.
-O programa insere a fotografia e seu ALT; não invente imagens, créditos ou URLs.
+Entregue summary_points com exatamente três fatos: o que aconteceu, onde/quando e impacto prático; não invente impacto ou data ausente. Título SEO de 50 a 60 caracteres e descrição SEO de 140 a 155 caracteres, sem encher texto ou inventar localização. O programa insere resumo GEO, links internos, fotografia e seu ALT; não invente imagens, créditos ou URLs.
 A política local pode publicar fontes autorizadas; a IA não decide o status. Casos que exigem
 apuração adicional devem retornar apto=false. Responda apenas no JSON solicitado."""
 
@@ -531,6 +532,35 @@ class Client:
                 raise StopRun("AI_MODEL não informa suporte a response_format; escolha um modelo com saída estruturada.")
             self.model_checked = True
             LOG.info("OpenRouter: chave e modelo %s validados.", self.model)
+    def original_lead(self, entry):
+        data, _ = self.asset(entry["url"],2*1024*1024,time.monotonic()+25)
+        soup = BeautifulSoup(data,"html.parser")
+        for node in soup.select("script,style,nav,header,footer,aside,form"):
+            node.decompose()
+        article = soup.select_one('article, [itemprop="articleBody"], .entry-content, .post-content, main')
+        if article is None:
+            raise ItemError("Não foi possível identificar o corpo da notícia original.")
+        paragraphs = [plain(str(x)) for x in article.find_all("p") if len(plain(str(x))) >= 35][:2]
+        if len(paragraphs) < 2:
+            raise ItemError("Dois parágrafos originais não disponíveis: nenhuma redação gerada.")
+        return "\n\n".join(paragraphs)[:8000]
+    def preflight(self, entry):
+        body = {"source_published_at":entry.get("published_at"),"source_date_basis":entry.get("date_basis"),
+                "source_url":entry.get("url"),"source_title":entry.get("source_title"),
+                "source_lead":entry.get("source_lead",entry.get("source_text", ""))[:8000],"source_feed_url":entry.get("source_feed_url", ""),
+                "source_name":entry.get("source_name",entry.get("publisher", "")),"source_type":entry.get("source_type", "")}
+        url = self.endpoint.rsplit("/",1)[0]+"/rss-preflight"
+        r = self.request("POST",url,"wordpress",headers={"X-G73-Token":self.wp_token},json=body)
+        try:
+            data = r.json()
+            if r.status_code == 409:
+                info=data.get("data",{})
+                raise DuplicateArticle("g73_duplicate_article",info.get("existing_id"),None)
+            if r.status_code != 200:
+                raise ItemError("RSS preflight rejeitado: "+str(data.get("code",r.status_code)))
+            return data
+        finally:
+            r.close()
     def generate(self, source: dict):
         self.check_model()
         material = {key: source[key] for key in ("source_title","source_text","url","publisher","published_at","regional_scope") if key in source}
@@ -784,13 +814,45 @@ def payload_from(generated: dict, entry: dict, category: str, image=None) -> dic
                   +html.escape(caption)+'</figcaption></figure>')
         position = next((index+1 for index,block in enumerate(blocks) if block["type"]=="p"),0)
         content.insert(position,figure)
+    points = generated.get("summary_points")
+    if not isinstance(points,list) or len(points) != 3 or any(not isinstance(x,str) or not x.strip() for x in points):
+        raise ItemError("Resumo GEO exige exatamente três fatos verificáveis.")
+    # Server inserts summary once, immediately after the first paragraph.
+    content.append('<p>Leia também <a href="https://giro73.com.br/category/'+html.escape(category,quote=True)+'/">mais notícias desta editoria</a>.</p>')
     tags = generated.get("tags", [])
     if not isinstance(tags, list) or len(tags) > 8:
         raise ItemError("Tags inválidas.")
     return {"title": title, "content": "\n".join(content), "excerpt": excerpt,"source_url":entry["url"],
             "category": category, "tags": list(dict.fromkeys(text(x, 60) for x in tags)),
             "image_url": image_url, "image_credit": image_credit, "image_credit_url": image_credit_url,
-            "status": "draft", "meta": seo}
+            "status": "draft", "meta": seo, "summary_points": points,
+            "source_published_at": entry.get("published_at"), "source_date_basis": entry.get("date_basis"),
+            "source_lead": entry.get("source_lead",entry.get("source_text", ""))[:8000], "source_title": entry.get("source_title", ""),
+            "source_feed_url": entry.get("source_feed_url", ""), "source_name":entry.get("source_name",entry.get("publisher", "")),
+            "source_type": entry.get("source_type", "")}
+
+RSS_MAX_AGE_SECONDS = 86400
+
+def municipal_source(source, entry=None):
+    entry = entry or {}
+    urls = [source.get("url", ""), entry.get("url", "")]
+    for url in urls:
+        host = (urlsplit(url).hostname or "").lower()
+        if re.search(r"(?:^|\.)(?:gov|leg)\.br$|prefeitura|camara", host):
+            return True
+    name = " ".join(str(source.get(k, "")) for k in ("name", "source_type", "type"))
+    return bool(re.search(r"prefeitura|c[aâ]mara|municipal|di[aá]rio oficial", name, re.I))
+
+def rss_freshness_reason(entry, now=None):
+    now = time.time() if now is None else now
+    stamp = entry.get("published_at")
+    if type(stamp) not in {int,float} or not 0 < stamp <= now:
+        return "data_original_ausente_invalida_ou_futura"
+    if entry.get("date_basis") != "published":
+        return "pubDate_original_obrigatorio"
+    if now - stamp > RSS_MAX_AGE_SECONDS:
+        return "fonte_antiga_mais_de_24h"
+    return None
 
 def source_url_date(url):
     """Indício datado da referência, não prova da data de um acontecimento."""
@@ -839,8 +901,10 @@ def editorial_review_reason(entry, generated):
 
 def publication_decision(source, entry, generated, payload, image=None):
     """O status vem da configuração local; a IA não pode liberar uma publicação."""
-    if source.get("publication_mode","draft") != "auto":
-        return "draft", "revisao_manual_da_fonte"
+    if municipal_source(source, entry):
+        return "draft", "fonte_municipal_revisao_obrigatoria"
+    if rss_freshness_reason(entry):
+        return "draft", "data_fora_da_janela_automatica"
     review = editorial_review_reason(entry, generated)
     if review:
         return "draft", review
@@ -857,7 +921,7 @@ def publication_decision(source, entry, generated, payload, image=None):
         return "draft", "data_fora_da_janela_automatica"
     if not payload.get("image_url"):
         return "draft", "capa_pendente"
-    if isinstance(image, dict) and min(image.get("width", 0), image.get("height", 0)) < 400:
+    if not isinstance(image, dict) or image.get("width", 0) < 1200:
         return "draft", "capa_pequena_requer_revisao"
     return "publish", "fonte_automatica_com_requisitos_atendidos"
 
@@ -896,7 +960,10 @@ def load_sources(path: Path):
                 raise ConfigError("Crédito de imagem inválido na fonte.")
         if f.get("image_credit_url"):
             checked_url(f["image_credit_url"],https_only=True)
-        f["max_age_hours"] = int(f.get("max_age_hours", 72))
+        f["publication_mode"] = "draft" if municipal_source(f) else "auto"
+        f["auto_max_age_hours"] = 24
+        f["allow_undated"] = False
+        f["max_age_hours"] = 24
         if not 1 <= f["max_age_hours"] <= 720:
             raise ConfigError("max_age_hours deve ficar entre 1 e 720.")
         approved.append(f)
@@ -921,11 +988,11 @@ def discover(client: Client, store: Store, sources: list):
                 # Conversores podem fornecer uma data de captura recente para um arquivo antigo.
                 if source_date_review_reason(url):
                     continue
-                parsed_date = entry.get("published_parsed") or entry.get("updated_parsed")
+                parsed_date = entry.get("published_parsed")
                 published = calendar.timegm(parsed_date) if parsed_date else None
-                if published is None and not source.get("allow_undated", False):
+                if published is None:
                     continue
-                if published is not None and (published > time.time()+300 or published < time.time()-source["max_age_hours"]*3600):
+                if published is not None and (published > time.time() or published < time.time()-RSS_MAX_AGE_SECONDS):
                     continue
                 raw = entry.get("summary", "")
                 if source.get("use_full_content") is True and entry.get("content"):
@@ -936,7 +1003,8 @@ def discover(client: Client, store: Store, sources: list):
                 item = {"guid": str(entry.get("id") or entry.get("guid") or ""), "url": url,
                         "publisher": source["name"], "source_title": plain(entry.get("title", ""))[:300],
                         "source_text": material, "published_at": published,
-                        "max_age_hours": source["max_age_hours"], "regional_scope": "Teixeira de Freitas e Extremo Sul da Bahia",
+                        "source_feed_url": source["url"], "source_name": source["name"],
+                        "source_type": source.get("source_type", ""), "max_age_hours": 24, "regional_scope": "Teixeira de Freitas e Extremo Sul da Bahia",
                         "date_basis": "published" if entry.get("published_parsed") else "updated" if entry.get("updated_parsed") else "unknown"}
                 item["image_candidates"] = feed_image_candidates(entry, url)
                 credits = entry.get("media_credit", [])
@@ -945,7 +1013,10 @@ def discover(client: Client, store: Store, sources: list):
                 item["image_credit_url"] = source.get("image_credit_url", "")
                 added += store.discover(source, item)
             total += added
-            LOG.info("Fonte %s: %s candidatos novos.", source["id"], added)
+            if added == 0:
+                LOG.info("Fonte %s sem pautas novas nas últimas 24h — nenhuma postagem gerada.", source.get("name",source["id"]))
+            else:
+                LOG.info("Fonte %s: %s candidatos novos.", source["id"], added)
         except (ItemError, Deferred, ConfigError, StopRun, requests.exceptions.RequestException):
             errors += 1
             LOG.warning("Fonte %s indisponível/inválida nesta execução; demais fontes continuam.", source["id"])
@@ -961,14 +1032,25 @@ def process(client: Client, store: Store, limit: int, dry_run=False, sources=Non
             client.remaining()
             entry = json.loads(item["input_json"])
             payload = json.loads(item["payload"]) if item["payload"] else None
-            # Payload já enviado/tentado é imutável, mesmo se envelhecer: resolve resposta perdida.
+            reason = rss_freshness_reason(entry)
+            if reason:
+                store.finish(key,"skipped",error=reason)
+                LOG.info("Item %s descartado antes de gerar/enviar: %s",key[:12],reason)
+                continue
+            entry["source_lead"] = client.original_lead(entry)
+            # Preflight checks original source and last 50 posts before generation.
+            if not dry_run:
+                client.preflight(entry)
+            elif hasattr(client,"preflight"):
+                client.preflight(entry)
+            # Old prepared payloads cannot bypass freshness or new required metadata.
             if payload is None:
                 review = source_date_review_reason(entry.get("url", ""))
                 if review:
                     store.finish(key, "blocked", error=review)
                     LOG.warning("Item %s reservado para revisão: %s; nenhuma geração ou publicação solicitada.", key[:12], review)
                     continue
-                if entry["published_at"] and entry["published_at"] < time.time()-entry["max_age_hours"]*3600:
+                if rss_freshness_reason(entry):
                     store.finish(key, "skipped", error="fonte_antiga")
                     continue
                 generated = client.generate(entry)
@@ -978,17 +1060,26 @@ def process(client: Client, store: Store, limit: int, dry_run=False, sources=Non
                     store.finish(key, "skipped", error="fonte_insuficiente_ou_revisao_necessaria")
                     continue
                 payload["status"], reason = publication_decision(source,entry,generated,payload,image=image)
+                payload["editorial_hold"] = payload["status"] == "draft" and not municipal_source(source,entry)
                 LOG.info("Item %s | fonte: %s | destino: %s | motivo: %s",key[:12],source.get("name",item["source"]),payload["status"],reason)
                 store.prepare(key, payload)
                 if not payload.get("image_url"):
                     LOG.warning("Item %s: fotografia não encontrada; rascunho ficará com capa pendente.",key[:12])
+            # Rebuild publication policy even for a prepared payload; legacy payloads fail closed.
+            if not payload.get("source_published_at") or not payload.get("summary_points"):
+                store.finish(key,"blocked",error="payload_legado_requer_repreparo_politica_20261028")
+                continue
+            if municipal_source(source,entry):
+                payload["status"] = "draft"
+            elif payload["status"] == "draft":
+                payload["editorial_hold"] = True
             if dry_run:
                 LOG.info("Item %s preparado; dry-run não envia ao WordPress.", key[:12])
                 continue
             store.attempt(key)
             try:
                 if payload.get("status") == "publish":
-                    if source.get("publication_mode") != "auto":
+                    if municipal_source(source,entry):
                         raise ItemError("Publicação preparada sem autorização atual da fonte; revisar antes de retomar.")
                     post_id = client.submit(key,payload,allow_publish=True)
                 else:
@@ -1030,6 +1121,77 @@ def process(client: Client, store: Store, limit: int, dry_run=False, sources=Non
             return processed, True
     return processed, issues
 
+def policy_self_test():
+    """Offline tests: no secrets, network, AI generation or WordPress writes."""
+    now = time.time()
+    fresh = {"published_at":now-60,"date_basis":"published"}
+    cases = [("fresh",fresh,None),
+             ("over_24h",dict(fresh,published_at=now-86401),"fonte_antiga_mais_de_24h"),
+             ("exactly_24h",dict(fresh,published_at=now-86400),None),
+             ("missing_date",{},"data_original_ausente_invalida_ou_futura"),
+             ("future",dict(fresh,published_at=now+1),"data_original_ausente_invalida_ou_futura"),
+             ("updated_only",dict(fresh,date_basis="updated"),"pubDate_original_obrigatorio")]
+    for name,entry,expected in cases:
+        assert rss_freshness_reason(entry,now)==expected,name
+        print("PASS "+name)
+    for source,expected in [({"url":"https://camaramucuri.ba.gov.br/feed/"},True),
+                            ({"url":"https://prefeitura.example/feed/"},True),
+                            ({"url":"https://legislativo.leg.br/feed/"},True),
+                            ({"name":"Câmara Municipal"},True),
+                            ({"url":"https://portal.example/feed/"},False)]:
+        assert municipal_source(source)==expected
+    print("PASS source_status_classifier")
+    import tempfile
+    class NoSideEffects:
+        def remaining(self): return 600
+        def __getattr__(self,name): raise AssertionError("Old backlog attempted side effect: "+name)
+    with tempfile.TemporaryDirectory() as directory:
+        store = Store(Path(directory)/"test.sqlite3")
+        try:
+            source = {"id":"self-test","category":"noticias-regiao"}
+            old = dict(fresh,published_at=now-90000,url="https://portal.example/old",guid="old",max_age_hours=720)
+            store.discover(source,old)
+            row=store.db.execute("SELECT id FROM items").fetchone()
+            store.prepare(row[0],{"status":"publish","title":"Old prepared payload"})
+            assert process(NoSideEffects(),store,1,sources=[source])==(0,False)
+            assert store.counts()=={"skipped":1}
+        finally:
+            store.close()
+    print("PASS expired_prepared_backlog_no_generation_no_submit")
+    print("RSS_POLICY_SELF_TEST_OK")
+    return 0
+
+
+def policy_check_server():
+    """Authenticated preflight only: creates zero posts and makes no AI calls."""
+    load_environment()
+    token=os.environ.get("G73_TOKEN", "").strip()
+    if not token: raise ConfigError("G73_TOKEN ausente no ambiente do serviço.")
+    endpoint=os.environ.get("G73_PUBLISH_URL","https://giro73.com.br/wp-json/g73/v1/publish")
+    checked_url(endpoint,https_only=True)
+    if urlsplit(endpoint).hostname!="giro73.com.br": raise ConfigError("Destino WordPress inesperado.")
+    url=endpoint.rsplit("/",1)[0]+"/rss-preflight"
+    now=time.time()
+    base={"source_published_at":now-60,"source_date_basis":"published", "source_url":"https://portal.example/policy-self-test",
+          "source_title":"Validação técnica sem criação de post", "source_lead":"Um serviço foi atualizado nesta manhã. A fonte confirmou as informações."}
+    tests=[("old",dict(base,source_published_at=now-90000),422,"g73_rss_stale"),
+           ("missing",dict(base,source_published_at=None),422,"g73_rss_date_required"),
+           ("municipal",dict(base,source_url="https://camara.example/policy-self-test"),200,"draft"),
+           ("news",base,200,"publish")]
+    for name,body,status,value in tests:
+        response=requests.post(url,headers={"X-G73-Token":token},json=body,timeout=(10,30),allow_redirects=False)
+        try:
+            result=response.json()
+            actual=result.get("status") if status==200 else result.get("code")
+            if response.status_code!=status or actual!=value:
+                raise ConfigError("Preflight do servidor falhou no caso "+name+"; nenhuma publicação solicitada.")
+            print("PASS server_"+name+" => "+str(actual))
+        finally:
+            response.close()
+    print("RSS_SERVER_POLICY_OK; posts_created=0")
+    return 0
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--feeds", type=Path, default=Path("rss_fontes.json"))
@@ -1039,9 +1201,19 @@ def main(argv=None):
     parser.add_argument("--check", action="store_true", help="Valida modelo, feeds e token WP sem criar matérias.")
     parser.add_argument("--check-ai", action="store_true", help="Valida chave e modelo OpenRouter, sem gerar texto nem chamar WordPress.")
     parser.add_argument("--list-models", action="store_true", help="Lista IDs de modelos do catálogo OpenRouter.")
+    parser.add_argument("--policy-self-test", action="store_true", help="Valida travas sem rede, IA ou escrita no WordPress.")
+    parser.add_argument("--policy-check-server", action="store_true", help="Valida preflight autenticado, sem publicar nem usar IA.")
     parser.add_argument("--status", action="store_true", help="Mostra contagem local, sem acessar APIs.")
     parser.add_argument("--retry-image-errors", action="store_true", help="Reabre apenas os bloqueados por 422 de imagem, sem foto; não chama APIs.")
     args = parser.parse_args(argv)
+    if args.policy_self_test:
+        return policy_self_test()
+    if args.policy_check_server:
+        try:
+            return policy_check_server()
+        except (ConfigError,requests.RequestException,ValueError):
+            print("Falha de validação do servidor; nenhuma publicação solicitada e nenhuma credencial exibida.")
+            return 2
     os.umask(0o077)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     store = None
