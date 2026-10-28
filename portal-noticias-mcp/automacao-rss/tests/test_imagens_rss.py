@@ -58,7 +58,7 @@ class ImageTests(unittest.TestCase):
                   '<article><img class="share" src="/arquivo1.jpg">'
                   '<img src="/Handler.ashx?f=i&amp;query=123" width="800" height="450" alt="Obras na cidade"></article>')
         candidates = m.html_image_candidates(markup,'https://camara.example/noticia',article=True)
-        self.assertEqual(candidates,[{'url':'https://camara.example/Handler.ashx?f=i&query=123'}])
+        self.assertEqual(candidates,[{'url':'https://camara.example/Handler.ashx?f=i&query=123','alt':'Obras na cidade'}])
 
     def test_srcset_prefers_larger_image_and_accepts_lazy_loading(self):
         markup = '<article><img data-src="/foto.jpg" srcset="/foto-400.jpg 400w, /foto-1200.jpg 1200w"></article>'
@@ -126,7 +126,7 @@ class ImageTests(unittest.TestCase):
         soup=m.BeautifulSoup(payload['content'],'html.parser')
         figure=soup.find('figure')
         self.assertEqual(soup.find('p').find_next_sibling().name,'figure')
-        self.assertEqual(figure.img['alt'],keyword)
+        self.assertEqual(figure.img['alt'],'Imagem fornecida por Fonte regional')
         self.assertEqual(figure.img['src'],payload['image_url'])
         self.assertEqual(figure.figcaption.get_text(),'Foto: Divulgação / Fonte Oficial')
         self.assertEqual(payload['status'],'draft')
