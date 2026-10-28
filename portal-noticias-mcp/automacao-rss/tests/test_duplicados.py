@@ -9,6 +9,8 @@ class DuplicateTests(unittest.TestCase):
     def client(self):
         client=m.Client('test-router','test-wp','openai/gpt-4o-mini','https://giro73.com.br/wp-json/g73/v1/publish',time.monotonic()+300)
         self.addCleanup(client.session.close)
+        client.original_lead=Mock(return_value="Informação factual da fonte. "*5)
+        client.preflight=Mock(return_value={"status":"publish"})
         return client
     def reply(self,code,url='https://giro73.com.br/existente/'):
         response=Mock(status_code=409,headers={})
@@ -29,10 +31,10 @@ class DuplicateTests(unittest.TestCase):
             store=m.Store(Path(directory)/'state.sqlite3')
             try:
                 source={'id':'source','category':'noticias-regiao'}
-                entry={'url':'https://origem.example/artigo','guid':'1','published_at':time.time(),'max_age_hours':72}
+                entry={'url':'https://origem.example/artigo','guid':'1','date_basis':'published','published_at':time.time(),'max_age_hours':72}
                 store.discover(source,entry)
                 row=store.db.execute('SELECT id FROM items').fetchone()
-                store.prepare(row['id'],{'title':'Notícia','status':'draft','image_url':''})
+                store.prepare(row['id'],{'title':'Notícia','status':'draft','image_url':'','source_published_at':time.time(),'summary_points':['Fato','Local','Impacto']})
                 c=self.client();c.session.request=Mock(return_value=self.reply(code))
                 result=m.process(c,store,1)
                 saved=dict(store.db.execute('SELECT * FROM items').fetchone())
@@ -55,7 +57,7 @@ class DuplicateTests(unittest.TestCase):
         with self.assertRaises(m.ItemError) as error:c.submit('key',{'status':'draft'})
         self.assertNotIsInstance(error.exception,m.DuplicateArticle)
     def test_source_url_is_assembled_locally_not_chosen_by_model(self):
-        g={'apto':True,'title':'Notícia','excerpt':'Resumo','blocks':[{'type':'p','text':'Fatos da fonte.'}],'tags':[],
+        g={'summary_points':['Fato','Local','Impacto'],'apto':True,'title':'Notícia','excerpt':'Resumo','blocks':[{'type':'p','text':'Fatos da fonte.'}],'tags':[],
            'meta':dict(zip(m.SEO_FIELDS,['notícia','Título','Descrição'])),'source_url':'https://inventado.example/'}
         result=m.payload_from(g,{'url':'https://origem.example/artigo','publisher':'Origem'},'noticias-regiao')
         self.assertEqual(result['source_url'],'https://origem.example/artigo')
