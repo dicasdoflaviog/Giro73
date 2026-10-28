@@ -21,7 +21,7 @@ def response(status, data=None, headers=None):
     return r
 
 def generated():
-    return {'apto': True, 'observacao': '', 'title': 'Informação regional verificada',
+    return {'summary_points':['O serviço foi atualizado.','A informação é regional.','Consulte os detalhes na fonte.'], 'apto': True, 'observacao': '', 'title': 'Informação regional verificada',
             'excerpt': 'Resumo factual para revisão editorial.', 'blocks': [
                 {'type': 'p', 'text': 'Conteúdo factual fornecido pela fonte, sem eventos adicionais.'}],
             'tags': ['Bahia'], 'meta': dict(zip(m.SEO_FIELDS, ['notícia regional', 'Título SEO regional', 'Descrição factual para o Rank Math.'])),
@@ -29,7 +29,7 @@ def generated():
 
 def entry(url='https://fonte.example/noticia?utm_source=rss', guid='id-1'):
     return {'url': url, 'guid': guid, 'publisher': 'Fonte autorizada', 'source_title': 'Notícia',
-            'source_text': 'Informação factual. '*20, 'published_at': time.time()-100,
+            'source_text': 'Informação factual. '*20, 'date_basis':'published','published_at': time.time()-100,
             'max_age_hours': 72}
 
 class CollectorTest(unittest.TestCase):
@@ -45,6 +45,8 @@ class CollectorTest(unittest.TestCase):
         c = m.Client('chave-openrouter-teste', 'token-wp-teste', 'openai/gpt-4o-mini',
                      'https://giro73.com.br/wp-json/g73/v1/publish', time.monotonic()+600)
         self.addCleanup(c.session.close)
+        c.preflight=Mock(return_value={"status":"publish"})
+        c.original_lead=Mock(side_effect=lambda e:e.get("source_text",""))
         return c
     def test_guid_e_url_sem_tracking_nao_duplicam(self):
         self.assertTrue(self.store.discover(self.source, entry()))
@@ -148,6 +150,8 @@ class CollectorTest(unittest.TestCase):
             sends = []
             lost = False
             def remaining(self):return 600
+            def original_lead(self,e):return e.get("source_text", "")
+            def preflight(self,e):return {"status":"publish"}
             def generate(self, source):self.generates += 1;return generated()
             def submit(self, key, payload):
                 self.sends.append((key, json.dumps(payload, sort_keys=True)))
@@ -167,7 +171,7 @@ class CollectorTest(unittest.TestCase):
         self.assertFalse(self.store.discover(self.source, entry()))
     def test_dry_run_prepara_sem_enviar(self):
         self.store.discover(self.source, entry())
-        c = Mock();c.generate.return_value = generated()
+        c = Mock();c.generate.return_value = generated();c.original_lead.side_effect=lambda e:e["source_text"]
         m.process(c, self.store, 5, dry_run=True)
         c.submit.assert_not_called()
         self.assertEqual(self.store.counts(), {'prepared': 1})
@@ -288,7 +292,7 @@ class CollectorTest(unittest.TestCase):
         sleep.assert_not_called(); c.generate.assert_not_called()
         self.assertEqual(len(sends), 2)
         self.assertEqual(sends[0]['headers']['Idempotency-Key'], sends[1]['headers']['Idempotency-Key'])
-        self.assertEqual(sends[1]['json'], dict(original, image_url=''))
+        self.assertEqual(sends[1]['json'], dict(original, image_url='', editorial_hold=True))
         saved = self.store.db.execute('SELECT * FROM items WHERE id=?', (key,)).fetchone()
         self.assertEqual((saved['status'], saved['wp_id'], saved['wp_url']), ('sent', 901, 'https://giro73.com.br/?p=901'))
 
