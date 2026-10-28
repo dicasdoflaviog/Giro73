@@ -51,8 +51,9 @@ NON_IMAGE_EXTENSIONS = {".svg", ".ico", ".pdf", ".html", ".htm", ".js", ".css", 
                         ".txt", ".mp4", ".webm", ".mp3", ".zip", ".woff", ".woff2"}
 SCHEMA = {
     "type": "object", "additionalProperties": False,
-    "required": ["apto", "observacao", "title", "excerpt", "blocks", "tags", "meta"],
+    "required": ["apto", "observacao", "title", "excerpt", "blocks", "tags", "meta", "editorial_category"],
     "properties": {
+        "editorial_category": {"type":"string","enum":sorted(CATEGORIES)},
         "apto": {"type": "boolean"}, "observacao": {"type": "string"},
         "title": {"type": "string"}, "excerpt": {"type": "string"},
         "blocks": {"type": "array", "items": {"type": "object", "additionalProperties": False,
@@ -89,6 +90,16 @@ focus keyword 100, título SEO 100, descrição SEO 200; até 8 tags de 60 carac
 Comece o texto com um parágrafo. Use uma palavra-chave fiel aos fatos e, de modo natural,
 inclua-a no título, título SEO, descrição SEO, primeiro parágrafo e em um subtítulo quando
 apropriado. Não repita artificialmente nem aumente o texto sem informação para obter nota.
+A palavra-chave deve ser uma expressão natural que apareça literalmente no título, título SEO,
+meta descrição e primeiro parágrafo. Escolha uma expressão curta já sustentada pelos fatos;
+não escolha "Bahia x São Paulo" se escreveu "Bahia e São Paulo". Quando houver subtítulos,
+use a expressão em um deles apenas se continuar claro e natural. Título SEO preferencialmente
+até 65 caracteres, descrição até 160, sem cortar fatos ou fabricar números. Não há mínimo
+obrigatório de 600 palavras, densidade-alvo, obrigação de lista, FAQ ou sumário. Nunca infle
+texto para pontuação. Escreva o essencial primeiro; identifique fonte, nomes, local e datas
+somente quando fornecidos. Não converta prognóstico em certeza nem data de coleta em evento.
+editorial_category deve classificar a notícia pelo assunto, não pela marca do feed: futebol
+publicado no Olhar Digital pertence a esportes. Use apenas as seis categorias permitidas.
 O programa insere a fotografia e seu ALT; não invente imagens, créditos ou URLs.
 A política local pode publicar fontes autorizadas; a IA não decide o status. Casos que exigem
 apuração adicional devem retornar apto=false. Responda apenas no JSON solicitado."""
@@ -260,10 +271,10 @@ def html_image_candidates(markup, base, article=False):
                 size = float(words[1][:-1]) if len(words)>1 and re.fullmatch(r"\d+(?:\.\d+)?[wx]", words[1]) else 0
                 variants.append((size, words[0]))
         for _, url in sorted(variants, reverse=True):
-            candidates.append({"url": url})
+            candidates.append({"url": url,"alt":plain(tag.get("alt", ""))[:300]})
         for key in ("data-src", "data-lazy-src", "data-original", "src"):
             if tag.get(key):
-                candidates.append({"url": tag[key]})
+                candidates.append({"url": tag[key],"alt":plain(tag.get("alt", ""))[:300]})
     result, seen = [], set()
     for candidate in candidates:
         url = clean_image_url(candidate["url"], base)
@@ -287,7 +298,7 @@ def feed_image_candidates(entry, base):
     for candidate in candidates:
         url = clean_image_url(candidate["url"], base)
         if url and url not in seen:
-            seen.add(url); result.append({"url": url})
+            seen.add(url); result.append(dict(candidate,url=url))
     return result[:8]
 
 def without_managed_image(content):
@@ -723,7 +734,10 @@ class Client:
                     break
                 seen.add(url)
                 try:
-                    return self.image_info(url, deadline)
+                    info = self.image_info(url, deadline)
+                    if isinstance(candidate,dict) and candidate.get("alt"):
+                        info["alt"] = plain(candidate["alt"])[:300]
+                    return info
                 except (ItemError, ConfigError, Deferred, requests.exceptions.RequestException):
                     self.remaining()  # Só o limite global encerra a fila; DNS de foto não encerra.
                     continue
@@ -780,6 +794,9 @@ def payload_from(generated: dict, entry: dict, category: str, image=None) -> dic
         if not result:
             raise ItemError("Campo editorial vazio após sanitização.")
         return result
+    category = generated.get("editorial_category",category)
+    if category not in CATEGORIES:
+        raise ItemError("Editoria editorial inválida.")
     title = text(generated.get("title"), 200)
     if len(title.encode()) > 600:
         raise ItemError("Título acima do limite do endpoint.")
@@ -808,17 +825,20 @@ def payload_from(generated: dict, entry: dict, category: str, image=None) -> dic
         if image.get("width") and image.get("height"):
             dimensions = f' width="{int(image["width"])}" height="{int(image["height"])}"'
         figure = ('<figure class="g73-imported-image"><img src="'+html.escape(image_url,quote=True)
-                  +'" alt="'+html.escape("Imagem ilustrativa de arquivo — "+category if image.get("illustrative") else seo["rank_math_focus_keyword"],quote=True)+'"'
+                  +'" alt="'+html.escape("Imagem ilustrativa de arquivo — "+category if image.get("illustrative") else image.get("alt") or "Imagem fornecida por "+entry["publisher"],quote=True)+'"'
                   +dimensions+' loading="lazy" decoding="async" /><figcaption>'
                   +html.escape(caption)+'</figcaption></figure>')
         position = next((index+1 for index,block in enumerate(blocks) if block["type"]=="p"),0)
         content.insert(position,figure)
+    category_names={"noticias-regiao":"Notícias e Região","politica":"Política", "dinheiro-renda-extra":"Dinheiro e Renda Extra", "tecnologia-inovacao":"Tecnologia e Inovação", "esportes":"Esportes", "famosos-entretenimento":"Famosos e Entretenimento"}
+    content.append('<p>Veja também a editoria de <a href="https://giro73.com.br/category/'+category+'/">'+category_names[category]+'</a> do Giro73.</p>')
     tags = generated.get("tags", [])
     if not isinstance(tags, list) or len(tags) > 8:
         raise ItemError("Tags inválidas.")
     return {"title": title, "content": "\n".join(content), "excerpt": excerpt,"source_url":entry["url"],
             "category": category, "tags": list(dict.fromkeys(text(x, 60) for x in tags)),
             "image_url": image_url, "image_credit": image_credit, "image_credit_url": image_credit_url,
+            "image_alt": ("Imagem ilustrativa de arquivo — "+category if image and image.get("illustrative") else image.get("alt") or "Imagem fornecida por "+entry["publisher"]) if image else "",
             "status": "draft", "meta": seo}
 
 def source_url_date(url):
@@ -866,6 +886,20 @@ def editorial_review_reason(entry, generated):
     return None
 
 
+def seo_issues(payload):
+    """Content checks, never a fabricated Rank Math score or a word-count target."""
+    meta=payload.get("meta",{})
+    keyword=plain(meta.get("rank_math_focus_keyword","")).casefold().strip()
+    if not keyword:
+        return ["palavra_chave_ausente"]
+    soup=BeautifulSoup(payload.get("content",""),"html.parser")
+    lead=soup.find("p")
+    fields={"titulo":payload.get("title",""),"titulo_seo":meta.get("rank_math_title",""),
+            "descricao_seo":meta.get("rank_math_description",""),"abertura":lead.get_text(" ",strip=True) if lead else ""}
+    return ["palavra_chave_incoerente_"+name for name,value in fields.items()
+            if keyword not in plain(value).casefold()]
+
+
 def publication_decision(source, entry, generated, payload, image=None):
     """O status vem da configuração local; a IA não pode liberar uma publicação."""
     if source.get("publication_mode","draft") != "auto":
@@ -873,6 +907,8 @@ def publication_decision(source, entry, generated, payload, image=None):
     material = entry.get("source_title","")+" "+entry.get("source_text","")
     if re.search(r"\b(?:edital|editais|ata de (?:sess[aã]o|reuni[aã]o|registro)|atas de (?:sess[oõ]es|reuni[oõ]es)|licita[cç][aã]o|preg[aã]o|chamamento p[uú]blico)\b", material, re.I):
         return "draft", "documento_institucional_requer_revisao"
+    if source.get("seo_required") and seo_issues(payload):
+        return "draft", "seo_requer_revisao:"+",".join(seo_issues(payload))
     review = editorial_review_reason(entry, generated)
     if review:
         return "draft", review
@@ -911,7 +947,7 @@ def load_sources(path: Path):
         checked_url(f.get("url", ""), https_only=True)
         if not isinstance(f.get("category"), str) or f["category"] not in CATEGORIES:
             raise ConfigError("Categoria de fonte fora das seis editorias configuradas.")
-        for flag in ("use_full_content", "allow_undated"):
+        for flag in ("use_full_content", "allow_undated", "seo_required"):
             if type(f.get(flag, False)) is not bool:
                 raise ConfigError(f"{flag} deve ser booleano JSON.")
         f = dict(f)
@@ -1030,7 +1066,7 @@ def process(client: Client, store: Store, limit: int, dry_run=False, sources=Non
                     store.finish(key, "skipped", error="fonte_insuficiente_ou_revisao_necessaria")
                     continue
                 payload["status"], reason = publication_decision(source,entry,generated,payload,image=image)
-                LOG.info("Item %s | fonte: %s | editoria: %s | destino: %s | motivo: %s",key[:12],source.get("name",item["source"]),item["category"],payload["status"],reason)
+                LOG.info("Item %s | fonte: %s | editoria: %s | destino: %s | motivo: %s",key[:12],source.get("name",item["source"]),payload["category"],payload["status"],reason)
                 store.prepare(key, payload)
                 if not payload.get("image_url"):
                     LOG.warning("Item %s: fotografia não encontrada; rascunho ficará com capa pendente.",key[:12])

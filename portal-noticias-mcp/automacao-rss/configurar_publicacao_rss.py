@@ -62,6 +62,7 @@ def configure(path, apply=False):
         mode = "auto" if approved_feed(feed) else "draft"
         feed["publication_mode"] = mode
         if mode == "auto":
+            feed["seo_required"] = True
             feed["use_full_content"] = True
             feed["fetch_article_text"] = True
             if feed.get("category") in covers:

@@ -56,7 +56,7 @@ class ImageTests(unittest.TestCase):
                   '<article><img class="share" src="/arquivo1.jpg">'
                   '<img src="/Handler.ashx?f=i&amp;query=123" width="800" height="450" alt="Obras na cidade"></article>')
         candidates = m.html_image_candidates(markup,'https://camara.example/noticia',article=True)
-        self.assertEqual(candidates,[{'url':'https://camara.example/Handler.ashx?f=i&query=123'}])
+        self.assertEqual(candidates,[{'url':'https://camara.example/Handler.ashx?f=i&query=123','alt':'Obras na cidade'}])
 
     def test_srcset_prefers_larger_image_and_accepts_lazy_loading(self):
         markup = '<article><img data-src="/foto.jpg" srcset="/foto-400.jpg 400w, /foto-1200.jpg 1200w"></article>'
@@ -116,15 +116,15 @@ class ImageTests(unittest.TestCase):
         self.assertNotIn('Authorization',headers)
         self.assertNotIn('X-G73-Token',headers)
 
-    def test_figure_after_first_paragraph_has_exact_keyword_and_same_url(self):
+    def test_figure_after_first_paragraph_keeps_descriptive_alt_and_same_url(self):
         keyword='crédito & renda "segura"'
         item=dict(entry(),image_credit='Divulgação / Fonte Oficial')
         url='https://fonte.example/Handler.ashx?f=i&query=123'
-        payload=m.payload_from(generated(keyword),item,'noticias-regiao',image={'url':url,'width':400,'height':250})
+        payload=m.payload_from(generated(keyword),item,'noticias-regiao',image={'url':url,'width':400,'height':250,'alt':'Pessoa usando um computador'})
         soup=m.BeautifulSoup(payload['content'],'html.parser')
         figure=soup.find('figure')
         self.assertEqual(soup.find('p').find_next_sibling().name,'figure')
-        self.assertEqual(figure.img['alt'],keyword)
+        self.assertEqual(figure.img['alt'],'Pessoa usando um computador')
         self.assertEqual(figure.img['src'],payload['image_url'])
         self.assertEqual(figure.figcaption.get_text(),'Foto: Divulgação / Fonte Oficial')
         self.assertEqual(payload['status'],'draft')

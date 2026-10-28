@@ -63,7 +63,7 @@ function g73_pub_validate($request) {
  foreach(array('title','content') as $key){if(!isset($p[$key])||!is_string($p[$key])||!trim($p[$key])){return g73_pub_error('invalid_'.$key,'Título e conteúdo são obrigatórios e devem ser texto.');}}
  $title=sanitize_text_field($p['title']);$content=g73_pub_html($p['content']);
  if(!trim($title)||strlen($title)>600||strlen($p['content'])>450000||!trim(wp_strip_all_tags($content))){return g73_pub_error('content_invalid','Título ou conteúdo vazio ou acima do limite.');}
- foreach(array('excerpt','columnist_slug','image_url','image_credit','image_credit_url','source_url','focus_keyword','status') as $key){if(isset($p[$key])&&(!is_string($p[$key])||strlen($p[$key])>('excerpt'===$key?2000:2048))){return g73_pub_error('invalid_field','Campo textual inválido: '.$key);}}
+ foreach(array('excerpt','columnist_slug','image_alt','image_url','image_credit','image_credit_url','source_url','focus_keyword','status') as $key){if(isset($p[$key])&&(!is_string($p[$key])||strlen($p[$key])>('excerpt'===$key?2000:2048))){return g73_pub_error('invalid_field','Campo textual inválido: '.$key);}}
  $seo_meta=array();
  if(isset($p['meta'])){
   if(!is_array($p['meta'])){return g73_pub_error('meta_invalid','O campo meta deve ser um objeto JSON.');}
@@ -90,7 +90,7 @@ function g73_pub_validate($request) {
  $credit=isset($p['image_credit'])?sanitize_text_field($p['image_credit']):'';$credit_url=isset($p['image_credit_url'])?$p['image_credit_url']:'';
  if($credit_url&&(!g73_pub_url($credit_url,false)||!$credit)){return g73_pub_error('credit_invalid','Crédito com URL exige nome e endereço HTTPS válido.');}
  $key=(string)$request->get_header('idempotency-key');if($key&&!preg_match('/^[A-Za-z0-9._:-]{1,160}$/D',$key)){return g73_pub_error('idempotency_invalid','Idempotency-Key deve conter até 160 letras, números, ponto, hífen, dois-pontos ou sublinhado.');}
- return array('title'=>$title,'content'=>$content,'excerpt'=>$excerpt,'category'=>(int)$term->term_id,'columnist_slug'=>$slug,'image_url'=>$image,'tags'=>$clean_tags,'meta'=>$seo_meta,'status'=>$status,'author'=>$author,'image_credit'=>$credit,'image_credit_url'=>$credit_url,'source_url'=>g73_pub_source_url(isset($p['source_url'])?$p['source_url']:g73_pub_content_source($content)),'focus_keyword'=>isset($p['focus_keyword'])?wp_html_excerpt(sanitize_text_field($p['focus_keyword']),100,''):'','key'=>$key);
+ return array('title'=>$title,'content'=>$content,'excerpt'=>$excerpt,'category'=>(int)$term->term_id,'columnist_slug'=>$slug,'image_url'=>$image,'image_alt'=>isset($p['image_alt'])?wp_html_excerpt(sanitize_text_field($p['image_alt']),300,''):null,'tags'=>$clean_tags,'meta'=>$seo_meta,'status'=>$status,'author'=>$author,'image_credit'=>$credit,'image_credit_url'=>$credit_url,'source_url'=>g73_pub_source_url(isset($p['source_url'])?$p['source_url']:g73_pub_content_source($content)),'focus_keyword'=>isset($p['focus_keyword'])?wp_html_excerpt(sanitize_text_field($p['focus_keyword']),100,''):'','key'=>$key);
 }
 function g73_pub_content_source($content) {
  preg_match_all('~<p\b[^>]*>(?:(?!</p>)[\s\S])*?</p>~i',$content,$paragraphs);
@@ -250,6 +250,16 @@ function g73_pub_response($id,$created,$request_id) {
   'warnings'=>array_values(array_unique(array_filter($warnings)))), $created?201:200);
  return $response;
 }
+/** Validação de coerência; não calcula nem grava pontuação Rank Math. */
+function g73_pub_seo_issues($p) {
+ $meta=isset($p['meta'])?$p['meta']:array();$keyword=trim(isset($meta['rank_math_focus_keyword'])?$meta['rank_math_focus_keyword']:$p['focus_keyword']);
+ if(!$keyword){return array('palavra-chave ausente');}
+ preg_match('~<p\b[^>]*>([\s\S]*?)</p>~i',$p['content'],$lead);
+ $fields=array('título'=>$p['title'],'título SEO'=>isset($meta['rank_math_title'])?$meta['rank_math_title']:$p['title'],
+ 'descrição SEO'=>isset($meta['rank_math_description'])?$meta['rank_math_description']:$p['excerpt'],'abertura'=>isset($lead[1])?$lead[1]:'');$issues=array();
+ foreach($fields as $field=>$text){$text=html_entity_decode(wp_strip_all_tags($text),ENT_QUOTES,'UTF-8');if(false===mb_stripos($text,$keyword,0,'UTF-8')){$issues[]='palavra-chave incoerente em '.$field;}}
+ return $issues;
+}
 function g73_pub_publish($request) {
  // Permission callbacks podem ser consultados novamente ao gerar o header Allow.
  $GLOBALS['g73_pub_request']=array('request_id'=>wp_generate_uuid4(),'post_id'=>0,'started'=>microtime(true));
@@ -268,7 +278,10 @@ function g73_pub_publish($request) {
   $source_review=g73_pub_source_review($p['source_url']);
   if($source_review['reason']){$p['status']='draft';$warnings[]='Referência temporal exige revisão: '.$source_review['reason'].($source_review['date']?' ('.$source_review['date'].')':'').'.';}
   $rate=(array)get_transient('g73_pub_rate');$now=time();$rate=array_values(array_filter($rate,function($v)use($now){return $v>$now-300;}));if(count($rate)>=20){return g73_pub_error('rate_limited','Limite de 20 tentativas de criação em cinco minutos.',429);}$rate[]=$now;set_transient('g73_pub_rate',$rate,300);
-  $image_alt=array_key_exists('rank_math_focus_keyword',$p['meta'])?$p['meta']['rank_math_focus_keyword']:($p['focus_keyword']?:$p['title']);
+  $seo_issues=g73_pub_seo_issues($p);
+  if($seo_issues){$p['status']='draft';$warnings[]='Revisão SEO: '.implode('; ',$seo_issues).'. Conteúdo preservado em rascunho.';}
+  $image_alt=null!==$p['image_alt']?$p['image_alt']:'';if(!$image_alt&&class_exists('WP_HTML_Tag_Processor')){$image_tags=new WP_HTML_Tag_Processor($p['content']);while($image_tags->next_tag('IMG')){$existing_alt=trim((string)$image_tags->get_attribute('alt'));if($existing_alt){$image_alt=wp_html_excerpt(sanitize_text_field($existing_alt),300,'');break;}}}
+  if(!$image_alt){$image_alt='Imagem que acompanha a matéria: '.$p['title'];}
   if($p['image_url']){
    try {$image=g73_pub_image($p['image_url'],$p['title'],$p['image_credit'],$p['image_credit_url'],$image_alt);}
    catch(Throwable $error){$image=g73_pub_error('image_processing','Falha ao preparar a capa.',422);}
@@ -285,6 +298,7 @@ function g73_pub_publish($request) {
   if($p['focus_keyword']){$meta['rank_math_focus_keyword']=$p['focus_keyword'];}
   // Somente os três campos SEO permitidos; meta recebido tem prioridade sobre os valores automáticos.
   $meta=array_merge($meta,$p['meta']);
+  $meta['_g73_seo_review']=$seo_issues;
   $meta['_g73_image_warnings']=$warnings;
   if($image){$meta['_thumbnail_id']=$image['id'];}
   if($p['columnist_slug']){$meta['g73_columnist_slug']=$p['columnist_slug'];$meta['g73_is_opinion']=true;}
