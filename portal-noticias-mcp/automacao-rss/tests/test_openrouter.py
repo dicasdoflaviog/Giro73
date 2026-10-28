@@ -18,7 +18,7 @@ def response(status,data=None,headers=None):
 
 
 def draft():
-    return {'apto':True,'observacao':'','title':'Notícia regional','excerpt':'Resumo factual.',
+    return {'summary_points':['O serviço foi atualizado.','A informação é regional.','Consulte os detalhes na fonte.'],'apto':True,'observacao':'','title':'Notícia regional','excerpt':'Resumo factual.',
             'blocks':[{'type':'p','text':'Informação factual da fonte.'}],'tags':[],
             'meta':{'rank_math_focus_keyword':'notícia regional','rank_math_title':'Título SEO',
                     'rank_math_description':'Descrição SEO.'}}
@@ -33,6 +33,8 @@ class OpenRouterTests(unittest.TestCase):
         client=m.Client('router-key-test','wp-token-test',model,
                         'https://giro73.com.br/wp-json/g73/v1/publish',time.monotonic()+600)
         self.addCleanup(client.session.close)
+        client.preflight=Mock(return_value={"status":"publish"})
+        client.original_lead=Mock(side_effect=lambda e:e.get("source_text",""))
         return client
 
     def test_generation_uses_only_openrouter_and_keeps_structured_seo(self):
