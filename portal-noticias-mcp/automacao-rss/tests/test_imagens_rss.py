@@ -19,7 +19,7 @@ def photo(width=400, height=250):
 
 
 def generated(keyword='crédito regional'):
-    return {'apto': True, 'observacao': '', 'title': 'Informação regional verificada',
+    return {'summary_points':['O serviço foi atualizado.','A informação é regional.','Consulte os detalhes na fonte.'], 'apto': True, 'observacao': '', 'title': 'Informação regional verificada',
             'excerpt': 'Resumo factual.', 'blocks': [
                 {'type': 'p', 'text': 'Primeiro parágrafo factual.'},
                 {'type': 'h2', 'text': 'Informações de serviço'},
@@ -31,7 +31,7 @@ def generated(keyword='crédito regional'):
 def entry():
     return {'url': 'https://fonte.example/noticia', 'guid': 'foto-1', 'publisher': 'Fonte regional',
             'source_text': 'Informação da fonte. '*20, 'source_title': 'Notícia',
-            'published_at': time.time()-60, 'max_age_hours': 72}
+            'date_basis':'published','published_at': time.time()-60, 'max_age_hours': 72}
 
 
 class ImageTests(unittest.TestCase):
@@ -39,6 +39,8 @@ class ImageTests(unittest.TestCase):
         client = m.Client('openrouter-test', 'wp-test', 'openai/gpt-4o-mini',
                           'https://giro73.com.br/wp-json/g73/v1/publish', time.monotonic()+600)
         self.addCleanup(client.session.close)
+        client.preflight=Mock(return_value={"status":"publish"})
+        client.original_lead=Mock(side_effect=lambda e:e.get("source_text",""))
         return client
 
     def test_rejects_social_logo_icon_and_non_image_extensions(self):
