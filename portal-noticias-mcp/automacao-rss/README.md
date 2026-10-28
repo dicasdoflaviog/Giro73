@@ -2,6 +2,18 @@
 
 Python 3.10+ em Ubuntu 22.04/24.04 ou posterior compatível. Não depende do bot Telegram nem instala plugins no WordPress. O padrão é rascunho; fontes explicitamente configuradas para modo automático podem publicar pelo endpoint existente. Política e implantação: [rodízio e publicação seletiva](../34-rodizio-publicacao-seletiva.md).
 
+## Política obrigatória de 28/10/2026
+
+A versão atual impõe uma janela máxima de 24 horas antes de gerar e antes de enviar, inclusive em payloads preparados. Datas ausentes, futuras ou apenas de atualização não entram. Configurações anteriores de 72/720h ou `allow_undated` não relaxam a regra. A autorização da fonte continua obrigatória; não há preenchimento de cotas com fila antiga.
+
+Fontes institucionais detectadas por domínio `.gov.br`, `.leg.br`, prefeitura/câmara ou identificação municipal permanecem em rascunho. Demais fontes autorizadas usam modo automático, sujeito a fatos suficientes, imagem de 1200px e SEO completo. O coletor lê os dois parágrafos iniciais da página original e consulta o preflight autenticado antes de chamar a IA. O servidor verifica duplicidade nos últimos 50 posts (publicados, rascunhos, pendentes e agendados) e mantém a checagem de URL de origem em todo o histórico.
+
+O resumo `summary_points` exige três fatos. O servidor insere “Em resumo” após a abertura e grava SEO, Open Graph e robots antes da publicação. Imagem/SEO inválidos preservam rascunho. Datas explícitas antigas no início da fonte são bloqueadas; isso não substitui verificação jornalística de fatos sem data explícita.
+
+`--policy-self-test` executa validação local sem credenciais, rede, IA ou publicação. `--policy-check-server` usa a credencial já configurada para testar o preflight, sem criar posts ou gerar textos.
+
+A implantação remota só estará concluída após o instalador informar `RSS_POLICY_INSTALLED`. O snippet WordPress 12 já aplica a trava de recepção; um coletor antigo sem data original e resumo será rejeitado. Isso impede a publicação insegura enquanto a VPS não é atualizada.
+
 ## Arquivos
 
 - `coletor_rss.py`: programa completo.
