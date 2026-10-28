@@ -92,8 +92,8 @@ def government_definitions(cities=None):
         if selected and slug not in selected:
             continue
         definitions.extend([
-            ("Prefeitura de "+city, "noticias-regiao", "https://"+prefeitura+"/", True),
-            ("Câmara de "+city, "politica", "https://"+camara+"/", True),
+            ("Prefeitura de "+city, "noticias-regiao", "https://www."+prefeitura+"/", True),
+            ("Câmara de "+city, "politica", "https://www."+camara+"/", True),
         ])
     return definitions
 
@@ -199,7 +199,7 @@ def discover_candidates(client, site):
         client.deadline = source_deadline
     for base in dict.fromkeys([site, current]):
         candidates.extend(urljoin(base, path) for path in (
-            "feed/", "?feed=rss2", "rss.php", "rss", "feed", "feed.xml", "rss2.xml",
+            "feed/", "feed", "rss", "rss.xml", "atom.xml", "?feed=rss2", "rss.php", "feed.xml", "rss2.xml",
             "index.php?format=feed&type=rss",
             "rss/", "rss.xml", "?format=feed&type=rss"
         ))
@@ -234,6 +234,62 @@ def save_config(path, data):
             os.unlink(temporary)
 
 
+# Lista oficial reafirmada pelo responsável em 28/10/2026 (22 órgãos).
+OFFICIAL_CITIES = ('medeiros-neto','ibirapua','lajedao','vereda','itamaraju','alcobaca',
+                   'caravelas','nova-vicosa','mucuri','porto-seguro','eunapolis')
+
+
+def configure_municipal(feeds,client,name,category,address,seconds):
+    metadata=government_metadata(address)
+    matches=[f for f in feeds if host_key(f.get('site_url',''))==host_key(address)
+             or host_key(f.get('url',''))==host_key(address)
+             or (f.get('city_slug')==metadata['city_slug'] and f.get('source_type')==metadata['source_type'])
+             or f.get('name','').casefold()==name.casefold()]
+    if len(matches)>1:
+        announce('EXIGE REVISÃO:',name,'| múltiplos cadastros existentes; nenhum novo criado.')
+        return False,False
+    existing=matches[0] if matches else None
+    if not existing and len(feeds)>=MAX_SOURCES:return False,False
+    finish=time.monotonic()+seconds
+    client.deadline=time.monotonic()+max(5,seconds*0.6)
+    candidates=[]
+    if existing and existing.get('transport','rss')=='rss':candidates.append(existing['url'])
+    candidates+=discover_candidates(client,address)
+    selected=None;transport='rss';entries=[]
+    for candidate in dict.fromkeys(candidates):
+        try:
+            client.remaining();entries=client.feed(candidate);selected=candidate;break
+        except (ItemError,ConfigError,Deferred,StopRun,ValueError,requests.exceptions.RequestException):
+            if time.monotonic()>=client.deadline:break
+    if selected is None:
+        client.deadline=finish
+        try:
+            entries=client.html_feed({'name':name,'url':address,'site_url':address})
+            selected=client.html_listing_url;transport='html'
+        except (ItemError,ConfigError,Deferred,StopRun,ValueError,requests.exceptions.RequestException) as error:
+            announce('PENDENTE:',name,'| RSS e HTML não validados |',type(error).__name__)
+            return False,False
+    source=dict(existing or {})
+    source.update(metadata)
+    source.update({'id':source.get('id') or 'fonte_'+hashlib.sha256(('https://'+host_key(address)+'/').encode()).hexdigest()[:12],
+        'name':source.get('name') or name,'url':selected,'transport':transport,'category':source.get('category') or category,
+        'authorized':True,'html_fallback':True,'use_full_content':True,'fetch_article_text':True,'allow_undated':False,
+        'max_age_hours':source.get('max_age_hours',72),'publication_mode':'auto','auto_min_chars':600,
+        'auto_max_age_hours':24,'seo_required':True})
+    covers=Path(__file__).with_name('capas_editorias.json')
+    if covers.is_file():
+        cover=json.loads(covers.read_text()).get(source['category'])
+        if cover and not source.get('fallback_image'):source['fallback_image']=cover
+    changed=source!=existing
+    if existing is not None:
+        existing.clear();existing.update(source)
+    else:feeds.append(source)
+    announce('JÁ CADASTRADA / VALIDADA:' if existing is not None else 'FONTE VALIDADA:',
+             name,'|',transport.upper(),'| entradas com texto/data:' if transport=='html' else '| entradas RSS:',len(entries),'| ID:',source['id'])
+    if not entries:announce('  MONITORAMENTO SEM ENTRADAS: nenhuma notícia será criada até haver matéria elegível.')
+    return changed,True
+
+
 def configure(path, client, definitions=FONTES, seconds=60):
     load_sources(path)
     original = path.read_text(encoding="utf-8")
@@ -241,6 +297,11 @@ def configure(path, client, definitions=FONTES, seconds=60):
     feeds = data["feeds"]
     added, failures, converted_links = 0, [], set()
     for name, category, address, discover in definitions:
+        if government_metadata(address) and hasattr(client,'html_feed'):
+            changed,success=configure_municipal(feeds,client,name,category,address,seconds)
+            added+=int(changed)
+            if not success:failures.append(name)
+            continue
         existing = next((feed for feed in feeds if
             url_key(feed.get("url", "")) == url_key(address) or
             (discover and (host_key(feed.get("url", "")) == host_key(address) or
@@ -334,6 +395,8 @@ def main():
                            help="Verifica apenas Portal TX e Vem Vê TX Bahia.")
     selection.add_argument("--only-converted", action="store_true",
                            help="Verifica apenas os três XMLs informados via PolitePaul.")
+    selection.add_argument("--official-government", action="store_true",
+                           help="Verifica os 22 órgãos da lista oficial: RSS primeiro, HTML como alternativa; sem duplicar cadastros.")
     selection.add_argument("--only-government", action="store_true",
                            help="Descobre RSS das prefeituras e câmaras indicadas; novas fontes ficam em draft.")
     parser.add_argument("--city", action="append", choices=[x[1] for x in MUNICIPIOS],
@@ -345,7 +408,8 @@ def main():
     client = Client("", "", "rss-check", "https://giro73.com.br/wp-json/g73/v1/publish",
                     time.monotonic()+args.timeout, attempts=1)
     try:
-        definitions = (government_definitions(args.city) if args.only_government else
+        definitions = (government_definitions(OFFICIAL_CITIES) if args.official_government else
+                       government_definitions(args.city) if args.only_government else
                        CONVERTIDAS if args.only_converted else
                        [source for source in FONTES if source[3]] if args.only_local else FONTES+CONVERTIDAS)
         return configure(args.config, client, definitions=definitions, seconds=args.timeout)

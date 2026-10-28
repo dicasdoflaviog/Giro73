@@ -381,3 +381,11 @@ Passaram **93 testes locais**: 27 do coletor, 12 do configurador, 12 das imagens
 Na VPS, execute o atualizador com `--apply-publication-policy`. Ele instala os arquivos, verifica/adiciona fontes de imprensa e dos municípios, aplica as capas/política, confere OpenRouter e roda **um** lote com `--limit 10`. Os logs mostram fonte, editoria, decisão, ID, capa e link efetivamente devolvidos pelo WordPress. Falhas de validação de feeds são parciais e não confirmam a ativação de uma fonte indisponível.
 
 A suíte local cobre o fluxo com APIs simuladas. A execução real depende das credenciais e do acesso de rede da VPS; estes não estão disponíveis no ambiente de desenvolvimento.
+
+## Lista oficial de 22 órgãos: RSS e HTML — 28/10/2026
+
+`configurar_fontes_rss.py --official-government --timeout 60` seleciona as prefeituras/câmaras de Medeiros Neto, Ibirapuã, Lajedão, Vereda, Itamaraju, Alcobaça, Caravelas, Nova Viçosa, Mucuri, Porto Seguro e Eunápolis. Procura RSS/Atom antes de usar `/noticias`, `/site/noticias` e Home. Reutiliza o ID existente e aceita somente matérias individuais com texto e data original; conserva os filtros e a fila. HTML é analisado por BeautifulSoup, sem executar JavaScript nem iframes externos.
+
+O transporte fica registrado como `rss` ou `html`; `html_fallback: true` permite alternativa HTML durante uma falha posterior do RSS municipal. Atualização do portal, rodapé e data parcial não viram data de publicação. O script `expandir-fontes-oficiais.sh COMMIT` instala essa integração e verifica os 22 órgãos sem chamar IA ou criar posts. A confirmação de ativação vem do log da VPS, não do catálogo no Git.
+
+Detalhes e limitações observadas: [monitoramento oficial RSS/HTML](../52-fontes-oficiais-rss-html.md).

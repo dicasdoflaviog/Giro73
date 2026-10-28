@@ -25,7 +25,7 @@ if [[ ! -x "$G73_ROOT/.venv/bin/python" || ! -f "$G73_ROOT/coletor_rss.py" || ! 
 fi
 G73_STAGE=$(mktemp -d "$G73_ROOT/.fontes.XXXXXX")
 trap 'rm -rf -- "$G73_STAGE"' EXIT
-for G73_FILE in coletor_rss.py configurar_fontes_rss.py; do
+for G73_FILE in coletor_rss.py configurar_fontes_rss.py capas_editorias.json; do
   curl --fail --silent --show-error --location --retry 3 --max-time 60 \
     "$G73_BASE/$G73_FILE" --output "$G73_STAGE/$G73_FILE"
 done
@@ -43,19 +43,23 @@ if ! flock -w 30 9; then
 fi
 G73_BACKUP=$(mktemp -d /root/giro73-fontes-backup.XXXXXX)
 cp -a /etc/giro73-rss.json "$G73_BACKUP/feeds.json"
-for G73_FILE in coletor_rss.py configurar_fontes_rss.py; do
+for G73_FILE in coletor_rss.py configurar_fontes_rss.py capas_editorias.json; do
   if [[ -f "$G73_ROOT/$G73_FILE" ]]; then cp -a "$G73_ROOT/$G73_FILE" "$G73_BACKUP/"; fi
   install -o root -g giro73-rss -m 0640 "$G73_STAGE/$G73_FILE" "$G73_ROOT/$G73_FILE.new"
 done
-for G73_FILE in coletor_rss.py configurar_fontes_rss.py; do
+for G73_FILE in coletor_rss.py configurar_fontes_rss.py capas_editorias.json; do
   mv -f "$G73_ROOT/$G73_FILE.new" "$G73_ROOT/$G73_FILE"
 done
 echo "Scripts atualizados. Backup privado: $G73_BACKUP"
-echo 'Verificando RSS; somente feeds válidos serão cadastrados como draft.'
+echo 'Verificando RSS e alternativa HTML; sem duplicar fontes. Nenhum artigo será publicado por esta instalação.'
 cd "$G73_ROOT"
+G73_SELECTION=(--official-government)
+for G73_ARG in "$@"; do
+  if [[ "$G73_ARG" == '--city' || "$G73_ARG" == --city=* ]]; then G73_SELECTION=(--only-government); fi
+done
 G73_RESULT=0
 "$G73_ROOT/.venv/bin/python" -B "$G73_ROOT/configurar_fontes_rss.py" \
-  --only-government --timeout 20 "$@" || G73_RESULT=$?
+  "${G73_SELECTION[@]}" --timeout 60 "$@" || G73_RESULT=$?
 if [[ "$G73_RESULT" == 1 ]]; then
   echo 'Verificação parcial: confira as fontes em EXIGEM REVISÃO. As válidas foram salvas com backup.'
 elif [[ "$G73_RESULT" == 0 ]]; then

@@ -198,7 +198,7 @@ class ConfigureTests(unittest.TestCase):
     def test_redirected_government_feed_is_not_added_again(self):
         definitions = config.government_definitions(["prado"])[:1]
         client = Client(feeds={"https://noticias.prado.ba.gov.br/feed/": [1]},
-                        pages={"https://prado.ba.gov.br/": Response(
+                        pages={"https://www.prado.ba.gov.br/": Response(
                             '<link type="application/rss+xml" href="https://noticias.prado.ba.gov.br/feed/">')})
         self.assertEqual(self.run_config(client, definitions), 0)
         client.calls.clear()

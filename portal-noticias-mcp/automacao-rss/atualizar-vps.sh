@@ -107,7 +107,7 @@ mv -f "$RSS_ROOT/configurar_publicacao_rss.py.new" "$RSS_ROOT/configurar_publica
 if [[ "$RSS_POLICY" == '--apply-publication-policy' ]]; then
   # Feed verification failures are reported individually; do not invent RSS endpoints.
   "$RSS_ROOT/.venv/bin/python" "$RSS_ROOT/configurar_fontes_rss.py" --timeout 20 || [[ $? == 1 ]]
-  "$RSS_ROOT/.venv/bin/python" "$RSS_ROOT/configurar_fontes_rss.py" --only-government --timeout 20 || [[ $? == 1 ]]
+  "$RSS_ROOT/.venv/bin/python" "$RSS_ROOT/configurar_fontes_rss.py" --official-government --timeout 60 || [[ $? == 1 ]]
   "$RSS_ROOT/.venv/bin/python" "$RSS_ROOT/configurar_publicacao_rss.py" --apply
 fi
 # Replace the canonical cron, and stop the optional timer to avoid duplicate schedules.
