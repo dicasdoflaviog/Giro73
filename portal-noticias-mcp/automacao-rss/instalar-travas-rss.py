@@ -13,7 +13,7 @@ import subprocess
 import tempfile
 import time
 
-BASELINE = '3eebe39dc47bb5ce70f7df6f5baf127ab536eef19f0443539d13250d1670015e'
+BASELINE = 'd319e84cc55813b4e06a9fea03cc591f20b3dd8ce36ead57e24942f23168e180'
 
 def safe_cron_inventory():
     found=[]
@@ -122,9 +122,9 @@ def apply(bundle):
 if __name__=='__main__':
     try:
         import urllib.request,gzip
-        url='https://raw.githubusercontent.com/dicasdoflaviog/Giro73/1bdb5e1ff3de50a71374c4f5008e3418ffeaf298/portal-noticias-mcp/automacao-rss/coletor_rss.py'
+        url='https://raw.githubusercontent.com/dicasdoflaviog/Giro73/ebae797698f7910200f48c9b88060bc7ec24fa3e/portal-noticias-mcp/automacao-rss/coletor_rss.py'
         code=urllib.request.urlopen(url,timeout=40).read()
-        bundle={'worker_sha256':'3ad657a32f055ce3e3ba9516f81e5a14e6ebfb3a70df80fa4261ec6ab55380f1',
+        bundle={'worker_sha256':'2ed7b60503b7dd8d30139d394f8a3584b8a1c8a5531d0c38f048ce8412240b8f',
                 'worker_gzip_base64':base64.b64encode(gzip.compress(code,mtime=0)).decode()}
         apply(bundle)
     except Exception as error:
