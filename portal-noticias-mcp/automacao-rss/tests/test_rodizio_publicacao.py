@@ -17,8 +17,8 @@ import configurar_publicacao_rss as policy
 
 def generated():
     return {"summary_points":["O serviço foi atualizado.","A informação é regional.","Consulte os detalhes na fonte."],"apto":True,"observacao":"","title":"Informação regional",
-            "excerpt":"Resumo factual.","blocks":[{"type":"p","text":"Informação confirmada pela fonte. "*25}],
-            "tags":[],"meta":dict(zip(m.SEO_FIELDS,["informação regional","Informação regional","Descrição factual."]))}
+            "excerpt":"Resumo factual.","blocks":[{"type":"p","text":"Informação regional confirmada pela fonte. "*25}],
+            "tags":[],"meta":dict(zip(m.SEO_FIELDS,["informação regional","Informação regional","Descrição factual sobre informação regional."]))}
 
 
 def entry(number=1,age=60):
